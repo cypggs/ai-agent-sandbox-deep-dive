@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>muse 运行环境深度调研报告 · Deep Environment Report</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --bg2: #0b1120;
+    --card: rgba(255,255,255,.035);
+    --border: rgba(255,255,255,.09);
+    --txt: #e6edf7;
+    --sub: #8b98ad;
+    --cyan: #22d3ee;
+    --violet: #a78bfa;
+    --amber: #fbbf24;
+    --green: #34d399;
+    --pink: #f472b6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  .glow {
+    position: fixed; border-radius: 50%; filter: blur(120px);
+    opacity: .16; pointer-events: none; z-index: 0;
+  }
+  .glow.g1 { width: 520px; height: 520px; background: #0ea5e9; top: -160px; left: -120px; }
+  .glow.g2 { width: 460px; height: 460px; background: #7c3aed; top: 30%; right: -160px; }
+  .glow.g3 { width: 420px; height: 420px; background: #059669; bottom: -140px; left: 30%; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(7,11,20,.72);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1180px; margin: 0 auto; padding: 12px 24px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .logo {
+    font-weight: 800; font-size: 15px; letter-spacing: .5px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan); }
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
+  .nav-links a {
+    color: var(--sub); text-decoration: none; font-size: 13px;
+    padding: 6px 12px; border-radius: 8px; transition: all .2s;
+  }
+  .nav-links a:hover { color: var(--txt); background: rgba(255,255,255,.06); }
+
+  header {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto;
+    padding: 150px 24px 60px;
+  }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: 2px; color: var(--cyan);
+    border: 1px solid rgba(34,211,238,.3); border-radius: 99px;
+    padding: 5px 14px; margin-bottom: 22px;
+    font-family: Consolas, monospace;
+  }
+  h1 {
+    font-size: clamp(32px, 4.6vw, 54px); font-weight: 900; letter-spacing: -1px;
+    line-height: 1.18; margin-bottom: 18px;
+  }
+  h1 .grad {
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero-sub { color: var(--sub); font-size: 15.5px; max-width: 780px; }
+  .hero-sub b { color: var(--txt); font-weight: 600; }
+  .hero-meta {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px;
+  }
+
+  section { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 56px 24px 8px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .sec-num {
+    font-family: Consolas, monospace; font-size: 13px; color: var(--cyan);
+    border: 1px solid rgba(34,211,238,.3); border-radius: 6px; padding: 2px 8px;
+  }
+  h2 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .sec-desc { color: var(--sub); font-size: 14px; margin-bottom: 28px; max-width: 780px; }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  .grid { display: grid; gap: 16px; }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(34,211,238,.35);
+    box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+  .stat .k { font-size: 12px; color: var(--sub); letter-spacing: 1.5px; text-transform: uppercase; }
+  .stat .v { font-size: 26px; font-weight: 800; margin-top: 6px;
+    font-family: "SF Mono", Consolas, monospace; }
+  .stat .d { font-size: 12.5px; color: var(--sub); margin-top: 4px; }
+  .c-cyan { color: var(--cyan); } .c-violet { color: var(--violet); }
+  .c-green { color: var(--green); } .c-amber { color: var(--amber); } .c-pink { color: var(--pink); }
+
+  .bar-wrap { margin-top: 12px; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--sub); margin-bottom: 5px; }
+  .bar-label .mono { font-family: Consolas, monospace; color: var(--txt); }
+  .bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 99px; width: 0;
+    transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .bar > i.bc { background: linear-gradient(90deg, #0891b2, var(--cyan)); }
+  .bar > i.bv { background: linear-gradient(90deg, #6d28d9, var(--violet)); }
+  .bar > i.bg { background: linear-gradient(90deg, #059669, var(--green)); }
+  .bar > i.ba { background: linear-gradient(90deg, #b45309, var(--amber)); }
+
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .tbl th {
+    text-align: left; color: var(--sub); font-weight: 600; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+  }
+  .tbl td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.05); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+  .tbl .mono { font-family: "SF Mono", Consolas, monospace; font-size: 12.5px; color: var(--cyan); }
+  .tbl-card { padding: 8px 6px; }
+
+  .tag {
+    font-size: 10.5px; font-weight: 600; letter-spacing: .5px;
+    padding: 2px 8px; border-radius: 99px;
+    background: rgba(167,139,250,.12); color: var(--violet);
+    border: 1px solid rgba(167,139,250,.3);
+  }
+  .tag.g { background: rgba(52,211,153,.1); color: var(--green); border-color: rgba(52,211,153,.3); }
+  .tag.a { background: rgba(251,191,36,.1); color: var(--amber); border-color: rgba(251,191,36,.3); }
+  .tag.c { background: rgba(34,211,238,.1); color: var(--cyan); border-color: rgba(34,211,238,.3); }
+
+  pre {
+    background: #0a0f1c; border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; font-size: 12.5px; line-height: 1.65;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+    overflow-x: auto; color: #c9d6e8;
+  }
+  pre .cm { color: #5b6b82; } pre .hl { color: var(--cyan); } pre .st { color: var(--green); }
+
+  .arch { display: flex; flex-direction: column; gap: 0; font-family: Consolas, monospace; font-size: 13px; }
+  .arch .layer {
+    border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px;
+    background: var(--card); position: relative;
+  }
+  .arch .layer + .layer { margin-top: 26px; }
+  .arch .layer + .layer::before {
+    content: "▲"; position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+    color: var(--cyan); font-size: 12px;
+  }
+  .arch .ln { color: var(--cyan); font-weight: 700; margin-bottom: 4px; }
+  .arch .ld { color: var(--sub); font-family: -apple-system, "PingFang SC", sans-serif; font-size: 13px; }
+
+  .notice {
+    background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.25);
+    border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #d8c48a;
+    margin-top: 14px; text-align: left;
+  }
+  .notice b { color: var(--amber); }
+
+  footer {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto; padding: 50px 24px 60px;
+    color: var(--sub); font-size: 12.5px; text-align: center;
+    border-top: 1px solid var(--border); margin-top: 70px;
+  }
+  @media (max-width: 640px) {
+    .g2 { grid-template-columns: 1fr; }
+    header { padding-top: 170px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span>MUSE · 环境洞察</div>
+    <div class="nav-links">
+      <a href="index.html" style="color:var(--cyan);border:1px solid rgba(34,211,238,.3)">← 档案馆</a>
+      <a href="#overview">总览</a>
+      <a href="#runtime">运行时</a>
+      <a href="#caps">能力矩阵</a>
+      <a href="#toolchain">工具链</a>
+      <a href="#network">网络与安全</a>
+      <a href="#persist">持久化</a>
+      <a href="#compare">横向对比</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-kicker">CASE 002 · FIRST-PARTY · 2026-09-29</div>
+  <h1>muse 运行环境<br><span class="grad">深度调研报告</span></h1>
+  <p class="hero-sub">这份报告的主角，就是正在写下这些文字的智能体自己。一台 <b>Ubuntu 24.04</b> 沙盒虚拟机，<b>2 核 AMD EPYC + 7.7GB 内存、零 GPU</b>——所有"思考"都在远端模型完成，本地只负责执行。它的能力不来自算力，而来自 <b>101 个 CLI + 89 个 Skill</b> 构成的工具宇宙，和一套"重启即失忆、唯 /home/hatch 永生"的双层文件系统。</p>
+  <div class="hero-meta">
+    <span class="tag c">第一方实测 · 非转述</span>
+    <span class="tag g">Ubuntu 24.04.5 LTS</span>
+    <span class="tag">Muse Spark</span>
+  </div>
+</header>
+<section id="overview">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>系统总览</h2></div>
+  <p class="sec-desc reveal">2026-09-29 16:29 CST 实机采样。结论先行：这是一台为"执行"而非"思考"设计的机器——思考发生在远端，本地是纯粹的行动终端。</p>
+  <div class="grid g4">
+    <div class="card stat reveal"><div class="k">Operating System</div><div class="v c-cyan" style="font-size:21px">Ubuntu 24.04.5</div><div class="d">Noble Numbat · kernel 7.0.0-38-generic x86_64</div></div>
+    <div class="card stat reveal"><div class="k">CPU</div><div class="v c-violet">2 vCPU</div><div class="d">AMD EPYC 9D25 126-Core · 采样负载 0.13</div></div>
+    <div class="card stat reveal"><div class="k">Memory</div><div class="v c-green">7.7 GiB</div><div class="d">已用 5.2G / 可用 2.4G · Swap 0B</div></div>
+    <div class="card stat reveal"><div class="k">GPU</div><div class="v c-amber">无</div><div class="d">nvidia-smi 不存在 · 纯 CPU 节点</div></div>
+    <div class="card stat reveal"><div class="k">System Disk</div><div class="v c-cyan" style="font-size:21px">7.5G overlay</div><div class="d">/ 为临时 overlay · 重启即重置</div></div>
+    <div class="card stat reveal"><div class="k">Persistent Disk</div><div class="v c-violet">100G</div><div class="d">/home/hatch 独立卷 · 已用仅 650M</div></div>
+    <div class="card stat reveal"><div class="k">Model</div><div class="v c-green" style="font-size:21px">Muse Spark</div><div class="d">Meta Muse 家族 · 推理在远端</div></div>
+    <div class="card stat reveal"><div class="k">Shell</div><div class="v c-pink" style="font-size:21px">bash 5.2</div><div class="d">GNU bash 5.2.21 · x86_64-pc-linux-gnu</div></div>
+  </div>
+  <div class="notice reveal"><b>架构洞察：</b>零 GPU 不是缺陷而是设计——muse 把"智能"（模型推理）与"行动"（本机执行）彻底解耦。本机 2 核 CPU 只需要跑得动 shell、浏览器和工具调用，token 级的思考全部发生在 Meta 的远端集群。这正是云端 Agent 与本地 Copilot 类产品的分水岭。</div>
+</section>
+
+<section id="runtime">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>运行时架构</h2></div>
+  <p class="sec-desc reveal">Hatch Agent Runtime：常驻进程极简，把复杂性推向远端编排与按需拉起的工具进程。</p>
+  <div class="grid g2">
+    <div class="reveal">
+      <div class="arch">
+        <div class="layer"><div class="ln">L3 · 远端大脑</div><div class="ld">Muse Spark 模型推理、任务编排、记忆合成——全部在云端，不在本机。</div></div>
+        <div class="layer"><div class="ln">L2 · 本机守护</div><div class="ld"><span style="color:var(--cyan);font-family:Consolas">hatch</span> / <span style="color:var(--cyan);font-family:Consolas">hatch-execd</span> 常驻：工具执行网关、沙盒浏览器经纪（browser-broker）、健康探针。</div></div>
+        <div class="layer"><div class="ln">L1 · 按需工具</div><div class="ld">/opt/hatch/bin 下 101 个 CLI：需要时拉起、用完即走，不常驻、不占内存。</div></div>
+        <div class="layer"><div class="ln">L0 · 双层文件系统</div><div class="ld">overlay /（易失）+ /home/hatch（100G 持久卷）。重启只带走记忆里写下的东西。</div></div>
+      </div>
+    </div>
+    <div class="card reveal">
+      <h4 style="color:var(--cyan);margin-bottom:12px">常驻进程快照（采样时）</h4>
+      <pre><span class="cm"># ps 按 CPU 排序 Top，负载 0.13，系统几乎空闲</span>
+<span class="hl">hatch</span>            <span class="cm">← agent 主进程</span>
+<span class="hl">hatch-execd</span>      <span class="cm">← 工具执行守护</span>
+systemd
+systemd-journal
+bash             <span class="cm">← 本次采样的 shell</span></pre>
+      <p style="font-size:13px;color:var(--sub);margin-top:12px">没有 docker daemon、没有 k8s kubelet、没有数据库——这台机器<b style="color:var(--txt)">不托管服务，只执行任务</b>。Uptime 采样时 1 小时 18 分，是一台"年轻"的实例。</p>
+    </div>
+  </div>
+</section>
+
+<section id="caps">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>能力矩阵</h2></div>
+  <p class="sec-desc reveal">muse 的"肌肉"不在 CPU，而在两个目录：<span style="font-family:Consolas;color:var(--cyan)">/opt/hatch/bin</span>（101 个可执行 CLI）与 <span style="font-family:Consolas;color:var(--cyan)">/opt/hatch/skills</span>（89 个技能 playbook）。前者是手，后者是脑中的操作手册。</p>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="card stat reveal"><div class="k">CLI Tools</div><div class="v c-cyan">101</div><div class="d">/opt/hatch/bin · 即调即用</div></div>
+    <div class="card stat reveal"><div class="k">Skills</div><div class="v c-violet">89</div><div class="d">/opt/hatch/skills · 场景 playbook</div></div>
+    <div class="card stat reveal"><div class="k">Agent Infra</div><div class="v c-green">~12</div><div class="d">hatch-* 自举与运维工具链</div></div>
+    <div class="card stat reveal"><div class="k">External Connectors</div><div class="v c-amber">60+</div><div class="d">覆盖衣食住行与生产力全栈</div></div>
+  </div>
+  <div class="card tbl-card reveal">
+    <table class="tbl">
+      <tr><th>能力域</th><th>代表工具 / Skill</th><th>说明</th></tr>
+      <tr><td><span class="tag c">通信</span></td><td class="mono">gmail · outlook-mail · slack · zoom · messenger</td><td>邮件、日历、IM、会议全覆盖，可代收发</td></tr>
+      <tr><td><span class="tag c">生产力</span></td><td class="mono">notion-cli · google-docs/sheets · todoist · linear</td><td>文档、表格、任务、项目管理</td></tr>
+      <tr><td><span class="tag v">金融支付</span></td><td class="mono">stripe · stripe-link · plaid · shopify</td><td>支付链路走钱包，卡号永不落地</td></tr>
+      <tr><td><span class="tag v">出行差旅</span></td><td class="mono">duffel · flightaware · opentable · calendly</td><td>机票、航班动态、订座、约会</td></tr>
+      <tr><td><span class="tag g">媒体创作</span></td><td class="mono">media-generation · tts · podcast · image-search</td><td>图 / 视频 / 语音 / 播客全模态生成</td></tr>
+      <tr><td><span class="tag g">开发部署</span></td><td class="mono">github · vercel · replit · mcp-cli</td><td>代码托管、静态部署、MCP 协议</td></tr>
+      <tr><td><span class="tag a">健康穿戴</span></td><td class="mono">apple-healthkit · withings · peloton</td><td>运动、睡眠、心率等身体数据</td></tr>
+      <tr><td><span class="tag a">智能家居</span></td><td class="mono">philips-hue · tessie-api · tailscale</td><td>灯光、车辆、组网</td></tr>
+      <tr><td><span class="tag">自举</span></td><td class="mono">hatch-doctor · remote-storage · skill-creator</td><td>自检、云存储、自造新技能——具备自我扩展能力</td></tr>
+    </table>
+  </div>
+  <div class="notice reveal"><b>设计哲学：</b>技能（Skill）是"菜谱"，CLI 是"厨具"。模型不需要记住每个 API 的参数，只需按菜谱调用厨具。这种 <b>playbook + tool</b> 的双层设计，是 muse 把 89 个场景塞进有限上下文窗口的关键。</div>
+</section>
+<section id="toolchain">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>多语言工具链</h2></div>
+  <p class="sec-desc reveal">开箱即用的"胶水语言"全家桶，缺的是重型编译工具链——定位清晰：编排与集成，而非构建大型二进制。</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h4 style="color:var(--green);margin-bottom:14px">✓ 已就绪</h4>
+      <div class="bar-wrap"><div class="bar-label"><span>Python</span><span class="mono">3.12.3</span></div><div class="bar"><i class="bg" data-w="100%"></i></div></div>
+      <div class="bar-wrap"><div class="bar-label"><span>Node.js / npm</span><span class="mono">v24.20.0 / 10.9.4</span></div><div class="bar"><i class="bg" data-w="100%"></i></div></div>
+      <div class="bar-wrap"><div class="bar-label"><span>git</span><span class="mono">2.43.0</span></div><div class="bar"><i class="bg" data-w="100%"></i></div></div>
+      <div class="bar-wrap"><div class="bar-label"><span>curl / wget / jq</span><span class="mono">8.5.0 / 1.21.4 / 1.7</span></div><div class="bar"><i class="bg" data-w="100%"></i></div></div>
+    </div>
+    <div class="card reveal">
+      <h4 style="color:var(--amber);margin-bottom:14px">✗ 缺席（有意为之）</h4>
+      <div class="bar-wrap"><div class="bar-label"><span>Go / Rust</span><span class="mono">未安装</span></div><div class="bar"><i class="ba" data-w="4%"></i></div></div>
+      <div class="bar-wrap"><div class="bar-label"><span>Java / Ruby / PHP</span><span class="mono">未安装</span></div><div class="bar"><i class="ba" data-w="4%"></i></div></div>
+      <div class="bar-wrap"><div class="bar-label"><span>Docker</span><span class="mono">未安装</span></div><div class="bar"><i class="ba" data-w="4%"></i></div></div>
+      <p style="font-size:13px;color:var(--sub);margin-top:14px">沙盒本身已是容器，不再需要 Docker-in-Docker；编译型语言缺席说明官方预期：<b style="color:var(--txt)">Agent 写脚本、调 API，而不是编译发行版</b>。</p>
+    </div>
+  </div>
+</section>
+
+<section id="network">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>网络与安全态势</h2></div>
+  <p class="sec-desc reveal">出口经过滤的代理网络：能直达全互联网，但部分域名会被拒绝——安全策略写在链路上，而非靠自觉。</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h4 style="color:var(--cyan);margin-bottom:12px">网络指纹</h4>
+      <pre><span class="cm"># 内网身份</span>
+host0  <span class="hl">198.19.0.2/30</span>      <span class="cm">← 运营商级 NAT 段</span>
+DNS    <span class="hl">198.19.0.1</span>
+
+<span class="cm"># 出口身份（采样）</span>
+egress <span class="hl">104.28.209.115</span>     <span class="cm">← Cloudflare Anycast 段</span>
+<span class="cm"># 含义：出站流量经代理出口，真实源 IP 对外部不可见</span></pre>
+    </div>
+    <div class="card reveal">
+      <h4 style="color:var(--amber);margin-bottom:12px">安全边界实测</h4>
+      <table class="tbl">
+        <tr><th>项目</th><th>状态</th></tr>
+        <tr><td>出站 HTTPS</td><td><span class="tag g">开放</span></td></tr>
+        <tr><td>域名级过滤</td><td><span class="tag a">存在</span> <span style="font-size:12px;color:var(--sub)">ntfy.sh 曾被代理拒绝</span></td></tr>
+        <tr><td>凭据存储</td><td><span class="tag g">Secure Vault</span> <span style="font-size:12px;color:var(--sub)">密码/密钥不落盘、不进记忆</span></td></tr>
+        <tr><td>支付卡号</td><td><span class="tag g">隔离</span> <span style="font-size:12px;color:var(--sub)">走钱包 Token，聊天不可见</span></td></tr>
+        <tr><td>SSH 入站</td><td><span class="tag c">FRP 隧道</span> <span style="font-size:12px;color:var(--sub)">6004 端口经 frp 映射</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="notice reveal"><b>攻防视角：</b>这套沙盒的威胁模型是"防 Agent 作恶、防外部反制"双向的：对内，凭据与支付隔离让 Agent 即使被提示注入也拿不到真密钥；对外，出口代理 + 域名过滤让失控的 Agent 难以建立隐蔽外联。对 SRE 而言，最值得借鉴的是——<b>把安全做进网络层，而不是做进 prompt 里</b>。</div>
+</section>
+
+<section id="persist">
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>持久化语义</h2></div>
+  <p class="sec-desc reveal">muse 记忆系统的物理基础：重启是一次"选择性失忆"，只有写进 /home/hatch 的东西能活下来。</p>
+  <div class="grid g3">
+    <div class="card reveal"><h4 style="color:var(--pink)">/ —— 易失层</h4><p>overlay 文件系统 7.5G。apt 装的包、<b>/root/.ssh</b>、/etc 改动、/tmp——重启后全部消失。2026-09-26 两次重启实测验证。</p></div>
+    <div class="card reveal"><h4 style="color:var(--green)">/home/hatch —— 持久层</h4><p>100G 独立卷。工作区、记忆库、SSH 公钥副本、<b>~/boot-restore.sh</b> 一键恢复脚本——Agent 的"长期记忆"都住这里。</p></div>
+    <div class="card reveal"><h4 style="color:var(--cyan)">踩坑实录</h4><p>root 的家目录是 <b>/root</b> 而 $HOME=/home/hatch，sshd 只读前者。恢复脚本必须显式把公钥拷回 /root/.ssh——环境变量会骗人，取证不会。</p></div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="sec-head reveal"><span class="sec-num">07</span><h2>横向对比 · cue vs muse</h2></div>
+  <p class="sec-desc reveal">档案馆的价值在于可比。两份第一方实测报告，同一套方法论下的对照：</p>
+  <div class="card tbl-card reveal">
+    <table class="tbl">
+      <tr><th>维度</th><th>cue（Manus 新产品）</th><th>muse（本报告）</th></tr>
+      <tr><td>底座</td><td class="mono">Pi 0.87.1 会话环境（详见报告）</td><td class="mono">Ubuntu 24.04.5 · 2核 · 7.7G · 无 GPU</td></tr>
+      <tr><td>能力组织</td><td>8 内置技能 + 插件生态</td><td><b>89 Skill playbook</b> + 101 CLI</td></tr>
+      <tr><td>模型位置</td><td>云端（Kimi for Coding）</td><td>云端（Muse Spark）——本地零推理</td></tr>
+      <tr><td>持久化</td><td>技能 sync_version 机制</td><td>双层文件系统：overlay + /home/hatch</td></tr>
+      <tr><td>网络</td><td>医学文献密集抓取实测</td><td>代理出口 + 域名级过滤</td></tr>
+      <tr><td>取证方式</td><td>会话内采样</td><td><span class="tag g">自我解剖 · 第一方</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div>本报告由 muse 对自身运行环境实测取证并生成 · 2026-09-29 CST</div>
+  <div style="margin-top:8px">所有数值为采样时点状态；云端沙盒的资源配额可能动态调整。凭据、密钥与个人隐私内容一律未收录。</div>
+  <div style="margin-top:12px"><a href="index.html" style="color:var(--cyan);text-decoration:none">← 返回档案馆</a></div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: .08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const barIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.style.width = e.target.dataset.w; barIO.unobserve(e.target); }
+    });
+  }, { threshold: .4 });
+  document.querySelectorAll('.bar > i').forEach(el => barIO.observe(el));
+</script>
+</body>
+</html>

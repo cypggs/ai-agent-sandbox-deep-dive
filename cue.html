@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本机环境深度调研报告 · Deep Environment Report</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --bg2: #0b1120;
+    --card: rgba(255,255,255,.035);
+    --border: rgba(255,255,255,.09);
+    --txt: #e6edf7;
+    --sub: #8b98ad;
+    --cyan: #22d3ee;
+    --violet: #a78bfa;
+    --amber: #fbbf24;
+    --green: #34d399;
+    --pink: #f472b6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  /* ---------- 背景光晕 ---------- */
+  .glow {
+    position: fixed; border-radius: 50%; filter: blur(120px);
+    opacity: .16; pointer-events: none; z-index: 0;
+  }
+  .glow.g1 { width: 520px; height: 520px; background: #0ea5e9; top: -160px; left: -120px; }
+  .glow.g2 { width: 460px; height: 460px; background: #7c3aed; top: 30%; right: -160px; }
+  .glow.g3 { width: 420px; height: 420px; background: #059669; bottom: -140px; left: 30%; }
+
+  /* ---------- 顶部导航 ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(7,11,20,.72);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1180px; margin: 0 auto; padding: 12px 24px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .logo {
+    font-weight: 800; font-size: 15px; letter-spacing: .5px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan); animation: pulse 2.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
+  .nav-links a {
+    color: var(--sub); text-decoration: none; font-size: 13px;
+    padding: 6px 12px; border-radius: 8px; transition: all .2s;
+  }
+  .nav-links a:hover { color: var(--txt); background: rgba(255,255,255,.06); }
+
+  /* ---------- Hero ---------- */
+  header {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto;
+    padding: 150px 24px 60px;
+    text-align: center;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; color: var(--cyan);
+    border: 1px solid rgba(34,211,238,.35); border-radius: 999px;
+    padding: 5px 16px; margin-bottom: 26px;
+    background: rgba(34,211,238,.07); letter-spacing: 1px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 52px); font-weight: 900; line-height: 1.25;
+    letter-spacing: -1px;
+  }
+  h1 .grad {
+    background: linear-gradient(92deg, var(--cyan) 0%, var(--violet) 55%, var(--pink) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero-sub { color: var(--sub); font-size: 16px; max-width: 720px; margin: 20px auto 0; }
+  .hero-meta {
+    margin-top: 34px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 12.5px; color: var(--sub);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 16px;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  }
+  .chip b { color: var(--txt); font-weight: 600; }
+
+  /* ---------- 通用区块 ---------- */
+  section { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 56px 24px 8px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .sec-num {
+    font-family: Consolas, monospace; font-size: 13px; color: var(--cyan);
+    border: 1px solid rgba(34,211,238,.3); border-radius: 6px; padding: 2px 8px;
+  }
+  h2 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .sec-desc { color: var(--sub); font-size: 14px; margin-bottom: 28px; max-width: 760px; }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ---------- 统计卡片 ---------- */
+  .grid { display: grid; gap: 16px; }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(34,211,238,.35);
+    box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+  .stat .k { font-size: 12px; color: var(--sub); letter-spacing: 1.5px; text-transform: uppercase; }
+  .stat .v { font-size: 27px; font-weight: 800; margin-top: 6px;
+    font-family: "SF Mono", Consolas, monospace; }
+  .stat .d { font-size: 12.5px; color: var(--sub); margin-top: 4px; }
+  .c-cyan { color: var(--cyan); } .c-violet { color: var(--violet); }
+  .c-green { color: var(--green); } .c-amber { color: var(--amber); } .c-pink { color: var(--pink); }
+
+  /* 进度条 */
+  .bar-wrap { margin-top: 12px; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--sub); margin-bottom: 5px; }
+  .bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 99px; width: 0;
+    transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .bar > i.bc { background: linear-gradient(90deg, #0891b2, var(--cyan)); }
+  .bar > i.bv { background: linear-gradient(90deg, #6d28d9, var(--violet)); }
+  .bar > i.bg { background: linear-gradient(90deg, #059669, var(--green)); }
+
+  /* ---------- 表格 ---------- */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .tbl th {
+    text-align: left; color: var(--sub); font-weight: 600; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+  }
+  .tbl td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.05); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+  .tbl .mono { font-family: "SF Mono", Consolas, monospace; font-size: 12.5px; color: var(--cyan); }
+  .tbl-card { padding: 8px 6px; }
+
+  /* ---------- Skill 卡片 ---------- */
+  .skill { position: relative; overflow: hidden; }
+  .skill::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0; transition: opacity .3s;
+  }
+  .skill:hover::before { opacity: 1; }
+  .skill .s-name {
+    font-family: "SF Mono", Consolas, monospace; font-size: 14.5px; font-weight: 700;
+    color: var(--cyan); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 10.5px; font-weight: 600; letter-spacing: .5px;
+    padding: 2px 8px; border-radius: 99px;
+    background: rgba(167,139,250,.12); color: var(--violet);
+    border: 1px solid rgba(167,139,250,.3);
+  }
+  .tag.g { background: rgba(52,211,153,.1); color: var(--green); border-color: rgba(52,211,153,.3); }
+  .tag.a { background: rgba(251,191,36,.1); color: var(--amber); border-color: rgba(251,191,36,.3); }
+  .skill p { font-size: 13px; color: var(--sub); margin-top: 10px; }
+
+  /* ---------- 代码块 ---------- */
+  pre {
+    background: #0a0f1c; border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; font-size: 12.5px; line-height: 1.65;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+    overflow-x: auto; color: #c9d6e8;
+  }
+  pre .cm { color: #5b6b82; } pre .hl { color: var(--cyan); } pre .st { color: var(--green); }
+
+  /* ---------- 时间线 ---------- */
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px;
+    width: 2px; background: linear-gradient(180deg, var(--cyan), var(--violet));
+    border-radius: 2px;
+  }
+  .tl-item { position: relative; padding-bottom: 20px; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -25px; top: 7px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--cyan);
+  }
+  .tl-item .t { font-size: 12px; color: var(--cyan); font-family: Consolas, monospace; }
+  .tl-item .b { font-size: 14px; margin-top: 2px; }
+  .tl-item .b small { color: var(--sub); }
+
+  footer {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto; padding: 50px 24px 60px;
+    color: var(--sub); font-size: 12.5px; text-align: center;
+    border-top: 1px solid var(--border); margin-top: 70px;
+  }
+  .notice {
+    background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.25);
+    border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #d8c48a;
+    margin-top: 14px; text-align: left;
+  }
+  @media (max-width: 640px) {
+    .g2 { grid-template-columns: 1fr; }
+    header { padding-top: 170px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span>ENV INSIGHT · 环境洞察</div>
+    <div class="nav-links">
+      <a href="index.html" style="color:var(--cyan);border:1px solid rgba(34,211,238,.3)">← 档案馆</a>
+      <a href="#overview">总览</a>
+      <a href="#pi">Pi 助手</a>
+      <a href="#skills">Skills</a>
+      <a href="#manus">Manus 生态</a>
+      <a href="#toolchain">工具链</a>
+      <a href="#network">网络与安全</a>
+      <a href="#timeline">时间线</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="badge">🔍 深度调研 · 共享沙箱环境全景扫描</div>
+  <h1>本机环境 <span class="grad">深度调研报告</span></h1>
+  <p class="hero-sub">对这台共享电脑进行了全方位盘点：硬件资源、虚拟化形态、Pi 编程助手配置、8 个内置技能、Manus 插件生态、多语言工具链与网络拓扑，并生成此可视化报告。</p>
+  <div class="hero-meta">
+    <span class="chip">主机 <b>ff65500f6338</b></span>
+    <span class="chip">系统 <b>Ubuntu 24.04.4 LTS</b></span>
+    <span class="chip">虚拟化 <b>KVM 虚拟机</b></span>
+    <span class="chip">架构 <b>x86_64</b></span>
+    <span class="chip">生成时间 <b>2026-09-29 UTC</b></span>
+  </div>
+</header>
+
+<!-- ============ 01 总览 ============ -->
+<section id="overview">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>系统总览</h2></div>
+  <p class="sec-desc reveal">当前系统是一台运行在 KVM 虚拟化之上的 Ubuntu 24.04 来宾机，资源充裕、负载极低，适合作为开发/研究沙箱使用。</p>
+
+  <div class="grid g4">
+    <div class="card stat reveal">
+      <div class="k">CPU</div>
+      <div class="v c-cyan">8 <small style="font-size:14px">逻辑核</small></div>
+      <div class="d">Intel Xeon @ ~2.50 GHz（4 核 × 2 线程）</div>
+    </div>
+    <div class="card stat reveal">
+      <div class="k">内存</div>
+      <div class="v c-violet">23 <small style="font-size:14px">GiB</small></div>
+      <div class="d">可用约 20 GiB · 交换空间 6 GiB（未使用）</div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>使用率</span><span>~12%</span></div>
+        <div class="bar"><i class="bv" data-w="12%"></i></div>
+      </div>
+    </div>
+    <div class="card stat reveal">
+      <div class="k">磁盘</div>
+      <div class="v c-green">54 <small style="font-size:14px">GiB</small></div>
+      <div class="d">ext4 · 已用 16 GiB · 可用 38 GiB</div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>/ 根文件系统</span><span>29%</span></div>
+        <div class="bar"><i class="bg" data-w="29%"></i></div>
+      </div>
+    </div>
+    <div class="card stat reveal">
+      <div class="k">运行状态</div>
+      <div class="v c-amber">0.35</div>
+      <div class="d">1 分钟负载 · 近乎空闲（0.35 / 0.23 / 0.19）</div>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:16px">
+    <div class="card stat reveal"><div class="k">内核</div><div class="v" style="font-size:20px">6.18.38+</div><div class="d">SMP PREEMPT_DYNAMIC</div></div>
+    <div class="card stat reveal"><div class="k">虚拟化</div><div class="v c-cyan" style="font-size:20px">KVM</div><div class="d">systemd-detect-virt 识别</div></div>
+    <div class="card stat reveal"><div class="k">GPU</div><div class="v" style="font-size:20px">无独显</div><div class="d">无 NVIDIA · 无 /dev/dri</div></div>
+    <div class="card stat reveal"><div class="k">容器</div><div class="v" style="font-size:20px">无 Docker</div><div class="d">docker / podman 均未安装</div></div>
+  </div>
+
+  <div class="notice reveal">📌 注：先前的一次环境巡检（2026-09-28）报告内存为 15 GiB，本次实测为 23 GiB —— 说明该来宾机的资源配额可能动态调整，数值均为采样时点状态。</div>
+</section>
+
+<!-- ============ 02 Pi ============ -->
+<section id="pi">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>Pi 编程助手</h2></div>
+  <p class="sec-desc reveal">本机运行 <b>Pi</b>（Earendil Works 出品的终端编码智能体），当前版本 <b class="mono" style="color:var(--cyan)">0.87.1</b>，通过 Kimi for Coding 模型提供推理服务。</p>
+
+  <div class="grid g3">
+    <div class="card reveal">
+      <div class="stat"><div class="k">Provider / Model</div>
+      <div class="v c-cyan" style="font-size:21px">kimi-for-coding</div>
+      <div class="d">API：Anthropic Messages 兼容协议 · Base URL <span class="mono">api.kimi.com/coding</span></div></div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>上下文窗口（Kimi K3）</span><span>1,048,576 tok</span></div>
+        <div class="bar"><i class="bc" data-w="100%"></i></div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>最大输出</span><span>131,072 tok</span></div>
+        <div class="bar"><i class="bv" data-w="45%"></i></div>
+      </div>
+      <div class="d" style="margin-top:10px">推理档位映射：low → low，high → high，max → max（自适应思考）</div>
+    </div>
+
+    <div class="card reveal">
+      <div class="stat"><div class="k">安装结构</div></div>
+      <table class="tbl" style="margin-top:6px">
+        <tr><td>安装根目录</td><td class="mono">~/.pi/agent/install</td></tr>
+        <tr><td>当前版本</td><td class="mono">releases/0.87.1</td></tr>
+        <tr><td>可执行文件</td><td class="mono">pi（shell 启动器）、fd（静态 ELF）</td></tr>
+        <tr><td>会话存储</td><td class="mono">sessions/*.jsonl（树形分支）</td></tr>
+        <tr><td>主题</td><td class="mono">dark</td></tr>
+      </table>
+    </div>
+
+    <div class="card reveal">
+      <div class="stat"><div class="k">内置文档与示例</div>
+      <div class="v c-violet" style="font-size:21px">34 篇文档</div></div>
+      <div class="d" style="margin:8px 0">涵盖 extensions、skills、providers、RPC、SDK、compaction、keybindings、themes 等主题</div>
+      <div class="d">示例目录含 <b>70+ 个扩展示例</b>：todo、plan-mode、git-checkpoint、subagent、question、rainbow-editor、space-invaders 等</div>
+    </div>
+  </div>
+
+  <div class="card reveal" style="margin-top:16px">
+    <div class="stat"><div class="k">Pi 的代理循环机制（源自官方文档）</div></div>
+    <pre style="margin-top:12px"><span class="cm"># 一次提交的完整生命周期</span>
+用户消息 → 加入活跃分支 → 组装系统提示 + 历史 + 工具定义
+        → Provider 流式返回（文本 + 工具调用）
+        → 执行工具并记录结果 → 完成一轮
+        → 若有工具结果/排队消息 → 开始下一轮，否则结束
+
+<span class="hl">会话模型</span>：JSONL 持久化，消息呈树形结构，每条路径即一个分支；
+当前条目所在的末端分支为活跃分支，为下一次请求提供历史。</pre>
+  </div>
+</section>
+
+<!-- ============ 03 Skills ============ -->
+<section id="skills">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>内置技能 · 8 个</h2></div>
+  <p class="sec-desc reveal">技能目录位于 <span class="mono" style="color:var(--cyan)">~/.manus/skills</span>（软链接为 <span class="mono">~/skills</span>），遵循 Agent Skills 规范，每个技能是一个含 <span class="mono">SKILL.md</span> 的目录，按需加载完整指令。</p>
+
+  <div class="grid g3">
+    <div class="card skill reveal">
+      <div class="s-name">automation-and-scheduling <span class="tag a">含 references</span></div>
+      <p>自动化与调度决策指南：在 Manus 定时任务、WebDev Cron / Heartbeat、预留托管、持久沙箱之间做架构选型。核心原则——<b>禁止用定时任务做分钟级轮询</b>（每次运行都会拉起完整会话，昂贵且架构错误），高频轮询应交给 WebDev 常驻进程。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">clear-communication</div>
+      <p>面向用户的表达规范：默认直接在对话中给出实质答案而非甩文件；文档仅用于用户明确要求或需要长期保存的深度研究；配 1–2 个简洁的可视化，兼顾手机阅读体验。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">cue-product</div>
+      <p>Cue 应用产品知识库：覆盖 iOS / Android / Mac / Windows 四大平台（无浏览器版），Agents、群聊、Scan &amp; Create、Computers、订阅计费等功能的入口与操作路径说明。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">data-api <span class="tag">含 scripts</span></div>
+      <p>Manus 数据 API 网关：一次调用即可获取 X/Twitter、LinkedIn、YouTube、TikTok/Instagram/Reddit 内容，金融市场行情、SEC 文件、Crunchbase、世界银行指标、Google Trends、App Store 排名，以及文生 3D 模型。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">gws-best-practices</div>
+      <p>Google Workspace CLI（<span class="mono">gws</span>）最佳实践：支持 Drive / Docs / Sheets / Slides 四类服务。新建文档须本地用 python-docx 生成 .docx 再上传；编辑既有文档只能用 <span class="mono">batchUpdate</span> 以保留批注。Gmail、Calendar 等<b>不可用</b>。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">manus-config</div>
+      <p>五大配置域 CLI：Agent 档案管理（agents）、Agent 群聊（group）、连接器（connector ensure）、项目级配置（config load/save）、定时任务（schedule，单任务单计划）。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">manus-touchpoint <span class="tag g">外部触达</span></div>
+      <p>代表用户发送邮件、短信或发起 AI 外呼，并查询历史记录（含附件、转录文本、录音）。前提是会话中提供已启用的 TouchPoint 联系人。</p>
+    </div>
+    <div class="card skill reveal">
+      <div class="s-name">skill-creator <span class="tag">含 scripts+references</span></div>
+      <p>技能创作指南：技能是扩展 Manus 的模块化知识包（工作流、工具集成、领域知识、资源文件）。强调"简洁至上"、描述决定加载时机、修改前必须先读本技能走更新流程。</p>
+    </div>
+    <div class="card reveal" style="display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;background:rgba(34,211,238,.04)">
+      <div class="v c-cyan" style="font-size:34px;font-weight:800;font-family:Consolas,monospace">8 / 8</div>
+      <div class="d" style="color:var(--sub);font-size:13px">技能均含版本指纹并同步自 Manus 服务<br><span class="mono" style="font-size:11px">sync_version: 1790658618812</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 Manus 生态 ============ -->
+<section id="manus">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>Manus 插件生态</h2></div>
+  <p class="sec-desc reveal">除内置技能外，本机还装载了 Manus 插件运行时（<span class="mono" style="color:var(--cyan)">~/.manus-addons</span>），含 16 个能力插件与 current / prod 双配置档，以及本地 IPC 套接字。</p>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <div class="stat"><div class="k">插件清单（~/.manus-addons/skills）</div></div>
+      <table class="tbl" style="margin-top:8px">
+        <tr><td><span class="mono">manus-webdev</span></td><td>网站/应用开发与托管（含 Autoscale / Reserved 模式）</td></tr>
+        <tr><td><span class="mono">manus-slides</span></td><td>演示文稿生成</td></tr>
+        <tr><td><span class="mono">manus-storage</span></td><td>持久化存储</td></tr>
+        <tr><td><span class="mono">manus-tasks / triggers</span></td><td>任务编排与事件触发</td></tr>
+        <tr><td><span class="mono">manus-trip</span></td><td>行程规划</td></tr>
+        <tr><td><span class="mono">manus-workflow</span></td><td>工作流引擎</td></tr>
+        <tr><td><span class="mono">manus-cronometer</span> 等 6 个</td><td>健康数据接入：Fitbit / Oura / Polar / Withings / MyFitnessPal / TrainingPeaks</td></tr>
+        <tr><td><span class="mono">manus-clue</span></td><td>线索/信息收集</td></tr>
+      </table>
+    </div>
+    <div class="card reveal">
+      <div class="stat"><div class="k">运行时与痕迹</div></div>
+      <table class="tbl" style="margin-top:8px">
+        <tr><td>IPC 套接字</td><td class="mono">addon-browser-*.sock<br>utilities-*.sock（srw-------）</td></tr>
+        <tr><td>配置档案</td><td class="mono">current / prod</td></tr>
+        <tr><td>数据目录</td><td class="mono">cache / data / profiles</td></tr>
+        <tr><td>网页抽取缓存</td><td class="mono">~/.manus/webpage-extract（约 5 MB）</td></tr>
+      </table>
+      <div class="notice" style="margin-top:14px">📄 <b>网页抽取缓存揭示了研究足迹</b>：缓存中含 NCCN 指南（CML 慢性髓系白血病）、JCO、J Natl Compr Canc Netw、Nature（白血病方向）等医学文献的多次抓取记录——这台机器此前被用于<b>肿瘤/血液病临床指南相关的深度研究</b>。</div>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:16px">
+    <div class="card stat reveal"><div class="k">内置技能</div><div class="v c-cyan">8</div><div class="d">~/.manus/skills</div></div>
+    <div class="card stat reveal"><div class="k">插件能力</div><div class="v c-violet">16+</div><div class="d">~/.manus-addons/skills</div></div>
+    <div class="card stat reveal"><div class="k">IPC 通道</div><div class="v c-green">2</div><div class="d">Unix Domain Socket</div></div>
+    <div class="card stat reveal"><div class="k">抓取文献</div><div class="v c-pink">10+</div><div class="d">医学期刊 / 临床指南 PDF</div></div>
+  </div>
+</section>
+
+<!-- ============ 05 工具链 ============ -->
+<section id="toolchain">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>多语言工具链</h2></div>
+  <p class="sec-desc reveal">沙箱预装了覆盖 Python / Node.js / Go / Rust / Java 五大语言的完整开发环境，以及 104 个 Python 包与 18 个全局 npm 工具。</p>
+
+  <div class="grid g3">
+    <div class="card reveal">
+      <div class="stat"><div class="k">Python 3.12.3</div><div class="v c-green" style="font-size:20px">104 个包</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+        <span class="chip" style="font-size:11px">Flask 3.1</span><span class="chip" style="font-size:11px">FastAPI 0.141</span>
+        <span class="chip" style="font-size:11px">pandas 3.0</span><span class="chip" style="font-size:11px">numpy 2.5</span>
+        <span class="chip" style="font-size:11px">openai 3.19</span><span class="chip" style="font-size:11px">boto3</span>
+        <span class="chip" style="font-size:11px">matplotlib</span><span class="chip" style="font-size:11px">opencv 5.0</span>
+        <span class="chip" style="font-size:11px">pillow</span><span class="chip" style="font-size:11px">openpyxl</span>
+        <span class="chip" style="font-size:11px">lxml</span><span class="chip" style="font-size:11px">cryptography</span>
+      </div>
+      <div class="d" style="margin-top:12px;font-size:12.5px">解释器位于 <span class="mono">/opt/manus/python/bin/python3</span>，由 Manus 托管。</div>
+    </div>
+
+    <div class="card reveal">
+      <div class="stat"><div class="k">Node.js 24.19 · npm 11.17 · pnpm 11.25</div><div class="v c-cyan" style="font-size:20px">18 个全局包</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+        <span class="chip" style="font-size:11px">@googleworkspace/cli 0.22</span>
+        <span class="chip" style="font-size:11px">@mermaid-js/mermaid-cli</span>
+        <span class="chip" style="font-size:11px">@anthropic-ai/mcpb</span>
+        <span class="chip" style="font-size:11px">typescript 6.0</span>
+        <span class="chip" style="font-size:11px">pyright 1.1</span>
+        <span class="chip" style="font-size:11px">svelte/yaml/graphql LSP</span>
+        <span class="chip" style="font-size:11px">yarn 1.22</span>
+      </div>
+      <div class="d" style="margin-top:12px;font-size:12.5px">全套 Language Server（Vue / Prisma / PHP / Dockerfile / JSON / HTML…）表明这是<b>编辑器/IDE 后端就绪</b>的环境。</div>
+    </div>
+
+    <div class="card reveal">
+      <div class="stat"><div class="k">编译型语言</div></div>
+      <table class="tbl" style="margin-top:8px">
+        <tr><td>Go</td><td class="mono">1.26.8 linux/amd64</td></tr>
+        <tr><td>Rust</td><td class="mono">1.97.1 (8bab26f4f)</td></tr>
+        <tr><td>Java</td><td class="mono">OpenJDK 21.0.12.1</td></tr>
+        <tr><td>C/C++</td><td class="mono">GCC 13.3.0 · Make 4.3</td></tr>
+      </table>
+      <div class="d" style="margin-top:10px;font-size:12.5px">多媒体：ffmpeg 6.1.1；版本控制：Git 2.43；下载：curl 8.5 / wget 1.21。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 网络与安全 ============ -->
+<section id="network">
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>网络与安全态势</h2></div>
+  <p class="sec-desc reveal">来宾机仅有链路本地地址，出网经 NAT，入站无公网映射；SSH 与 Web 终端服务已在监听。</p>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <div class="stat"><div class="k">监听端口</div></div>
+      <table class="tbl" style="margin-top:8px">
+        <tr><th>端口</th><th>绑定</th><th>进程 / 用途</th></tr>
+        <tr><td class="mono">22</td><td>0.0.0.0 / ::</td><td>SSH 守护进程</td></tr>
+        <tr><td class="mono">8330</td><td>*（全部网卡）</td><td>web-terminal</td></tr>
+        <tr><td class="mono">8331</td><td>0.0.0.0</td><td>辅助服务</td></tr>
+        <tr><td class="mono">35831</td><td>127.0.0.1</td><td>manus-computer-operator</td></tr>
+        <tr><td class="mono">33279 / 34731 / 35773</td><td>127.0.0.1</td><td>cloud-computer-control</td></tr>
+        <tr><td class="mono">48465</td><td>169.254.0.21</td><td>manus-screen-link</td></tr>
+      </table>
+    </div>
+    <div class="card reveal">
+      <div class="stat"><div class="k">连通性与安全要点</div></div>
+      <table class="tbl" style="margin-top:8px">
+        <tr><td>内网地址</td><td class="mono">eth0 = 169.254.0.21/30（链路本地）</td></tr>
+        <tr><td>出口 IP</td><td class="mono">61.5.149.14（NAT 后，随路由可变）</td></tr>
+        <tr><td>DNS / HTTPS</td><td class="mono">example.com、cip.cc、api.ipify.org 均 200</td></tr>
+        <tr><td>sudo</td><td class="mono">免密可用（sudo -n 通过）</td></tr>
+        <tr><td>防火墙</td><td>iptables INPUT/FORWARD 默认 ACCEPT，无规则</td></tr>
+        <tr><td>凭据</td><td><span style="color:var(--amber)">auth.json 存有 OAuth Token</span>（本报告不收录）</td></tr>
+      </table>
+      <div class="notice" style="margin-top:14px">🔐 安全提示：iptables 无入站限制 + sudo 免密 + 多服务绑定全网卡，三者叠加意味着<b>任何能到达该地址的邻居都可尝试访问 8330/8331 服务</b>。OAuth 凭据建议定期轮换。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 时间线 ============ -->
+<section id="timeline">
+  <div class="sec-head reveal"><span class="sec-num">07</span><h2>环境演化时间线</h2></div>
+  <p class="sec-desc reveal">综合文件时间戳与巡检记录还原的本机关键事件。</p>
+  <div class="card reveal">
+    <div class="timeline" style="padding:14px 6px 0 30px">
+      <div class="tl-item"><div class="t">2026-09-28 13:12 ~ 16:49</div><div class="b">沙箱基础环境建成 <small>— 系统目录、桌面、X 组件（xfce4 / fcitx5 / Thunar）就绪</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-28 16:49</div><div class="b">Manus 首批技能同步 <small>— 5 个技能落地（skill-creator / cue-product / clear-communication 等）</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-28 16:53</div><div class="b">首次环境巡检 <small>— 生成 sandbox_environment_report.md（记录 15 GiB 内存时代）</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-29 04:55</div><div class="b">插件运行时启动 <small>— addon-browser / utilities 套接字创建</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-29 05:10</div><div class="b">技能全量同步 <small>— 8 个技能统一至 sync_version 1790658618812</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-29 06:27</div><div class="b">Pi 智能体安装 <small>— 0.87.1 版本落地，接入 Kimi for Coding</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-29 07:02 ~ 07:20</div><div class="b">医学文献密集抓取 <small>— NCCN CML 指南、JCO、Nature 等 10+ 篇文献入缓存</small></div></div>
+      <div class="tl-item"><div class="t">2026-09-29 08:04</div><div class="b">本次调研会话开始 <small>— 产出此报告</small></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>本报告由运行在 <b>Pi 0.87.1</b>（kimi-for-coding）上的调研会话自动生成 · 2026-09-29 UTC</div>
+  <div style="margin-top:8px">所有数值均为采样时点状态；虚拟化来宾机的资源配额可能动态调整。凭据与个人隐私内容一律未收录。</div>
+</footer>
+
+<script>
+  // 滚动显现
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: .08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // 进度条动画
+  const barIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.style.width = e.target.dataset.w; barIO.unobserve(e.target); }
+    });
+  }, { threshold: .4 });
+  document.querySelectorAll('.bar > i').forEach(el => barIO.observe(el));
+</script>
+</body>
+</html>
