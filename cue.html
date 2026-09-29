@@ -227,7 +227,6 @@
     <div class="nav-links">
       <a href="index.html" style="color:var(--cyan);border:1px solid rgba(34,211,238,.3)">← 档案馆</a>
       <a href="#overview">总览</a>
-      <a href="#pi">Pi 助手</a>
       <a href="#skills">Skills</a>
       <a href="#manus">Manus 生态</a>
       <a href="#toolchain">工具链</a>
@@ -240,7 +239,7 @@
 <header>
   <div class="badge">🔍 深度调研 · 共享沙箱环境全景扫描</div>
   <h1>本机环境 <span class="grad">深度调研报告</span></h1>
-  <p class="hero-sub">对这台共享电脑进行了全方位盘点：硬件资源、虚拟化形态、Pi 编程助手配置、8 个内置技能、Manus 插件生态、多语言工具链与网络拓扑，并生成此可视化报告。</p>
+  <p class="hero-sub">对这台共享电脑进行了全方位盘点：硬件资源、虚拟化形态、8 个内置技能、Manus 插件生态、多语言工具链与网络拓扑，并生成此可视化报告。</p>
   <div class="hero-meta">
     <span class="chip">主机 <b>ff65500f6338</b></span>
     <span class="chip">系统 <b>Ubuntu 24.04.4 LTS</b></span>
@@ -296,62 +295,10 @@
   <div class="notice reveal">📌 注：先前的一次环境巡检（2026-09-28）报告内存为 15 GiB，本次实测为 23 GiB —— 说明该来宾机的资源配额可能动态调整，数值均为采样时点状态。</div>
 </section>
 
-<!-- ============ 02 Pi ============ -->
-<section id="pi">
-  <div class="sec-head reveal"><span class="sec-num">02</span><h2>Pi 编程助手</h2></div>
-  <p class="sec-desc reveal">本机运行 <b>Pi</b>（Earendil Works 出品的终端编码智能体），当前版本 <b class="mono" style="color:var(--cyan)">0.87.1</b>，通过 Kimi for Coding 模型提供推理服务。</p>
 
-  <div class="grid g3">
-    <div class="card reveal">
-      <div class="stat"><div class="k">Provider / Model</div>
-      <div class="v c-cyan" style="font-size:21px">kimi-for-coding</div>
-      <div class="d">API：Anthropic Messages 兼容协议 · Base URL <span class="mono">api.kimi.com/coding</span></div></div>
-      <div class="bar-wrap">
-        <div class="bar-label"><span>上下文窗口（Kimi K3）</span><span>1,048,576 tok</span></div>
-        <div class="bar"><i class="bc" data-w="100%"></i></div>
-      </div>
-      <div class="bar-wrap">
-        <div class="bar-label"><span>最大输出</span><span>131,072 tok</span></div>
-        <div class="bar"><i class="bv" data-w="45%"></i></div>
-      </div>
-      <div class="d" style="margin-top:10px">推理档位映射：low → low，high → high，max → max（自适应思考）</div>
-    </div>
-
-    <div class="card reveal">
-      <div class="stat"><div class="k">安装结构</div></div>
-      <table class="tbl" style="margin-top:6px">
-        <tr><td>安装根目录</td><td class="mono">~/.pi/agent/install</td></tr>
-        <tr><td>当前版本</td><td class="mono">releases/0.87.1</td></tr>
-        <tr><td>可执行文件</td><td class="mono">pi（shell 启动器）、fd（静态 ELF）</td></tr>
-        <tr><td>会话存储</td><td class="mono">sessions/*.jsonl（树形分支）</td></tr>
-        <tr><td>主题</td><td class="mono">dark</td></tr>
-      </table>
-    </div>
-
-    <div class="card reveal">
-      <div class="stat"><div class="k">内置文档与示例</div>
-      <div class="v c-violet" style="font-size:21px">34 篇文档</div></div>
-      <div class="d" style="margin:8px 0">涵盖 extensions、skills、providers、RPC、SDK、compaction、keybindings、themes 等主题</div>
-      <div class="d">示例目录含 <b>70+ 个扩展示例</b>：todo、plan-mode、git-checkpoint、subagent、question、rainbow-editor、space-invaders 等</div>
-    </div>
-  </div>
-
-  <div class="card reveal" style="margin-top:16px">
-    <div class="stat"><div class="k">Pi 的代理循环机制（源自官方文档）</div></div>
-    <pre style="margin-top:12px"><span class="cm"># 一次提交的完整生命周期</span>
-用户消息 → 加入活跃分支 → 组装系统提示 + 历史 + 工具定义
-        → Provider 流式返回（文本 + 工具调用）
-        → 执行工具并记录结果 → 完成一轮
-        → 若有工具结果/排队消息 → 开始下一轮，否则结束
-
-<span class="hl">会话模型</span>：JSONL 持久化，消息呈树形结构，每条路径即一个分支；
-当前条目所在的末端分支为活跃分支，为下一次请求提供历史。</pre>
-  </div>
-</section>
-
-<!-- ============ 03 Skills ============ -->
+<!-- ============ 02 Skills ============ -->
 <section id="skills">
-  <div class="sec-head reveal"><span class="sec-num">03</span><h2>内置技能 · 8 个</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>内置技能 · 8 个</h2></div>
   <p class="sec-desc reveal">技能目录位于 <span class="mono" style="color:var(--cyan)">~/.manus/skills</span>（软链接为 <span class="mono">~/skills</span>），遵循 Agent Skills 规范，每个技能是一个含 <span class="mono">SKILL.md</span> 的目录，按需加载完整指令。</p>
 
   <div class="grid g3">
@@ -394,9 +341,9 @@
   </div>
 </section>
 
-<!-- ============ 04 Manus 生态 ============ -->
+<!-- ============ 03 Manus 生态 ============ -->
 <section id="manus">
-  <div class="sec-head reveal"><span class="sec-num">04</span><h2>Manus 插件生态</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>Manus 插件生态</h2></div>
   <p class="sec-desc reveal">除内置技能外，本机还装载了 Manus 插件运行时（<span class="mono" style="color:var(--cyan)">~/.manus-addons</span>），含 16 个能力插件与 current / prod 双配置档，以及本地 IPC 套接字。</p>
 
   <div class="grid g2">
@@ -433,9 +380,9 @@
   </div>
 </section>
 
-<!-- ============ 05 工具链 ============ -->
+<!-- ============ 04 工具链 ============ -->
 <section id="toolchain">
-  <div class="sec-head reveal"><span class="sec-num">05</span><h2>多语言工具链</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>多语言工具链</h2></div>
   <p class="sec-desc reveal">沙箱预装了覆盖 Python / Node.js / Go / Rust / Java 五大语言的完整开发环境，以及 104 个 Python 包与 18 个全局 npm 工具。</p>
 
   <div class="grid g3">
@@ -479,9 +426,9 @@
   </div>
 </section>
 
-<!-- ============ 06 网络与安全 ============ -->
+<!-- ============ 05 网络与安全 ============ -->
 <section id="network">
-  <div class="sec-head reveal"><span class="sec-num">06</span><h2>网络与安全态势</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>网络与安全态势</h2></div>
   <p class="sec-desc reveal">来宾机仅有链路本地地址，出网经 NAT，入站无公网映射；SSH 与 Web 终端服务已在监听。</p>
 
   <div class="grid g2">
@@ -512,9 +459,9 @@
   </div>
 </section>
 
-<!-- ============ 07 时间线 ============ -->
+<!-- ============ 06 时间线 ============ -->
 <section id="timeline">
-  <div class="sec-head reveal"><span class="sec-num">07</span><h2>环境演化时间线</h2></div>
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>环境演化时间线</h2></div>
   <p class="sec-desc reveal">综合文件时间戳与巡检记录还原的本机关键事件。</p>
   <div class="card reveal">
     <div class="timeline" style="padding:14px 6px 0 30px">
@@ -523,7 +470,6 @@
       <div class="tl-item"><div class="t">2026-09-28 16:53</div><div class="b">首次环境巡检 <small>— 生成 sandbox_environment_report.md（记录 15 GiB 内存时代）</small></div></div>
       <div class="tl-item"><div class="t">2026-09-29 04:55</div><div class="b">插件运行时启动 <small>— addon-browser / utilities 套接字创建</small></div></div>
       <div class="tl-item"><div class="t">2026-09-29 05:10</div><div class="b">技能全量同步 <small>— 8 个技能统一至 sync_version 1790658618812</small></div></div>
-      <div class="tl-item"><div class="t">2026-09-29 06:27</div><div class="b">Pi 智能体安装 <small>— 0.87.1 版本落地，接入 Kimi for Coding</small></div></div>
       <div class="tl-item"><div class="t">2026-09-29 07:02 ~ 07:20</div><div class="b">医学文献密集抓取 <small>— NCCN CML 指南、JCO、Nature 等 10+ 篇文献入缓存</small></div></div>
       <div class="tl-item"><div class="t">2026-09-29 08:04</div><div class="b">本次调研会话开始 <small>— 产出此报告</small></div></div>
     </div>
