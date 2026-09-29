@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manus 2.0 Sandbox 深度环境解析报告</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --bg2: #0b1120;
+    --card: rgba(255,255,255,.035);
+    --border: rgba(255,255,255,.09);
+    --txt: #e6edf7;
+    --sub: #8b98ad;
+    --cyan: #22d3ee;
+    --violet: #a78bfa;
+    --amber: #fbbf24;
+    --green: #34d399;
+    --pink: #f472b6;
+    --red: #f87171;
+    --blue: #60a5fa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg); color: var(--txt);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    line-height: 1.75; overflow-x: hidden;
+  }
+  .glow { position: fixed; border-radius: 50%; filter: blur(130px); opacity: .14; pointer-events: none; z-index: 0; }
+  .glow.g1 { width: 540px; height: 540px; background: #0ea5e9; top: -180px; left: -140px; }
+  .glow.g2 { width: 480px; height: 480px; background: #7c3aed; top: 28%; right: -180px; }
+  .glow.g3 { width: 440px; height: 440px; background: #059669; bottom: -160px; left: 28%; }
+  .glow.g4 { width: 380px; height: 380px; background: #db2777; top: 62%; left: -160px; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(14px); background: rgba(7,11,20,.75);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .logo {
+    font-weight: 800; font-size: 15px; letter-spacing: .5px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); animation: pulse 2.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  .nav-links { display: flex; gap: 2px; flex-wrap: wrap; margin-left: auto; }
+  .nav-links a { color: var(--sub); text-decoration: none; font-size: 12.5px; padding: 6px 10px; border-radius: 8px; transition: all .2s; white-space: nowrap; }
+  .nav-links a:hover { color: var(--txt); background: rgba(255,255,255,.07); }
+
+  header { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 140px 24px 50px; text-align: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--cyan);
+    border: 1px solid rgba(34,211,238,.35); border-radius: 999px; padding: 5px 16px;
+    margin-bottom: 24px; background: rgba(34,211,238,.07); letter-spacing: 1px;
+  }
+  h1 { font-size: clamp(30px, 5vw, 50px); font-weight: 900; line-height: 1.25; letter-spacing: -1px; }
+  h1 .grad { background: linear-gradient(92deg, #22d3ee 0%, #a78bfa 45%, #f472b6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .subtitle { color: var(--sub); font-size: 15.5px; margin-top: 18px; max-width: 780px; margin-left: auto; margin-right: auto; }
+  .meta-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+  .meta-chip {
+    font-size: 12.5px; color: var(--sub); border: 1px solid var(--border);
+    background: var(--card); border-radius: 999px; padding: 5px 14px; font-family: "SF Mono", Menlo, monospace;
+  }
+  .meta-chip b { color: var(--cyan); font-weight: 600; }
+
+  main { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 24px 100px; }
+  section { margin-top: 72px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .sec-num {
+    font-family: "SF Mono", Menlo, monospace; font-size: 13px; color: var(--bg);
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    border-radius: 8px; padding: 3px 10px; font-weight: 800;
+  }
+  h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; letter-spacing: -.5px; }
+  .sec-desc { color: var(--sub); font-size: 14px; margin-bottom: 24px; max-width: 900px; }
+  h3 { font-size: 17px; font-weight: 700; margin: 30px 0 12px; color: var(--cyan); display: flex; align-items: center; gap: 8px; }
+  h3::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: inline-block; }
+
+  .grid { display: grid; gap: 14px; }
+  .grid.c2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid.c3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid.c4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px 20px; transition: transform .25s, border-color .25s, box-shadow .25s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(34,211,238,.35); box-shadow: 0 12px 36px rgba(0,0,0,.35); }
+  .card .k { font-size: 12px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; }
+  .card .v { font-size: 24px; font-weight: 800; margin-top: 4px; }
+  .card .v small { font-size: 13px; color: var(--sub); font-weight: 500; }
+  .card .d { font-size: 12.5px; color: var(--sub); margin-top: 6px; }
+  .card h4 { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; color: var(--txt); }
+  .card p { font-size: 13px; color: var(--sub); }
+  .card p b { color: var(--txt); font-weight: 600; }
+
+  .tag { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border); margin: 2px 3px 2px 0; color: var(--sub); background: rgba(255,255,255,.03); font-family: "SF Mono", Menlo, monospace; }
+  .tag.c { color: var(--cyan); border-color: rgba(34,211,238,.4); background: rgba(34,211,238,.08); }
+  .tag.v { color: var(--violet); border-color: rgba(167,139,250,.4); background: rgba(167,139,250,.08); }
+  .tag.g { color: var(--green); border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.08); }
+  .tag.a { color: var(--amber); border-color: rgba(251,191,36,.4); background: rgba(251,191,36,.08); }
+  .tag.p { color: var(--pink); border-color: rgba(244,114,182,.4); background: rgba(244,114,182,.08); }
+  .tag.r { color: var(--red); border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.08); }
+  .tag.b { color: var(--blue); border-color: rgba(96,165,250,.4); background: rgba(96,165,250,.08); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  th { text-align: left; padding: 11px 14px; color: var(--cyan); font-size: 12px; letter-spacing: .8px; text-transform: uppercase; background: rgba(34,211,238,.06); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.05); color: var(--sub); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td b, td .mono { color: var(--txt); }
+  .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  tr:hover td { background: rgba(255,255,255,.025); }
+
+  pre {
+    background: #0a0f1c; border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; overflow-x: auto; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; line-height: 1.7; color: #b8c4d8;
+  }
+  pre .cm { color: #5b6b85; } pre .hl { color: var(--cyan); } pre .hl2 { color: var(--violet); } pre .hl3 { color: var(--green); }
+  .scrollbox { max-height: 420px; overflow-y: auto; }
+  .scrollbox::-webkit-scrollbar { width: 8px; } .scrollbox::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 4px; }
+
+  .flow { display: flex; flex-direction: column; gap: 0; margin: 10px 0; }
+  .flow-node {
+    position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 18px 14px 46px; margin-left: 20px;
+  }
+  .flow-node::before {
+    content: attr(data-step); position: absolute; left: -20px; top: 14px;
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--cyan), var(--violet)); color: #060a12;
+    font-weight: 800; font-size: 13px; font-family: "SF Mono", Menlo, monospace;
+  }
+  .flow-conn { width: 2px; height: 18px; margin-left: 33px; background: linear-gradient(180deg, var(--cyan), var(--violet)); opacity: .5; }
+  .flow-node h5 { font-size: 14px; font-weight: 700; }
+  .flow-node h5 .mono { color: var(--cyan); }
+  .flow-node p { font-size: 12.5px; color: var(--sub); margin-top: 3px; }
+
+  .skill-group { margin-bottom: 28px; }
+  .skill-group-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .skill-group-title .icon { font-size: 18px; }
+  .skill-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; transition: all .25s; }
+  .skill-card:hover { border-color: rgba(167,139,250,.4); transform: translateY(-2px); }
+  .skill-card h5 { font-size: 13.5px; font-weight: 700; color: var(--cyan); font-family: "SF Mono", Menlo, monospace; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .skill-card p { font-size: 12.5px; color: var(--sub); margin-top: 8px; }
+  .skill-card .usage { margin-top: 8px; font-size: 12px; color: var(--green); border-left: 2px solid rgba(52,211,153,.4); padding-left: 10px; }
+
+  .callout { border: 1px solid rgba(251,191,36,.35); background: rgba(251,191,36,.06); border-radius: 14px; padding: 14px 18px; font-size: 13px; color: #f5d996; margin: 18px 0; }
+  .callout.info { border-color: rgba(34,211,238,.35); background: rgba(34,211,238,.06); color: #a9e8f5; }
+  .callout.danger { border-color: rgba(248,113,113,.35); background: rgba(248,113,113,.06); color: #f3b4b4; }
+  .callout b { color: inherit; }
+
+  .tree { font-family: "SF Mono", Menlo, monospace; font-size: 12.5px; }
+  .tree .dir { color: var(--cyan); } .tree .note { color: #5b6b85; }
+
+  details { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 0; margin: 10px 0; overflow: hidden; }
+  summary { cursor: pointer; padding: 13px 18px; font-size: 13.5px; font-weight: 600; color: var(--txt); list-style: none; display: flex; align-items: center; gap: 8px; }
+  summary::before { content: "▸"; color: var(--cyan); transition: transform .2s; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details .body { padding: 0 18px 16px; }
+
+  footer { text-align: center; color: var(--sub); font-size: 12.5px; padding: 40px 24px 60px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+  footer .mono { color: var(--cyan); }
+
+  .progress-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.07); overflow: hidden; margin-top: 8px; }
+  .progress-bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--cyan), var(--violet)); }
+
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    table { font-size: 12px; } th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div><div class="glow g4"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span>MANUS SANDBOX · DEEP REPORT</div>
+    <div class="nav-links">
+      <a href="index.html" style="color:var(--cyan);border:1px solid rgba(34,211,238,.3)">← 档案馆</a>
+      <a href="#overview">总览</a>
+      <a href="#arch">系统架构</a>
+      <a href="#hardware">硬件资源</a>
+      <a href="#boot">启动链路</a>
+      <a href="#process">进程全景</a>
+      <a href="#ports">服务端口</a>
+      <a href="#platform">Manus 平台</a>
+      <a href="#devtools">开发环境</a>
+      <a href="#browser">浏览器栈</a>
+      <a href="#skills">Skills 详解</a>
+      <a href="#envconfig">环境变量</a>
+      <a href="#security">安全机制</a>
+      <a href="#fs">文件布局</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="badge">⬢ DEEP ENVIRONMENT ANALYSIS</div>
+  <h1>Manus 2.0 Sandbox<br><span class="grad">深度环境解析报告</span></h1>
+  <p class="subtitle">针对 Manus 2.0 全新发布的 Sandbox 运行时环境（基于 E2B 沙箱基础设施）的全方位勘察：系统架构、进程拓扑、运行时组件、开发工具链、浏览器自动化栈，以及全部 33 个内置 Skills 的逐一解析。</p>
+  <div class="meta-row">
+    <span class="meta-chip">主机 <b>0377397e2287</b></span>
+    <span class="meta-chip">OS <b>Ubuntu 24.04.4 LTS</b></span>
+    <span class="meta-chip">内核 <b>6.18.38+ KVM</b></span>
+    <span class="meta-chip">采集时间 <b>2026-09-29 09:30 UTC</b></span>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 1. 总览 ============ -->
+<section id="overview">
+  <div class="sec-head"><span class="sec-num">01</span><h2>环境总览</h2></div>
+  <p class="sec-desc">这是一台运行在 KVM 虚拟化之上的微型虚拟机（MicroVM 风格），宿主域名格式 <span class="mono">0377397e2287</span> 呈容器哈希风格。核心守护进程 <span class="mono">envd</span>（E2B 平台的 Env Daemon）证实了该沙箱构建于 <b>E2B 开源沙箱基础设施</b>之上，Manus 在其上叠加了自己的运行时层（sandbox-runtime）、图形栈（Xorg + Chromium + VNC）与代理工作负载。</p>
+  <div class="grid c4">
+    <div class="card"><div class="k">CPU</div><div class="v">6 <small>vCPU</small></div><div class="d">Intel Xeon @ 2.50GHz<br>3 核 × 2 线程 · AVX-512</div></div>
+    <div class="card"><div class="k">内存</div><div class="v">7.8 <small>GiB</small></div><div class="d">+ 2 GiB Swap<br>earlyoom 守护</div></div>
+    <div class="card"><div class="k">磁盘</div><div class="v">51 <small>GB</small></div><div class="d">已用 12G (23%)<br>/dev/vda ext4</div></div>
+    <div class="card"><div class="k">内核</div><div class="v">6.18.38+</div><div class="d">x86_64 · PREEMPT_DYNAMIC<br>KVM full virtualization</div></div>
+    <div class="card"><div class="k">Skills</div><div class="v">33 <small>个</small></div><div class="d">/home/ubuntu/skills<br>云端版本化管理</div></div>
+    <div class="card"><div class="k">Addons</div><div class="v">7 <small>个</small></div><div class="d">~/.manus-addons<br>MCP 插件运行时</div></div>
+    <div class="card"><div class="k">运行时工具</div><div class="v">25 <small>个二进制</small></div><div class="d">/opt/.manus 平台层<br>Go 编写为主</div></div>
+    <div class="card"><div class="k">监听端口</div><div class="v">12 <small>个</small></div><div class="d">SSH/VNC/CDP/WS<br>runtime API 等</div></div>
+  </div>
+  <div class="grid c3" style="margin-top:14px">
+    <div class="card"><div class="k">内存占用</div><div class="d">1.3 GiB / 7.8 GiB</div><div class="progress-bar"><i style="width:17%"></i></div></div>
+    <div class="card"><div class="k">磁盘占用</div><div class="d">12 GB / 51 GB</div><div class="progress-bar"><i style="width:23%"></i></div></div>
+    <div class="card"><div class="k">负载</div><div class="d">load avg 0.00 / 0.03 / 0.04（空闲）</div><div class="progress-bar"><i style="width:2%"></i></div></div>
+  </div>
+</section>
+
+<!-- ============ 2. 系统架构 ============ -->
+<section id="arch">
+  <div class="sec-head"><span class="sec-num">02</span><h2>系统架构与虚拟化</h2></div>
+  <p class="sec-desc">沙箱并非容器，而是一台完整的 KVM 虚拟机（<span class="mono">systemd-detect-virt = docker</span> 的检测源于 E2B 模板惯例，实际 hypervisor 为 KVM，<span class="mono">/dev/vda</span> 为 virtio 磁盘），运行裁剪过的 Ubuntu 24.04 + systemd。网络为 E2B 典型的 link-local 拓扑。</p>
+
+  <h3>身份与基础设施指纹</h3>
+  <table>
+    <tr><th>维度</th><th>值</th><th>解读</th></tr>
+    <tr><td>主机名</td><td class="mono">0377397e2287</td><td>12 位十六进制，E2B 沙箱实例 ID 风格</td></tr>
+    <tr><td>Init 系统</td><td class="mono">/sbin/init (systemd) · PID1</td><td>完整 VM 而非容器；仅 10 个 systemd 服务在跑，极简裁剪</td></tr>
+    <tr><td>平台守护</td><td class="mono">/usr/bin/envd -cmd /e2b-startup.sh</td><td><b>E2B envd</b>（Env Daemon），监听 49983，负责接收宿主指令、执行启动脚本、冷缓存回收</td></tr>
+    <tr><td>Hypervisor</td><td class="mono">KVM (full virtualization)</td><td>Firecracker 类 MicroVM 编排的典型后端</td></tr>
+    <tr><td>元数据服务</td><td class="mono">169.254.169.254 (IMDSv2 风格 PUT token)</td><td>启动脚本用其获取 instanceID 写入 <span class="mono">/opt/.manus/.host_id</span></td></tr>
+    <tr><td>出口公网 IP</td><td class="mono">201.18.254.115</td><td>经 NAT 出网，与沙箱内网地址隔离</td></tr>
+    <tr><td>DNS</td><td class="mono">8.8.8.8</td><td>直连 Google DNS，无 systemd-resolved</td></tr>
+    <tr><td>时钟</td><td class="mono">chronyd + UTC</td><td>启动脚本含偏移>0.5s 才 makestep 的保护逻辑（避免 DNS 缓存抖动）</td></tr>
+    <tr><td>cgroup 限制</td><td class="mono">无 memory.max / cpu.max</td><td>未设 cgroup v2 限额，靠 VM 边界 + earlyoom 兜底</td></tr>
+  </table>
+
+  <h3>网络拓扑</h3>
+  <pre><span class="cm"># eth0 为 /30 link-local 网段（E2B 标准拓扑）</span>
+eth0  <span class="hl">169.254.0.21/30</span>   ←→   网关 169.254.0.22（宿主机 veth 对）
+lo    127.0.0.1/8
+默认路由: default via 169.254.0.22 dev eth0
+
+<span class="cm"># SSH 服务</span>
+sshd 监听 0.0.0.0:22（systemd socket activation），由 E2B 编排层统一管控入口</pre>
+
+  <div class="callout info">💡 <b>架构判断</b>：整体链路为 <span class="mono">E2B MicroVM（KVM）→ envd 引导 → /e2b-startup.sh → /startup.sh → supervisord 托管的 Manus 运行时栈</span>。Manus 在 E2B 之上构建了完整的产品层：Go 运行时 API、图形浏览器环境、状态同步与 MCP 插件体系。</div>
+</section>
+
+<!-- ============ 3. 硬件资源 ============ -->
+<section id="hardware">
+  <div class="sec-head"><span class="sec-num">03</span><h2>硬件资源配置</h2></div>
+  <div class="grid c2">
+    <div class="card">
+      <h4>🧮 CPU — Intel Xeon @ 2.50GHz</h4>
+      <p>3 物理核 × 2 超线程 = <b>6 vCPU</b>，单 Socket 单 NUMA 节点。Family 6 Model 85（Skylake-SP 世代虚拟型号），指令集亮点：<b>AVX-512 全家桶</b>（f/dq/cd/bw/vl + VNNI）、AES-NI、FMA、BMI2。L3 缓存 35.8 MiB。适合中等强度并行计算与 ML 推理前处理。</p>
+    </div>
+    <div class="card">
+      <h4>🧠 内存 — 7.8 GiB + 2 GiB Swap</h4>
+      <p>无 cgroup 限额，OOM 防护依赖 <b>earlyoom</b>（可用内存 &lt;10% SIGTERM、&lt;5% SIGKILL），且配置了<b>保护名单</b>豁免 supervisord、sandbox-runtime、Xorg、x11vnc、statesync、manus-* 等关键进程。swappiness=0，swap 仅吸收匿名页尖峰。</p>
+    </div>
+    <div class="card">
+      <h4>💾 存储 — 51 GB virtio 根盘</h4>
+      <p><span class="mono">/dev/vda → ext4 (rw,noatime)</span>，已用 12G / 可用 40G。<span class="mono">/dev/shm</span> 为 2G tmpfs；Chromium 以 <span class="mono">--disable-dev-shm-usage</span> 规避 shm 不足。另有 fusectl 支持 FUSE（ws-mount 使用）。</p>
+    </div>
+    <div class="card">
+      <h4>🎮 GPU — 无物理 GPU</h4>
+      <p>图形渲染走 <b>SwiftShader</b>（<span class="mono">--use-angle=swiftshader-webgl</span>）CPU 软渲 WebGL，Xorg 虚拟屏 1280×1029@24bit。Chromium 还加载了 <b>OnDeviceModelService</b>（端侧模型沙箱进程）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. 启动链路 ============ -->
+<section id="boot">
+  <div class="sec-head"><span class="sec-num">04</span><h2>启动链路剖析</h2></div>
+  <p class="sec-desc">从 VM 上电到代理就绪的完整引导链。核心文件 <span class="mono">/e2b-startup.sh</span>（3 行转发）与 <span class="mono">/startup.sh</span>（约 400 行，含完善的守护与自愈逻辑）。</p>
+
+  <div class="flow">
+    <div class="flow-node" data-step="1"><h5>systemd (PID 1) → <span class="mono">envd.service</span></h5><p>E2B 守护进程，OOMScoreAdjust=-1000（最后被杀），GOMEMLIMIT=64MiB，每 10s 回收冷页缓存（保留 1024MiB）。执行 <span class="mono">/e2b-startup.sh</span>。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="2"><h5><span class="mono">/e2b-startup.sh</span> → <span class="mono">sudo -u ubuntu /startup.sh</span></h5><p>切换到非特权用户 ubuntu 执行主引导脚本。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="3"><h5><span class="mono">/startup.sh</span> — 环境准备阶段</h5><p>加载 <span class="mono">~/.env</span>（平台注入）与 <span class="mono">~/.user_env</span>（用户连接器凭据，如 GH_TOKEN、GOOGLE_DRIVE_TOKEN）；向 .bashrc/.zshrc 注入 env 自动加载、<span class="mono">PYTHONIOENCODING=utf-8</span>、<span class="mono">PIP_BREAK_SYSTEM_PACKAGES=1</span>；用 <b>uv 包装 pip/pip3</b>（install 走 <span class="mono">uv pip --system</span>）；创建 <span class="mono">/var/lib/manus</span> 持久状态目录；启动 dbus（固定 well-known session bus 地址）。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="4"><h5>拓扑环境冻结（runtime-topology-env.sh）</h5><p><span class="mono">capture/restore_supervisor_runtime_env</span>：在加载用户密钥<b>之前</b>快照平台可信拓扑变量，之后恢复——防止用户级 .user_env 覆盖运行时关键配置（fail-closed 设计）。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="5"><h5>supervisord 拉起托管进程组</h5><p>先强制清理残留 sandbox-runtime / runtime-upgrade（注释中记录了 commit 9821822a8 的 SIGKILL 竞态不变量），再启动 supervisord。等待 <span class="mono">localhost:8330/healthz</span> 与 <span class="mono">8340/health</span> 就绪（各 30 次重试）。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="6"><h5><span class="mono">monitor_and_restart</span> 守护循环（每 10s）</h5><p>从 IMDS 获取 instanceID 写入 <span class="mono">/opt/.manus/.host_id</span>；supervisord 死亡则重启；dbus 死亡则重启；runtime 健康检查失败时：查更新锁 → 端口释放（含 lsof 强杀）→ supervisorctl stop/start 自愈。iptables 强制切到 legacy 模式（为 Docker 兼容预留）。</p></div>
+  </div>
+
+  <h3>supervisord 托管清单（/etc/supervisor/conf.d/）</h3>
+  <table>
+    <tr><th>配置</th><th>状态</th><th>职责</th></tr>
+    <tr><td class="mono">00-process-observer.conf</td><td><span class="tag g">RUNNING</span></td><td>PROCESS_STATE 事件监听器，把进程生命周期事件写入 <span class="mono">~/.local/state/manus/process-lifecycle</span>，带 OTEL 遥测</td></tr>
+    <tr><td class="mono">1-sandbox-runtime.conf</td><td><span class="tag g">RUNNING</span></td><td>核心 Go 运行时（端口 8328/8330/8350/9330），priority=1 最先启动</td></tr>
+    <tr><td class="mono">10-runtime-upgrade.conf</td><td><span class="tag g">RUNNING</span></td><td>运行时热升级服务（8340），depends_on=sandbox-runtime</td></tr>
+    <tr><td class="mono">11-token-local-proxy.conf</td><td><span class="tag a">STANDBY</span></td><td>manus-token-local-proxy（root，autostart=false），按需做凭据替换 + iptables 透明代理</td></tr>
+    <tr><td class="mono">12-ws-server.conf</td><td><span class="tag g">RUNNING</span></td><td>WebSocket 文件服务器（19780）+ FUSE 挂载守护</td></tr>
+    <tr><td class="mono">13-earlyoom.conf</td><td><span class="tag g">RUNNING</span></td><td>OOM 守护，带关键进程豁免正则</td></tr>
+    <tr><td class="mono">14-touchpoint-fuse.conf</td><td><span class="tag a">STANDBY</span></td><td>touchpoint FUSE（远程设备文件桥），autostart=false</td></tr>
+    <tr><td class="mono">15-ttyd.conf</td><td><span class="tag g">RUNNING</span></td><td>Web 终端（unix socket + X-Manus-Terminal-User 头鉴权，可写 -W）</td></tr>
+    <tr><td class="mono">2-xvfb.conf</td><td><span class="tag g">RUNNING</span></td><td>Xorg :0 虚拟显示（1280×1029）</td></tr>
+    <tr><td class="mono">4-chrome.conf</td><td><span class="tag g">RUNNING</span></td><td>start-chrome.sh 启动 Chromium</td></tr>
+    <tr><td class="mono">5-x11vnc.conf / 6-websockify.conf</td><td><span class="tag g">RUNNING</span></td><td>VNC 5900 + WebSocket 代理 5901（浏览器内 noVNC 看桌面）</td></tr>
+    <tr><td class="mono">0-clock-sync / 3-openbox / 8-slidev</td><td><span class="tag r">DISABLED</span></td><td>.conf.disabled 后缀停用（窗口管理器都不要了，直接全屏 Chrome）</td></tr>
+  </table>
+</section>
+
+<!-- ============ 5. 进程全景 ============ -->
+<section id="process">
+  <div class="sec-head"><span class="sec-num">05</span><h2>进程全景</h2></div>
+  <p class="sec-desc">采集时刻约 60+ 用户态进程，内存大户为 Chromium 进程族（软渲 WebGL + 4 个渲染器）。以下按功能域归纳，仅呈现沙箱自带组件。</p>
+
+  <h3>关键进程树（裁剪内核线程后）</h3>
+  <pre class="tree"><span class="dir">systemd(1)</span>
+ ├─ <span class="hl">envd(1014, root)</span>            <span class="note">E2B 守护，执行 /e2b-startup.sh</span>
+ │   └─ sudo -u ubuntu /startup.sh(1085)
+ │       └─ startup.sh(1087)      <span class="note">monitor_and_restart 守护循环（每10s健康检查）</span>
+ │           └─ tail -f supervisor 日志(1369)
+ ├─ <span class="hl">supervisord(1145, root)</span>
+ │   ├─ <span class="hl2">sandbox-runtime(1148, ubuntu)</span>   <span class="note">核心 Go 运行时 · 55MB RSS · 端口8328/8330/8350/9330</span>
+ │   ├─ <span class="hl2">runtime-upgrade(1150)</span>           <span class="note">热升级服务 · 端口8340</span>
+ │   ├─ <span class="hl2">sandbox-process-observer(1147)</span>  <span class="note">进程生命周期事件监听</span>
+ │   ├─ <span class="hl2">ws-server(1154)</span>                 <span class="note">0.0.0.0:19780 · WS 文件服务/FUSE</span>
+ │   ├─ Xorg(1149, root)          <span class="note">:0 · 1280x1029</span>
+ │   ├─ start-chrome.sh(1152)
+ │   │   └─ <span class="hl3">chromium(1273) × 10+ 子进程</span>  <span class="note">主296MB + gpu117MB + renderer×4 + utility(network/storage/on_device_model) + zygote×3 + broker + crashpad×2</span>
+ │   ├─ x11vnc(1155, root)        <span class="note">:5900 · 桌面名"chrome"</span>
+ │   ├─ websockify(1153)          <span class="note">:5901 → localhost:5900</span>
+ │   ├─ <span class="hl2">ttyd(1151)</span>                 <span class="note">unix socket Web 终端</span>
+ │   └─ earlyoom(1146)            <span class="note">-m 10,5 保护关键进程</span>
+ ├─ <span class="hl2">statesync(1598, ubuntu)</span>      <span class="note">浏览器状态与 R2 双向同步 · 36MB</span>
+ ├─ <span class="hl2">node server.mjs(1889)</span>        <span class="note">manus-webdev addon 的 MCP 服务器 · 83MB</span>
+ ├─ sshd(2061) · chronyd(1020) · earlyoom(999, uid 61876 独立实例)
+ ├─ dbus-daemon(997 系统 / 1134 会话)
+ └─ bash × 4 (pts/0-3, ubuntu 交互会话) <span class="note">sandbox-runtime 派生的终端会话</span></pre>
+
+  <h3>进程资源 TOP（按 RSS）</h3>
+  <table>
+    <tr><th>进程</th><th>用户</th><th>RSS</th><th>说明</th></tr>
+    <tr><td class="mono">chromium (主)</td><td>ubuntu</td><td>~296 MB</td><td>浏览器主进程，30+ 启动参数，CDP 9222</td></tr>
+    <tr><td class="mono">chromium gpu/renderer ×5</td><td>ubuntu</td><td>65–118 MB/个</td><td>SwiftShader 软渲 GPU 进程 + 4 个渲染器</td></tr>
+    <tr><td class="mono">sandbox-runtime</td><td>ubuntu</td><td>~55 MB</td><td>Go 核心运行时（含 OTLP 遥测）</td></tr>
+    <tr><td class="mono">statesync</td><td>ubuntu</td><td>~36 MB</td><td>浏览器 profile/cookie 状态同步</td></tr>
+    <tr><td class="mono">node (webdev MCP)</td><td>ubuntu</td><td>~83 MB</td><td>manus-webdev 插件 MCP server</td></tr>
+    <tr><td class="mono">Xorg / x11vnc / websockify</td><td>root</td><td>2–66 MB</td><td>图形输出链路</td></tr>
+  </table>
+</section>
+
+<!-- ============ 6. 服务端口 ============ -->
+<section id="ports">
+  <div class="sec-head"><span class="sec-num">06</span><h2>服务与端口地图</h2></div>
+  <table>
+    <tr><th>端口</th><th>绑定</th><th>进程</th><th>用途</th></tr>
+    <tr><td class="mono">22</td><td>0.0.0.0/::</td><td class="mono">sshd</td><td>SSH 服务，systemd socket activation</td></tr>
+    <tr><td class="mono">8330</td><td>*</td><td class="mono">sandbox-runtime</td><td><b>运行时主 API</b>，/healthz 健康检查点</td></tr>
+    <tr><td class="mono">8328</td><td>*</td><td class="mono">sandbox-runtime</td><td>运行时辅助通道</td></tr>
+    <tr><td class="mono">8350</td><td>127.0.0.1</td><td class="mono">sandbox-runtime</td><td>本机内部控制面</td></tr>
+    <tr><td class="mono">9330</td><td>127.0.0.1</td><td class="mono">sandbox-runtime</td><td>本机内部指标/管理</td></tr>
+    <tr><td class="mono">8340</td><td>*</td><td class="mono">runtime-upgrade</td><td>热升级服务 /health；升级时置 <span class="mono">.versions/.update.lock</span></td></tr>
+    <tr><td class="mono">9222</td><td>127.0.0.1</td><td class="mono">chromium</td><td><b>Chrome DevTools Protocol</b>，浏览器自动化主入口</td></tr>
+    <tr><td class="mono">5900</td><td>0.0.0.0/::</td><td class="mono">x11vnc</td><td>VNC 桌面共享（-shared -forever -permitfiletransfer）</td></tr>
+    <tr><td class="mono">5901</td><td>*</td><td class="mono">websockify</td><td>WS→VNC 桥，供 Web 端 noVNC 实时看桌面</td></tr>
+    <tr><td class="mono">19780</td><td>*</td><td class="mono">ws-server</td><td>WebSocket 文件服务（挂载基座 /mnt，配合 ws-mount FUSE）</td></tr>
+    <tr><td class="mono">49983</td><td>*</td><td class="mono">envd</td><td>E2B 宿主↔沙箱控制通道（文件传输/命令执行）</td></tr>
+    <tr><td class="mono">unix sock</td><td>~/.local/run/manus-terminal</td><td class="mono">ttyd</td><td>Web 终端，umask 077 + X-Manus-Terminal-User 头隔离</td></tr>
+  </table>
+  <div class="callout danger">⚠️ <b>暴露面提示</b>：5900/5901/8330/8340/19780 绑定在通配地址上。沙箱运行在 E2B 私有网络内通常不可从公网直达，这些端口主要面向编排层与本机内部消费者。</div>
+</section>
+
+<!-- ============ 7. Manus 平台组件 ============ -->
+<section id="platform">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Manus 平台组件</h2></div>
+  <p class="sec-desc">平台层根目录 <span class="mono">/opt/.manus</span>（<span class="mono">MANUS_OPT_PATH</span>），采用 <span class="mono">current</span> 符号链接 + <span class="mono">deploy</span> 目录的蓝绿式布局，支持 runtime-upgrade 热替换。</p>
+
+  <h3>/opt/.manus 布局</h3>
+  <pre class="tree"><span class="dir">/opt/.manus/</span>
+ ├─ <span class="hl">.sandbox-runtime → current</span>      <span class="note">运行时软链，升级时切换指向</span>
+ ├─ <span class="dir">current/</span>
+ │   ├─ bin/                    <span class="note">25 个 Go 二进制（见下表）</span>
+ │   ├─ assets/templates · assets/bin
+ │   ├─ app_data/js
+ │   └─ data_api.py             <span class="note">Data API 的 Python 侧 SDK</span>
+ ├─ <span class="dir">.packages/</span>
+ │   ├─ scripts/                <span class="note">start-chrome / start-vnc / start-ws-server / runtime-topology-env 等 9 个引导脚本</span>
+ │   └─ chrome-extensions/      <span class="note">manus-helper · ublock-lite · ublock-origin</span>
+ ├─ <span class="dir">deploy/templates/</span>          <span class="note">31 个网站部署模板（landing/dashboard/portfolio/event/wedding/flask…）</span>
+ ├─ <span class="dir">webdev/templates</span>           <span class="note">web-dev-templates 脚手架（WEBDEV_TEMPLATES_PATH）</span>
+ ├─ .host_id · .session_id      <span class="note">实例/会话标识（IMDS 写入）</span>
+ └─ .versions/                  <span class="note">.update.lock 升级互斥锁</span></pre>
+
+  <h3>运行时二进制（/usr/local/bin 软链 → .sandbox-runtime/bin）</h3>
+  <table>
+    <tr><th>工具</th><th>用途</th></tr>
+    <tr><td class="mono">sandbox-runtime</td><td>核心 Go 运行时：执行代理指令、管理终端会话、OTLP 遥测（Sentry + OTel 已预配）、崩溃状态落盘 <span class="mono">/var/lib/manus</span></td></tr>
+    <tr><td class="mono">runtime-upgrade</td><td>运行时原位热升级，带文件锁防并发</td></tr>
+    <tr><td class="mono">statesync</td><td>浏览器状态守护：把 <span class="mono">~/.browser_data_dir</span> 的 cookie/会话打包同步到 Cloudflare R2（预签名 URL pull/push），实现<b>跨会话登录态持久化</b></td></tr>
+    <tr><td class="mono">manus-tools</td><td>工具集入口（子命令路由到下列各 manus-* 二进制）</td></tr>
+    <tr><td class="mono">manus-channel</td><td>消息通道客户端</td></tr>
+    <tr><td class="mono">manus-computer-operator</td><td>GUI 操作（模拟键鼠控制 Xorg 桌面上的 Chromium）</td></tr>
+    <tr><td class="mono">manus-touchpoint / -fuse</td><td>「触点」设备桥：FUSE 挂载，把用户本地设备文件暴露进沙箱</td></tr>
+    <tr><td class="mono">manus-upload-file</td><td>产物回传 Manus 平台</td></tr>
+    <tr><td class="mono">manus-md-to-pdf / manus-export-slides / manus-render-diagram</td><td>文档渲染管线（MD→PDF、幻灯片导出、图表渲染）</td></tr>
+    <tr><td class="mono">manus-analyze-pptx / manus-analyze-video / manus-speech-to-text</td><td>多模态内容分析</td></tr>
+    <tr><td class="mono">manus-mcp-cli / manus-config</td><td>MCP 服务器管理 CLI / 代理与连接器配置</td></tr>
+    <tr><td class="mono">manus-heartbeat / manus-webdev-logs</td><td>保活心跳 / WebDev 日志采集</td></tr>
+    <tr><td class="mono">manus-token-local-proxy</td><td>root 运行的按需透明代理：请求级 token 替换 + iptables 规则（autostart=false，按需激活）</td></tr>
+    <tr><td class="mono">ws-server / ws-mount / web-terminal / websockify / sandbox-process-observer</td><td>WS 文件服务 / FUSE 挂载 / Web 终端 / noVNC 桥 / 进程事件监听</td></tr>
+  </table>
+
+  <h3>MCP 插件体系（~/.manus-addons）</h3>
+  <p class="sec-desc" style="margin-bottom:14px">7 个以 <span class="mono">manus-*-sha-&lt;hash&gt;</span> 命名的插件，各带 <span class="mono">package.manifest.json</span> + <span class="mono">runtime/</span>（Node MCP server），由运行时按 <span class="mono">/tmp/manus-mcp/addon_runtime_launch_specs.json</span> 启动规范拉起（revision 固定 sha256）。</p>
+  <div class="grid c3">
+    <div class="card"><h4>manus-webdev</h4><p>网站开发插件，MCP server.mjs 常驻（83MB），含 starters、game-dev、checkpoint-preview、git-credential-helper</p></div>
+    <div class="card"><h4>manus-slides</h4><p>幻灯片生成，含 browser/device/static 资源与运行时</p></div>
+    <div class="card"><h4>manus-tasks</h4><p>任务/项目管理 API 桥，附带专属 skills</p></div>
+    <div class="card"><h4>manus-triggers</h4><p>条件触发器（webhook / 定时 JS 监控）</p></div>
+    <div class="card"><h4>manus-trip</h4><p>Trip.com 机酒景搜索 MCP 工具</p></div>
+    <div class="card"><h4>manus-storage</h4><p>持久存储插件，附带 skills</p></div>
+    <div class="card"><h4>manus-workflow</h4><p>workflow/run 子代理编排引擎</p></div>
+  </div>
+</section>
+
+<!-- ============ 8. 开发环境 ============ -->
+<section id="devtools">
+  <div class="sec-head"><span class="sec-num">08</span><h2>开发环境工具链</h2></div>
+  <div class="grid c3">
+    <div class="card"><h4>🐍 Python 3.12.3</h4><p><span class="mono">/usr/bin/python3</span>，pip 被 <b>uv 0.12</b> 包装（install→uv pip --system）。预装 <b>89 个包</b>：pandas 3.0 / numpy 2.5 / matplotlib / seaborn / plotly / playwright 1.62 / fastapi / flask / openai 2.52 / weasyprint / reportlab / pypdf / openpyxl / boto3…</p></div>
+    <div class="card"><h4>🟢 Node.js v22.13.0</h4><p>nvm 管理（<span class="mono">~/.nvm</span>），npm 10.9 + pnpm 11.25 + corepack。全局预装<b>一整套语言服务器</b>：typescript 6.0、pyright、svelte/vue/astro、graphql、intelephense(PHP)、dockerfile、yaml —— 典型的 AI 编码代理配置。</p></div>
+    <div class="card"><h4>🛠 其他语言/运行时</h4><p>Go 工具链 + gopls · OpenJDK 21 · Godot 4（146MB 二进制，游戏开发）· d2 图表 · PlantUML 2025.4 · marksman/postgrestools LSP</p></div>
+    <div class="card"><h4>🎬 媒体处理</h4><p>FFmpeg 6.1 · LibreOffice（无头文档转换）· Typst（排版 PDF）· ImageMagick 系 · pdf2image</p></div>
+    <div class="card"><h4>🌐 浏览器</h4><p>Chromium 151.0.7922.71（CDP 9222）· Playwright 1.62（Python）· chromium 命令直链</p></div>
+    <div class="card"><h4>📦 常用 CLI</h4><p>git 2.43 + git-lfs-s3 · gh 2.97（TERM=dumb 别名防控制序列）· rclone · jq · ripgrep · mysql client · vim/nano · zip/7z</p></div>
+  </div>
+  <h3>字体</h3>
+  <p style="font-size:13.5px;color:var(--sub)">共 <b style="color:var(--txt)">2108</b> 个字体文件，其中中文字体 <b style="color:var(--txt)">93</b> 个 —— 为 CJK 文档渲染（Typst/weasyprint/LibreOffice）与中文网页截图做了充分准备。</p>
+  <details>
+    <summary>完整 Python 包清单（89 个）</summary>
+    <div class="body"><pre class="scrollbox">annotated-doc 0.0.5 · annotated-types 0.8.0 · anyio 4.14.2 · arabic-reshaper 3.0.1
+asn1crypto 1.5.1 · beautifulsoup4 4.15.0 · blinker 1.9.0 · boto3 1.43.62 · botocore 1.43.62
+brotli 1.2.0 · certifi 2026.7.22 · cffi 2.1.0 · charset-normalizer 3.4.9 · click 8.4.2
+contourpy 1.3.3 · cryptography 50.0.0 · cssselect2 0.9.0 · cycler 0.12.1 · defusedxml 0.7.1
+distro 1.9.0 · et-xmlfile 2.0.0 · fastapi 0.141.1 · flask 3.1.3 · fonttools 4.63.0
+fpdf2 2.8.7 · fpdf 1.7.2 · git-remote-s3 0.3.2 · greenlet 3.5.4 · h11 0.16.0
+html5lib 1.1 · httpcore 1.0.9 · httpx 0.28.1 · idna 3.18 · itsdangerous 2.2.0
+jinja2 3.1.6 · jiter 0.16.0 · jmespath 1.1.0 · kiwisolver 1.5.0 · lxml 6.1.1
+markdown 3.10.3 · markupsafe 3.0.3 · matplotlib 3.11.1 · narwhals 2.24.0 · numpy 2.5.1
+openai 2.52.0 · openpyxl 3.1.5 · oscrypto 1.3.0 · packaging 26.2 · pandas 3.0.5
+pdf2image 1.17.0 · pillow 12.3.0 · playwright 1.62.0 · plotly 6.9.0 · pycparser 3.0
+pydantic 2.13.4 · pydantic-core 2.46.4 · pydyf 0.12.1 · pyee 13.0.1 · pyhanko 0.36.2
+pyhanko-certvalidator 0.31.4 · pyparsing 3.3.2 · pypdf 6.14.2 · pyphen 0.17.2
+python-bidi 0.6.11 · python-dateutil 2.9.0 · reportlab 5.0.0 · requests 2.34.2
+s3transfer 0.19.2 · seaborn 0.13.2 · six 1.17.0 · sniffio 1.3.1 · soupsieve 2.9.1
+starlette 1.3.1 · svglib 2.1.0 · tabulate 0.10.0 · tinycss2 1.5.1 · tinyhtml5 2.1.0
+tqdm 4.70.0 · typing-extensions 4.16.0 · typing-inspection 0.4.2 · tzlocal 5.4.4
+uritools 6.1.3 · urllib3 2.7.0 · uvicorn 0.52.1 · weasyprint 69.0 · webencodings 0.5.1
+werkzeug 3.1.8 · xhtml2pdf 0.2.14 · zopfli 0.4.3</pre></div>
+  </details>
+  <details>
+    <summary>npm 全局包（15 个，语言服务器全家桶）</summary>
+    <div class="body"><pre>@astrojs/ts-plugin 1.10.10 · @prisma/language-server 31.11.0
+@vue/typescript-plugin 3.3.8 · corepack 0.30.0
+dockerfile-language-server-nodejs 0.15.0 · graphql-language-service-cli 3.5.0
+intelephense 1.18.5 · npm 10.9.2 · pnpm 11.25.0 · pyright 1.1.411
+svelte-language-server 0.18.3 · typescript-language-server 5.3.0
+typescript 6.0.3 · vscode-langservers-extracted 4.10.0 · yaml-language-server 1.24.0</pre></div>
+  </details>
+</section>
+
+<!-- ============ 9. 浏览器栈 ============ -->
+<section id="browser">
+  <div class="sec-head"><span class="sec-num">09</span><h2>浏览器自动化栈</h2></div>
+  <p class="sec-desc">这是沙箱最精巧的部分：一套「真 GUI 浏览器 + 多端控制」的完整链路，让代理既能用 CDP 编程控制，也能模拟真人键鼠，还能让用户实时观看。</p>
+
+  <div class="flow">
+    <div class="flow-node" data-step="A"><h5>渲染层 — Xorg :0（1280×1029@24bit）</h5><p>无窗口管理器（openbox 已禁用），Chromium 全屏独占。SwiftShader 软渲 WebGL，无需 GPU。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="B"><h5>浏览器 — Chromium 151</h5><p>30+ 启动参数精心调校：禁用后台节流/翻译/崩溃上报，强制 sRGB，<span class="mono">--remote-debugging-port=9222</span>，加载 <b>ublock-lite</b> 去广告，<span class="mono">--user-data-dir=~/.browser_data_dir</span>，下载目录锁定 ~/Downloads（并用 <span class="mono">/etc/chromium/policies/managed</span> 企业策略强制）。模拟触屏设备指针参数。另启 OnDeviceModelService 端侧模型沙箱。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="C"><h5>控制面 — 三条通道</h5><p>① <b>CDP 9222</b>：Playwright/程序化控制；② <b>manus-computer-operator</b>：X 级键鼠注入（拟人操作）；③ <b>manus-helper 扩展</b>：浏览器内上下文。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="D"><h5>观层面 — VNC 链</h5><p>x11vnc(:5900) → websockify(:5901) → 用户浏览器内 noVNC 实时看桌面，支持文件传输。</p></div>
+    <div class="flow-conn"></div>
+    <div class="flow-node" data-step="E"><h5>持久层 — statesync</h5><p>把浏览器 profile（cookie/登录态）经 Cloudflare R2 预签名 URL 双向同步（pull+push），下次会话沙箱重建后<b>登录态不丢</b>。</p></div>
+  </div>
+</section>
+
+<!-- ============ 10. Skills ============ -->
+<section id="skills">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Skills 全量详解（33 个）</h2></div>
+  <p class="sec-desc">位于 <span class="mono">/home/ubuntu/skills</span>，由云端版本化管理（<span class="mono">.skill_versions.json</span> 记录每个 skill 的版本哈希/语义版本）。每个 skill 是一个含 SKILL.md 的目录，描述字段本身就是路由触发器。以下按职能分 7 组逐一介绍。</p>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">🔬</span>研究与数据（6）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>deep-research <span class="tag c">Vkn584AP…</span></h5><p>跨多来源深度调研并综合成可读报告。</p><div class="usage">用法：用户要求「深入研究/全面调研/深度报告」时触发，产出基于可信来源的结构化报告。</div></div>
+      <div class="skill-card"><h5>workflow-composer <span class="tag v">workflow MCP</span></h5><p>子代理编排引擎：≥5 个独立可比事项时必须扇出（≥10 个强制），每项一个专属代理并行研究后聚合。</p><div class="usage">用法：调 workflow MCP 的 run 工具（workflow/run）；也用于循环、条件、多阶段 map/reduce。少量搜索能完成的任务不要用。</div></div>
+      <div class="skill-card"><h5>data-api <span class="tag c">FRVn8VBL…</span></h5><p>Manus Data APIs 结构化数据：X/LinkedIn/YouTube/TikTok/IG/Reddit 社媒、金融行情与技术指标、SEC  filings、Crunchbase、世界银行、Google Trends、App Store、Similarweb、域名查询、文本/图片生成 3D 模型。</p><div class="usage">用法：需要上述来源的结构化数据时优先于网页抓取；经 /opt/.manus/current/data_api.py 调用。</div></div>
+      <div class="skill-card"><h5>data-analysis <span class="tag c">WMh4Q9E9…</span></h5><p>结构化数据处理、分析与可视化/电子表格产出。</p><div class="usage">用法：数据处理、洞察分析、图表/表格生成任务（配合 pandas/matplotlib/plotly 栈）。</div></div>
+      <div class="skill-card"><h5>finance-pro-playbooks <span class="tag a">GzVD2Up3…</span></h5><p>金融投研全工作流：股票/公司分析、财报研报、DCF/LBO/comps 估值建模、尽调、M&A 材料（teaser/CIM）、IC 备忘录。内置数据源层级、财期纪律、交付格式标准；其 excel_standards.md 优先于通用表格 skill。</p><div class="usage">用法：任何金融/投资/公司分析任务必读；量化交易系统、法律纠纷计算、个人报税除外。</div></div>
+      <div class="skill-card"><h5>read-special-images <span class="tag c">SHVVeFg8…</span></h5><p>长截图/全景图/超高分辨率/密集文档的 OCR 与分块阅读。≥4:1 长宽比、边长>4096px、面积>16M 像素仅为筛查信号而非自动切分触发。</p><div class="usage">用法：整图显示导致关键文字不可读时启用分块；能读就不切。</div></div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">📄</span>文档与演示（4）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>slides <span class="tag p">0.0.1-prod.36444…</span></h5><p>一切演示文稿需求（含「HTML slides」说法）的唯一入口，支持 HTML（默认）/图片/PPTX 三种产出模式，覆盖预览、检查、更新。</p><div class="usage">用法：任何 PPT/slides 请求都走此 skill，绝不手写独立 HTML/PPTX 演示文件（除非用户明确要求）。</div></div>
+      <div class="skill-card"><h5>office <span class="tag p">0.1.0-prod.36257…</span></h5><p>Manus Office 中处理 DOCX/XLSX/CSV/TSV/PDF：选区引用、批注与编辑指令。</p><div class="usage">用法：Office 工作区内文档协作；PPTX 仅用于修改既有文件，新建演示走 Slides。</div></div>
+      <div class="skill-card"><h5>office-documents <span class="tag p">0.1.0-prod.36257…</span></h5><p>创建/检查/编辑/转换 Word 与 Excel 文档（含 HTML、PDF 导出）。</p><div class="usage">用法：从零生成 .docx/.xlsx 的场景；PowerPoint 仅改旧文件，新建走 Slides skill。</div></div>
+      <div class="skill-card"><h5>typst-pdf-maker <span class="tag c">本地 typst CLI</span></h5><p>用 Typst 排版高质量 PDF：报告、论文、简历、数学排版、代码密集文档、精确版式与 CJK 排版。</p><div class="usage">用法：Markdown→PDF 不够用时；先选 skill 自带资产或 Typst Universe 模板再加包；普通演示需求路由到 Slides。</div></div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">🎨</span>设计与多媒体（5）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>imagegen <span class="tag p">YtGzn32f…</span></h5><p>视觉交付路由器：AI 生图/改图/放大修复/UI mockup/海报/图标/logo/信息图，也负责在 Mermaid、Python 绘图、静态布局截图、Web 开发与 AI 生图之间做路径选择。</p><div class="usage">用法：任何模糊视觉请求先经此 skill 判定路线，再分派到对应生成通道。</div></div>
+      <div class="skill-card"><h5>image-processing <span class="tag c">8o6BBzxp…</span></h5><p>既有图片的理解、检查与确定性变换：缩放、裁剪、格式转换、压缩、传统 CV 操作。</p><div class="usage">用法：描述图片、回答图片相关问题、程序化图片批处理（Pillow/OpenCV 路径）。</div></div>
+      <div class="skill-card"><h5>video-generation <span class="tag p">沙箱内制作</span></h5><p>视频与动效创作：剪辑、高光提取、拼接、字幕、FFmpeg 导出；也覆盖广告、讲解视频、数字人口播、幻灯片视频、UGC、叙事短片等生成式需求。</p><div class="usage">用法：一切视频剪辑/生成任务；本地 FFmpeg 6.1 负责确定性处理。</div></div>
+      <div class="skill-card"><h5>music-prompter <span class="tag a">Jw77q5pZ…</span></h5><p>音乐生成提示词框架：结构语法、多片段策略。</p><div class="usage">用法：音乐任务进入 generate 模式前必读。</div></div>
+      <div class="skill-card"><h5>tts-prompter <span class="tag a">j8rwnYiL…</span></h5><p>TTS 提示词框架：口播文本与风格指令分离、情绪与非语音音效的标记 vs 自然语言选择。</p><div class="usage">用法：语音合成任务进入 generate 模式前必读。</div></div>
+      <div class="skill-card"><h5>game-asset-catalog <span class="tag v">0.0.68+f970338e</span></h5><p>检索/改编 Manus 游戏素材库（精灵、模型、UI、字体、音效），经 webdev-mcp 操作。</p><div class="usage">用法：素材库复用路线下，catalog 操作或素材选型前必读；独立请求无需项目。</div></div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">🌐</span>Web 开发（5）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>webdev <span class="tag v">manus-webdev addon</span></h5><p>Webdev 项目的开发工作流、最佳实践与平台参考。</p><div class="usage">用法：修改网站、保存 checkpoint、发布、或把代码连接/保存到用户 GitHub 仓库时使用。</div></div>
+      <div class="skill-card"><h5>webdev-deployment <span class="tag v">部署架构</span></h5><p>选择部署架构、静态/容器构建、发布路由与响应缓存配置。</p><div class="usage">用法：部署规划、发布配置，或排查加载慢、资源过期、直链失效。</div></div>
+      <div class="skill-card"><h5>webdev-nextjs <span class="tag v">Next.js 专项</span></h5><p>Manus 网站使用 Next.js 的最佳实践。</p><div class="usage">用法：配置 Next.js dev server、排查 Preview 交互性与 HMR 问题时必读。</div></div>
+      <div class="skill-card"><h5>webdev-seo <span class="tag v">SEO</span></h5><p>搜索可见性：爬虫可读 HTML、逐路由 metadata、社交预览、canonical、sitemap/robots。</p><div class="usage">用法：面向公网搜索的页面、SEO 请求、链接预览或收录问题。</div></div>
+      <div class="skill-card"><h5>webdev-worklocally <span class="tag v">本地开发</span></h5><p>本地网站/移动 App/游戏开发的路径选择：Web/Mobile 是否使用 Manus 托管服务（Mobile 托管会切到云端）；Game 默认托管初始化；project_dir 独立选项目；文件声明、独立 Managed Git、worktree 与会话预览。</p><div class="usage">用法：本地开发类需求先读此 skill 做路径判定；纯编码与只读检查无需 init/attach。</div></div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">⚙️</span>自动化与持久计算（4）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>automation-and-scheduling <span class="tag a">XocNRk9F…</span></h5><p>自动化/定时/后台/事件触发/机器人执行、API 集成、数据同步、webhook 等一切「持续运行」需求的方案选型指南。</p><div class="usage">用法：即使主诉求是网站或 bot，只要涉及后台执行就必读，先选对实现路径再动工。</div></div>
+      <div class="skill-card"><h5>triggers <span class="tag a">0.0.53+c16f7a41</span></h5><p>条件触发型自动化：provider 事件、webhook、定时 JS 监控脚本的创建/管理/执行检查/调试。</p><div class="usage">用法：有监控条件的触发器；纯提醒/周期指令用 manus-config 的 ScheduleTask。</div></div>
+      <div class="skill-card"><h5>persistent-computing <span class="tag a">F9DbUGTd…</span></h5><p>持久计算决策：常驻服务、游戏服务器、自托管开源应用、Docker、固定 IP、后台任务、重计算、跨会话复用环境。区分 sandbox / WebDev / 持久 VM（Cloud Computer）三条路线。</p><div class="usage">用法：默认沙箱或 WebDev 撑不住的常驻需求必读；在挂接的持久 VM 上开发部署前也必读。</div></div>
+      <div class="skill-card"><h5>handoff <span class="tag v">0.1.5+3f7c7bdc</span></h5><p>跨设备私密传输临时工作区文件：handoff.create / handoff.receive。</p><div class="usage">用法：文件需在 Desktop Work Locally、其他设备或会话运行时之间转移且无共享文件系统时。</div></div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">🧰</span>平台与集成（6）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>manus-api <span class="tag b">eVBYXKAW…</span></h5><p>Manus API：管理任务/项目/数据，构建 OAuth2 Open Apps 与第三方集成，编程式创建任务。</p><div class="usage">用法：需要以 API 方式驱动 Manus 或为其生态做集成开发时。</div></div>
+      <div class="skill-card"><h5>manus-config <span class="tag b">ABCVdrMif…</span></h5><p>Agent Profiles、连接器（App/Custom API/Custom MCP）、项目指令与共享文件、定时任务（cron/间隔/连接器 UID/run-as-new）管理。</p><div class="usage">用法：增删查改 Agent、集成、项目配置、共享链接、定时任务的创建/暂停/排障。</div></div>
+      <div class="skill-card"><h5>manus-tasks <span class="tag b">0.0.14+7c62d32e</span></h5><p>Tasks Addon：创建/更新/查找任务、读历史、发任务消息、建项目、获取临时 API key。</p><div class="usage">用法：沙箱内脚本需要回写任务状态或与 Manus 任务系统交互时。</div></div>
+      <div class="skill-card"><h5>trip <span class="tag b">0.0.1-prod.36454…</span></h5><p>Trip.com 搜索 MCP：search_flights（低价机票/票价日历）、search_hotels、search_attractions（门票/一日游/接送机/Wi-Fi/SIM），结果以紧凑 deal 卡片呈现。</p><div class="usage">用法：机酒景查询；不含火车票、租车、邮轮、签证与代订支付。</div></div>
+      <div class="skill-card"><h5>gws-best-practices <span class="tag b">2DXYUqgt…</span></h5><p>gws CLI 操作 Google Workspace（Drive/Docs/Sheets/Slides）的最佳实践。</p><div class="usage">用法：任何 gws CLI 操作前阅读（对应 .user_env 里的 GOOGLE_* token）。</div></div>
+      <div class="skill-card"><h5>builtin-llm-models <span class="tag b">EmE92BsA…</span></h5><p>内置 LLM 模型目录与能力说明。</p><div class="usage">用法：需要了解/选用沙箱内置模型时参考。</div></div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <div class="skill-group-title"><span class="icon">🛟</span>元能力与运维（2）</div>
+    <div class="grid c2">
+      <div class="skill-card"><h5>skill-creator <span class="tag g">iuADnvHu…</span></h5><p>创建/更新 skill 的官方指南：专业知识、工作流、工具集成的封装方法。</p><div class="usage">用法：任何 skill 修改/改进请求必须先读此 skill 并走其更新工作流，不得直接改文件。</div></div>
+      <div class="skill-card"><h5>data-backup-restoration <span class="tag g">jmXyUCSj…</span></h5><p>2026 年 8 月 Manus 数据备份与恢复服务变更的官方指引（含网站与移动 App）。</p><div class="usage">用法：用户询问是否受影响、数据/服务会怎样、如何备份恢复时。</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11. 环境变量 ============ -->
+<section id="envconfig">
+  <div class="sec-head"><span class="sec-num">11</span><h2>环境变量与配置体系</h2></div>
+  <p class="sec-desc">三层配置：平台注入的 <span class="mono">~/.env</span>、用户连接器的 <span class="mono">~/.user_env</span>、以及 <span class="mono">~/.secrets/</span> 目录。所有值已脱敏。</p>
+
+  <h3>~/.env（平台层，启动时 source）</h3>
+  <table>
+    <tr><th>变量</th><th>类别</th><th>用途推断</th></tr>
+    <tr><td class="mono">APP_ENV / RUNTIME_API_HOST</td><td><span class="tag c">平台</span></td><td>运行环境标识与运行时 API 地址</td></tr>
+    <tr><td class="mono">ADDON_WORKSPACE_AUTHORITY_JWKS</td><td><span class="tag v">鉴权</span></td><td>Addon 工作区的 JWKS 验签公钥</td></tr>
+    <tr><td class="mono">OTEL_*（8 项）</td><td><span class="tag a">可观测</span></td><td>OpenTelemetry：OTLP endpoint、采样率、日志关联、span 最小上报时长等</td></tr>
+    <tr><td class="mono">SENTRY_DSN</td><td><span class="tag a">可观测</span></td><td>Sentry 崩溃上报</td></tr>
+    <tr><td class="mono">DEPLOY_WASMER_OWNER</td><td><span class="tag c">部署</span></td><td>Wasmer（WebAssembly 托管）owner，部署管线一环</td></tr>
+    <tr><td class="mono">CODE_SERVER_DOMAIN</td><td><span class="tag c">IDE</span></td><td>code-server 域名（Web IDE 入口）</td></tr>
+    <tr><td class="mono">LAST_COMMIT_HASH / TZ / PW_TEST_*</td><td><span class="tag c">杂项</span></td><td>版本指纹 / UTC 时区 / Playwright 截图等待行为</td></tr>
+  </table>
+
+  <h3>~/.user_env（用户连接器层，受拓扑冻结保护）</h3>
+  <table>
+    <tr><th>变量</th><th>用途</th></tr>
+    <tr><td class="mono">GH_TOKEN</td><td>GitHub 连接器凭据（webdev 保存到用户仓库）</td></tr>
+    <tr><td class="mono">GOOGLE_WORKSPACE_CLI_TOKEN / GOOGLE_DRIVE_TOKEN</td><td>Google Workspace / Drive 连接器（配合 gws CLI）</td></tr>
+    <tr><td class="mono">MANUS_GROUP_ENABLED / AGENT_TIMEZONE / AGENT_LOCALE</td><td>群组功能开关、代理时区与语言</td></tr>
+    <tr><td class="mono">MANUS_ADDON_REGISTRY_ENABLED / RUNTIME_SPEC_PATH / SPECS_REVISION</td><td>MCP 插件目录：启动规范文件 <span class="mono">/tmp/manus-mcp/addon_runtime_launch_specs.json</span> + 版本 sha256 锁定</td></tr>
+  </table>
+
+  <h3>其他配置文件</h3>
+  <div class="grid c2">
+    <div class="card"><h4>~/.secrets/sandbox_api_token</h4><p>沙箱 API 令牌（单文件，0700 权限目录）</p></div>
+    <div class="card"><h4>~/.mcp/servers.json</h4><p>用户级 MCP 服务器注册表（当前为空 {}）</p></div>
+    <div class="card"><h4>~/.manus/config/multiAccounts.json</h4><p>多账号配置（当前为空 []）</p></div>
+    <div class="card"><h4>~/.safety_warning.md（7.5KB）</h4><p>平台内置安全协议：warn-and-proceed 策略——敏感领域（医/法/税/金融等）加免责声明后完整作答，硬性红线仅自伤与未成年人两条。这是 Manus 2.0 代理行为准则的一部分。</p></div>
+    <div class="card"><h4>~/.config/state-sync/state-sync-config.yaml</h4><p>statesync 配置：browser-port 9222 + R2 预签名 GET/PUT URL（24h 有效期），实现浏览器状态云同步</p></div>
+    <div class="card"><h4>~/sandbox.txt</h4><p>内容为 "inside the sandbox" —— 沙箱自检标记文件</p></div>
+  </div>
+</section>
+
+<!-- ============ 12. 安全机制 ============ -->
+<section id="security">
+  <div class="sec-head"><span class="sec-num">12</span><h2>安全与稳定性机制</h2></div>
+  <div class="grid c2">
+    <div class="card"><h4>🛡 拓扑环境冻结</h4><p>startup.sh 在加载用户密钥前后做快照/恢复（capture_supervisor_runtime_env → restore），平台关键变量免遭 .user_env 覆盖；缺省键导出为空实现 fail-closed。</p></div>
+    <div class="card"><h4>💉 凭据透明注入</h4><p>manus-token-local-proxy（root、按需启动）：iptables 透明代理 + 请求级 token 替换，让沙箱内进程用占位凭据即可访问需鉴权服务，真实 token 不落用户空间。</p></div>
+    <div class="card"><h4>📉 earlyoom 双层防护</h4><p>root 实例（-m 10,5）+ 独立用户(61876)实例（-r 3600 每小时报告）；豁免正则保护 supervisord/runtime/Xorg/VNC/statesync/manus-* 等关键进程不被 OOM 误杀。</p></div>
+    <div class="card"><h4>🔁 多级自愈</h4><p>supervisord autorestart → startup.sh 每 10s 健康巡检（8330/8340）→ 端口强释 + stop/start 重启链 → 更新锁感知（升级中不误重启）→ SIGKILL 竞态不变量（commit 9821822a8 注释固化）。</p></div>
+    <div class="card"><h4>🔐 终端隔离</h4><p>ttyd 用 umask 077 的 unix socket + X-Manus-Terminal-User 请求头标识用户；bash 会话以 --noprofile --norc -i 启动确保环境纯净后再 source .env。</p></div>
+    <div class="card"><h4>👁 进程事件审计</h4><p>sandbox-process-observer 订阅 supervisor PROCESS_STATE 事件，进程启停全部落盘 ~/.local/state/manus/process-lifecycle 并上报 OTel。</p></div>
+    <div class="card"><h4>🧹 冷缓存回收</h4><p>envd 每 10s 回收冷页缓存（保留 1024MiB），长会话内存压力可控。</p></div>
+    <div class="card"><h4>⏱ 时钟纪律</h4><p>chronyd 平滑校时；仅在偏移>0.5s 时 makestep，避免 DNS 缓存雪崩、CPU 突刺与网络抖动（脚本内附 systemd-resolved 源码链接佐证）。</p></div>
+  </div>
+</section>
+
+<!-- ============ 13. 文件布局 ============ -->
+<section id="fs">
+  <div class="sec-head"><span class="sec-num">13</span><h2>关键文件系统布局</h2></div>
+  <pre class="tree scrollbox"><span class="dir">/</span>
+ ├─ <span class="hl">e2b-startup.sh</span>              <span class="note">E2B 引导入口（root → ubuntu）</span>
+ ├─ <span class="hl">startup.sh</span>                  <span class="note">主引导脚本：env/pip包装/dbus/supervisord/守护循环</span>
+ ├─ <span class="dir">opt/.manus/</span>                 <span class="note">平台层（见 §07）</span>
+ ├─ <span class="dir">var/lib/manus/</span>              <span class="note">重启可持久的运行时状态（崩溃状态、插件预览状态）</span>
+ ├─ <span class="dir">var/log/supervisor/</span>         <span class="note">全部托管进程日志（50MB 轮转）</span>
+ ├─ <span class="dir">var/log/manus-token-replacement/</span>
+ └─ <span class="dir">home/ubuntu/</span>                <span class="note">代理工作用户主目录</span>
+     ├─ <span class="hl">.env / .user_env</span>          <span class="note">平台变量 / 用户连接器凭据（rc 文件自动 source）</span>
+     ├─ <span class="hl">.safety_warning.md</span>        <span class="note">代理安全行为协议</span>
+     ├─ <span class="dir">skills/</span>                   <span class="note">33 个云端版本化 skills + .skill_versions.json</span>
+     ├─ <span class="dir">.manus-addons/</span>            <span class="note">7 个 MCP 插件（sha 版本目录）+ data/</span>
+     ├─ <span class="dir">.manus/config/</span>            <span class="note">multiAccounts.json</span>
+     ├─ <span class="dir">.mcp/servers.json</span>         <span class="note">用户 MCP 注册表</span>
+     ├─ <span class="dir">.browser_data_dir/</span>        <span class="note">Chromium profile（30 个子目录，statesync 同步对象）</span>
+     ├─ <span class="dir">Downloads/</span>                <span class="note">浏览器下载目录（企业策略锁定）</span>
+     ├─ <span class="dir">.config/</span>                  <span class="note">state-sync 配置 / chromium Crash Reports</span>
+     ├─ <span class="dir">.secrets/sandbox_api_token</span>
+     ├─ <span class="dir">.local/state/manus/</span>       <span class="note">进程生命周期事件、运行时崩溃状态</span>
+     ├─ <span class="dir">.local/run/manus-terminal/</span><span class="note">ttyd unix socket</span>
+     ├─ <span class="dir">.nvm/versions/node/v22.13.0/</span>
+     ├─ <span class="dir">.logs/state-sync/</span>
+     ├─ sandbox.txt              <span class="note">"inside the sandbox" 自检标记</span></pre>
+
+  <div class="callout info">📌 <b>持久化边界</b>：<span class="mono">/var/lib/manus</span> 可跨重启持久；浏览器登录态经 statesync 上云持久；其余文件系统随沙箱实例生命周期——重要产物须通过 manus-upload-file / handoff / git 回传。</div>
+
+  <h3>结论速览</h3>
+  <table>
+    <tr><th>层</th><th>技术选型</th><th>一句话</th></tr>
+    <tr><td>基础设施</td><td>E2B (envd) + KVM MicroVM</td><td>成熟开源沙箱底座，IMDS 元数据、link-local 网络</td></tr>
+    <tr><td>进程编排</td><td>systemd → envd → bash 引导 → supervisord</td><td>三层套娃，含完善自愈与升级锁</td></tr>
+    <tr><td>运行时</td><td>Go 二进制群（sandbox-runtime 等 25 个）</td><td>API 面 8328/8330/8340/8350/9330，OTel+Sentry 全遥测</td></tr>
+    <tr><td>代理能力</td><td>Skills(33) + MCP Addons(7) + 浏览器栈</td><td>「云端技能市场 + 插件运行时 + 真 GUI 浏览器」三件套</td></tr>
+    <tr><td>工具链</td><td>Python3.12/uv · Node22/语言服务器群 · Godot · FFmpeg · Typst</td><td>面向 AI 编码代理与多模态产出的全家桶</td></tr>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  <p>Manus 2.0 Sandbox Deep Environment Report · 采集于 <span class="mono">0377397e2287</span> (Ubuntu 24.04.4 / kernel 6.18.38+) · 2026-09-29</p>
+  <p style="margin-top:6px">敏感信息已脱敏 · 所有数据来自只读勘察，未对沙箱做任何修改</p>
+</footer>
+
+</body>
+</html>
