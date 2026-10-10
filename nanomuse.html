@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASE 004 · nanoMuse 深度解读 · Agent Sandbox 档案馆</title>
+<style>
+  :root {
+    --bg: #070b14; --bg2: #0b1120;
+    --card: rgba(255,255,255,.035); --border: rgba(255,255,255,.09);
+    --txt: #e6edf7; --sub: #8b98ad;
+    --cyan: #22d3ee; --violet: #a78bfa; --amber: #fbbf24;
+    --green: #34d399; --pink: #f472b6; --red: #f87171;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg); color: var(--txt);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    line-height: 1.8; overflow-x: hidden; font-size: 15.5px;
+  }
+  .glow { position: fixed; border-radius: 50%; filter: blur(130px); opacity: .14; pointer-events: none; z-index: 0; }
+  .glow.g1 { width: 560px; height: 560px; background: #0ea5e9; top: -180px; left: -140px; }
+  .glow.g2 { width: 480px; height: 480px; background: #7c3aed; top: 32%; right: -180px; }
+  .glow.g3 { width: 440px; height: 440px; background: #059669; bottom: -160px; left: 32%; }
+
+  nav { position: fixed; top:0; left:0; right:0; z-index:100; backdrop-filter: blur(14px);
+    background: rgba(7,11,20,.75); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 1080px; margin: 0 auto; padding: 11px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:14px; letter-spacing:.5px; display:flex; align-items:center; gap:8px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .nav-links { display:flex; gap:2px; flex-wrap:wrap; margin-left:auto; }
+  .nav-links a { color:var(--sub); text-decoration:none; font-size:12.5px; padding:6px 10px; border-radius:8px; transition:all .2s; }
+  .nav-links a:hover { color:var(--txt); background:rgba(255,255,255,.06); }
+  .nav-links a.home { color:var(--cyan); border:1px solid rgba(34,211,238,.3); }
+
+  header { position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:140px 24px 40px; }
+  .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:2px; color:var(--cyan);
+    border:1px solid rgba(34,211,238,.3); border-radius:99px; padding:5px 14px; margin-bottom:20px; font-family:Consolas,monospace; }
+  h1 { font-size:clamp(30px,4.6vw,50px); font-weight:900; letter-spacing:-1px; line-height:1.2; margin-bottom:16px; }
+  h1 .grad { background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--sub); font-size:16px; max-width:780px; }
+  .hero-sub b { color:var(--txt); }
+  .hero-meta { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .meta-chip { font-size:12.5px; color:var(--sub); border:1px solid var(--border); border-radius:99px; padding:5px 14px; background:var(--card); }
+  .meta-chip b { color:var(--txt); font-weight:600; }
+  .meta-chip a { color:var(--cyan); text-decoration:none; }
+
+  main { position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:0 24px; }
+  section.block { padding:44px 0 6px; }
+  .sec-head { display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+  .sec-num { font-family:Consolas,monospace; font-size:13px; color:var(--cyan); border:1px solid rgba(34,211,238,.3);
+    border-radius:6px; padding:2px 9px; white-space:nowrap; }
+  h2 { font-size:25px; font-weight:800; letter-spacing:-.5px; }
+  .sec-desc { color:var(--sub); font-size:14px; margin:4px 0 24px; max-width:820px; }
+
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 24px; margin-bottom:16px; }
+  .card h3 { font-size:17px; font-weight:750; margin-bottom:10px; }
+  .card h3 .em { color:var(--cyan); }
+  .card p { color:var(--sub); font-size:14.5px; margin-bottom:10px; }
+  .card p:last-child { margin-bottom:0; }
+  .card p b, .card li b { color:var(--txt); font-weight:600; }
+  .card ul, .card ol { margin:8px 0 8px 20px; color:var(--sub); font-size:14.5px; }
+  .card li { margin-bottom:6px; }
+  .card code, p code, li code, td code { font-family:Consolas,"SF Mono",monospace; font-size:.86em;
+    background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.18); border-radius:6px; padding:1px 7px; color:var(--cyan); }
+
+  .badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:1px; border-radius:6px; padding:2px 9px; margin-right:8px; vertical-align:2px; }
+  .badge.fact { background:rgba(34,211,238,.12); color:var(--cyan); border:1px solid rgba(34,211,238,.35); }
+  .badge.analysis { background:rgba(167,139,250,.12); color:var(--violet); border:1px solid rgba(167,139,250,.35); }
+  .badge.hypo { background:rgba(251,191,36,.1); color:var(--amber); border:1px solid rgba(251,191,36,.35); }
+  .badge.warn { background:rgba(248,113,113,.1); color:var(--red); border:1px solid rgba(248,113,113,.35); }
+
+  .callout { border-left:3px solid var(--cyan); background:rgba(34,211,238,.05); border-radius:0 12px 12px 0;
+    padding:16px 20px; margin:18px 0; font-size:14.5px; color:var(--sub); }
+  .callout b { color:var(--txt); }
+  .callout.violet { border-color:var(--violet); background:rgba(167,139,250,.05); }
+  .callout.amber { border-color:var(--amber); background:rgba(251,191,36,.05); }
+  .callout.red { border-color:var(--red); background:rgba(248,113,113,.05); }
+  .callout.green { border-color:var(--green); background:rgba(52,211,153,.05); }
+
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:14px 0; }
+  th, td { text-align:left; padding:11px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  th { color:var(--cyan); font-weight:700; font-size:13px; letter-spacing:.5px; white-space:nowrap; }
+  td { color:var(--sub); }
+  td b, td strong { color:var(--txt); }
+  tr:hover td { background:rgba(255,255,255,.02); }
+
+  .fig { background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:18px;
+    padding:26px 18px 14px; margin:20px 0; overflow-x:auto; }
+  .fig svg { display:block; margin:0 auto; max-width:100%; height:auto; }
+  .figcap { text-align:center; color:var(--sub); font-size:13px; margin-top:10px; padding:0 12px 6px; }
+  .figcap b { color:var(--txt); }
+
+  .grid { display:grid; gap:14px; }
+  .g2 { grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); }
+  .g3 { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+  .mini { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+  .mini h4 { font-size:15px; margin-bottom:8px; }
+  .mini p { font-size:13.5px; color:var(--sub); }
+  .mini p b { color:var(--txt); }
+
+  .timeline { position:relative; margin:10px 0 10px 8px; padding-left:26px; border-left:2px solid rgba(34,211,238,.25); }
+  .tl-item { position:relative; margin-bottom:20px; }
+  .tl-item::before { content:""; position:absolute; left:-33px; top:6px; width:10px; height:10px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 10px var(--cyan); }
+  .tl-item .tl-date { font-family:Consolas,monospace; font-size:12.5px; color:var(--cyan); }
+  .tl-item .tl-body { color:var(--sub); font-size:14.5px; }
+  .tl-item .tl-body b { color:var(--txt); }
+
+  .toc { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px 26px; margin:26px 0; }
+  .toc h3 { font-size:14px; letter-spacing:2px; color:var(--sub); margin-bottom:12px; font-weight:700; }
+  .toc ol { margin-left:20px; color:var(--sub); font-size:14px; columns:2; column-gap:32px; }
+  .toc li { margin-bottom:6px; }
+  .toc a { color:var(--sub); text-decoration:none; }
+  .toc a:hover { color:var(--cyan); }
+  @media (max-width:700px){ .toc ol{columns:1;} }
+
+  footer { position:relative; z-index:1; max-width:1080px; margin:60px auto 0; padding:36px 24px 60px;
+    color:var(--sub); font-size:12.5px; text-align:center; border-top:1px solid var(--border); }
+  footer a { color:var(--cyan); text-decoration:none; }
+  .src-list { text-align:left; max-width:720px; margin:18px auto 0; font-size:13px; }
+  .src-list li { margin-bottom:6px; }
+  @media (max-width:640px){ .g2{grid-template-columns:1fr;} header{padding-top:150px;} }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span>SANDBOX ARCHIVE · 沙盒档案馆</div>
+    <div class="nav-links">
+      <a class="home" href="index.html">← 档案馆首页</a>
+      <a href="#s01">一句话</a><a href="#s03">架构</a><a href="#s04">Hands</a>
+      <a href="#s05">Sentinel</a><a href="#s06">记忆</a><a href="#s10">启示</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-kicker">CASE 004 · PERSONAL AGENT · 2026-10-10</div>
+  <h1>nanoMuse <span class="grad">深度解读</span><br>每台设备上的开源个人智能体</h1>
+  <p class="hero-sub">浙江大学团队开源的 <b>Meta Muse 平替</b>：手机、电脑、网页各跑一个完整 Agent，通过可自建的中继共享同一段对话，App 关了任务照跑。以下是一份<b>反复精读论文与源码</b>后写成的通俗笔记——结论先行，机制拆开，短板不藏。</p>
+  <div class="hero-meta">
+    <span class="meta-chip"><b>团队</b> 浙江大学（刘广义 / 刘勇 / 张江宁）</span>
+    <span class="meta-chip"><b>许可</b> GPL-3.0-or-later</span>
+    <span class="meta-chip"><b>版本</b> 1.0.1 Ballast</span>
+    <span class="meta-chip"><b>热度</b> ★702 · 69 forks（10-10 实测）</span>
+    <span class="meta-chip"><b>论文</b> <a href="https://arxiv.org/abs/2610.08699">arXiv:2610.08699</a></span>
+    <span class="meta-chip"><b>仓库</b> <a href="https://github.com/nano-muse/nanoMuse">nano-muse/nanoMuse</a></span>
+  </div>
+
+  <div class="toc reveal">
+    <h3>本页目录</h3>
+    <ol>
+      <li><a href="#s01">一句话看懂：它到底是什么</a></li>
+      <li><a href="#s02">基本面：团队、时间线与体量</a></li>
+      <li><a href="#s03">架构深读：shape 才是本质差异</a></li>
+      <li><a href="#s04">Hands：爬梯子，最后一 rung 才是读屏</a></li>
+      <li><a href="#s05">Sentinel：最值得抄走的设计</a></li>
+      <li><a href="#s06">记忆：双轨制与诚实的短板</a></li>
+      <li><a href="#s07">论文的隐藏价值：Muse 逆向阅读</a></li>
+      <li><a href="#s08">五问三环：个人智能体应该是什么样子</a></li>
+      <li><a href="#s09">成本与体量：小到能装进口袋</a></li>
+      <li><a href="#s10">对 openmuse 的启示：红线与可借鉴清单</a></li>
+      <li><a href="#s11">短板与风险：论文自己承认的七件事</a></li>
+      <li><a href="#s12">验证方法与资料</a></li>
+    </ol>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 01 ============ -->
+<section class="block" id="s01">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>一句话看懂</h2></div>
+  <p class="sec-desc reveal">先建立直觉，再谈细节。</p>
+
+  <div class="card reveal">
+    <p><span class="badge fact">Fact</span><b>2026 年 9 月，Meta 发布 Muse：一个有名字、有记忆、替你办事、App 关了还在跑的个人智能体。</b>三周内 OpenAI、Manus 相继跟进。nanoMuse 是浙大团队在 9 月 25 日开源的<b>完整对位产品</b>——不是论文 demo，10 月 9 日已发 1.0，手机/桌面/Web 三端可装。</p>
+    <p><span class="badge analysis">Analysis</span>理解 nanoMuse 的总钥匙是 <b>shape（形态）</b>，不是模型。Muse 把"每人一台云 VM"卖给你；nanoMuse 说：agent 应该跑在<b>你已经拥有的硬件</b>上，多台设备之间用一个<b>你自己能搭的中继</b>连成同一段对话。论文原话："Who runs that program, where, and under whose eyes is not a detail of deployment. It is the product."（谁运行这个程序、在哪里、在谁的眼皮底下，不是部署细节，它就是产品本身。）</p>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 340" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <defs>
+        <linearGradient id="gA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+        <linearGradient id="gB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+      </defs>
+      <text x="200" y="30" fill="#8b98ad" font-size="14" text-anchor="middle" font-weight="700">Meta Muse：每人一台云 VM</text>
+      <rect x="60" y="50" width="280" height="150" rx="14" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="200" y="78" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">☁️ Meta 云 · Linux VM</text>
+      <text x="200" y="102" fill="#8b98ad" font-size="12" text-anchor="middle">agent + 工具 + 记忆 + 凭据</text>
+      <text x="200" y="122" fill="#8b98ad" font-size="12" text-anchor="middle">Sentinel 在 VM 之外（特权边界）</text>
+      <text x="200" y="150" fill="#fbbf24" font-size="12" text-anchor="middle">代价：订阅制 · 美国 only · 闭源</text>
+      <rect x="90" y="215" width="80" height="40" rx="10" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.2)"/>
+      <rect x="185" y="215" width="80" height="40" rx="10" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.2)"/>
+      <rect x="280" y="215" width="80" height="40" rx="10" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.2)"/>
+      <text x="130" y="240" fill="#8b98ad" font-size="12" text-anchor="middle">手机</text>
+      <text x="225" y="240" fill="#8b98ad" font-size="12" text-anchor="middle">网页</text>
+      <text x="320" y="240" fill="#8b98ad" font-size="12" text-anchor="middle">Mac</text>
+      <text x="225" y="280" fill="#8b98ad" font-size="12" text-anchor="middle">各客户端只是同一 VM 的窗口</text>
+      <line x1="130" y1="215" x2="160" y2="200" stroke="rgba(255,255,255,.25)"/>
+      <line x1="225" y1="215" x2="225" y2="200" stroke="rgba(255,255,255,.25)"/>
+      <line x1="320" y1="215" x2="290" y2="200" stroke="rgba(255,255,255,.25)"/>
+
+      <text x="700" y="30" fill="#8b98ad" font-size="14" text-anchor="middle" font-weight="700">nanoMuse：每台设备一个完整 agent</text>
+      <rect x="560" y="50" width="120" height="90" rx="12" fill="rgba(52,211,153,.07)" stroke="#34d399" stroke-width="1.5"/>
+      <rect x="700" y="50" width="120" height="90" rx="12" fill="rgba(52,211,153,.07)" stroke="#34d399" stroke-width="1.5"/>
+      <rect x="560" y="155" width="120" height="90" rx="12" fill="rgba(52,211,153,.07)" stroke="#34d399" stroke-width="1.5"/>
+      <rect x="700" y="155" width="120" height="90" rx="12" fill="rgba(52,211,153,.07)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="620" y="80" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">📱 手机</text>
+      <text x="620" y="100" fill="#8b98ad" font-size="11" text-anchor="middle">agent+Sentinel</text>
+      <text x="620" y="116" fill="#8b98ad" font-size="11" text-anchor="middle">+ Hands 读屏</text>
+      <text x="760" y="80" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">💻 电脑</text>
+      <text x="760" y="100" fill="#8b98ad" font-size="11" text-anchor="middle">agent+Sentinel</text>
+      <text x="760" y="116" fill="#8b98ad" font-size="11" text-anchor="middle">+ Hands 读屏</text>
+      <text x="620" y="185" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">🍎 iPhone</text>
+      <text x="620" y="205" fill="#8b98ad" font-size="11" text-anchor="middle">agent（无 Hands）</text>
+      <text x="760" y="185" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">🌐 网页</text>
+      <text x="760" y="205" fill="#8b98ad" font-size="11" text-anchor="middle">同一段对话</text>
+      <rect x="620" y="262" width="140" height="44" rx="22" fill="none" stroke="url(#gB)" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="690" y="289" fill="#34d399" font-size="13" text-anchor="middle" font-weight="700">🔗 可自建的中继</text>
+      <line x1="620" y1="140" x2="660" y2="262" stroke="rgba(52,211,153,.4)"/>
+      <line x1="760" y1="140" x2="720" y2="262" stroke="rgba(52,211,153,.4)"/>
+      <line x1="620" y1="200" x2="655" y2="262" stroke="rgba(52,211,153,.4)"/>
+      <line x1="760" y1="200" x2="725" y2="262" stroke="rgba(52,211,153,.4)"/>
+      <text x="690" y="328" fill="#8b98ad" font-size="12" text-anchor="middle">设备是 peer，互相派活；中继只做签到与帧路由</text>
+    </svg>
+    <div class="figcap"><b>图 1 · 形态对比。</b>左边是"云里的一台电脑"，右边是"你手里的每台设备"。理解了这张图，就理解了论文 12 页里一半的论证。</div>
+  </div>
+
+  <div class="callout green reveal"><b>一句话记住它：</b>nanoMuse = <b>设备端 agent</b>（OpenMinis 魔改手机端 + DeepSeek Harness 桌面端）+ <b>Hands 读屏操作</b> + <b>Sentinel 安全门</b> + <b>可自建中继</b>，全部 GPL 开源。论文里那句"an open counterpart had to exist"（开源对位必须存在）就是它的立项理由。</div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section class="block" id="s02">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>基本面：团队、时间线与体量</h2></div>
+  <p class="sec-desc reveal">先看"这是谁、做了多久、有多少人在用"——判断一个开源项目靠不靠谱的三要素。</p>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>📇 项目名片 <span class="badge fact">Fact</span></h3>
+      <table>
+        <tr><th>团队</th><td>浙江大学：<b>刘广义</b>（一作/维护者）、刘勇、张江宁（通讯）</td></tr>
+        <tr><th>论文</th><td>arXiv:2610.08699，2026-10-06；10-08 登 HF Daily Papers 第 3</td></tr>
+        <tr><th>许可</th><td><b>GPL-3.0-or-later</b>（手机端基于 OpenMinis 1.13，早期 Python 版曾是 MIT）</td></tr>
+        <tr><th>热度</th><td>★702 / 69 forks / 15 open issues（2026-10-10 GitHub API 实测）</td></tr>
+        <tr><th>版本</th><td>1.0.1 Ballast（10-09 发 1.0.0 Keel；论文写的是 0.1.40）</td></tr>
+        <tr><th>安装</th><td>Android APK 38MB · iOS TestFlight · macOS/Win/Linux 桌面端 · Docker 一键自托管</td></tr>
+      </table>
+    </div>
+    <div class="card reveal">
+      <h3>🗓️ 17 天从 0 到 1.0 <span class="badge fact">Fact</span></h3>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-date">2026-09-23</div><div class="tl-body">GitHub 开源，首版 Android（基于 OpenMinis 1.13 魔改）</div></div>
+        <div class="tl-item"><div class="tl-date">2026-09-25</div><div class="tl-body">公开 release；随后几天补上<b>中继、桌面端、iPhone</b></div></div>
+        <div class="tl-item"><div class="tl-date">2026-10-06</div><div class="tl-body">论文提交 arXiv：《nanoMuse: An Open-Source Personal Agent for Every Device You Own》</div></div>
+        <div class="tl-item"><div class="tl-date">2026-10-08</div><div class="tl-body">Hugging Face Daily Papers 第 3 名</div></div>
+        <div class="tl-item"><div class="tl-date">2026-10-09/10</div><div class="tl-body"><b>1.0.0 Keel → 1.0.1 Ballast</b>；仓库当日仍有提交，活跃维护中</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout amber reveal"><b>注意命名碰撞：</b>论文引用了 CopilotKit 的 <b>OpenMuse</b>（Muse 形状的开源项目，MIT 协议），与本档案馆作者自己的 openmuse 重名但<b>完全无关</b>，引用时需区分三者：Meta Muse（闭源产品）/ CopilotKit OpenMuse（MIT 开源）/ cypggs openmuse（本馆馆长的项目）。</div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section class="block" id="s03">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>架构深读：shape 才是本质差异</h2></div>
+  <p class="sec-desc reveal">把"每台设备一个完整 agent"这句话拆开，看它到底是怎么连起来的。</p>
+
+  <div class="card reveal">
+    <h3>🧩 四端各自为战，中继只当"接线员" <span class="badge fact">Fact</span></h3>
+    <p>每台设备都跑<b>完整</b>的一套：agent 主循环 + 自己的 Sentinel + 记忆。设备之间是 <b>peer（对等）</b> 关系——手机的 agent 可以把"去 Mac 上把订单号填进表格"这个任务<b>派给</b> Mac 的 agent，被派活的设备先自己同意（走它自己的 Sentinel），权限不跨设备借用。</p>
+    <p>中继（nanoMuse Cloud）是唯一共享的部件，但被刻意做小：<b>单进程 + 一个 SQLite 文件</b>，idle 仅 85MB。它只存 5 样东西——账号（哈希 ID）、token/费用账本、agent 画像、设备在线状态、<b>用户选择同步的对话文本</b>；<b>永远不碰</b>文件、截图和 tool 返回内容。社区中继给免费模型额度，用完换自己的 key；一台最小 VPS（¥30–60/月）就能自建。</p>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 300" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <rect x="40" y="60" width="170" height="120" rx="14" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="125" y="92" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">📱 Android</text>
+      <text x="125" y="114" fill="#8b98ad" font-size="11.5" text-anchor="middle">agent · Sentinel</text>
+      <text x="125" y="132" fill="#8b98ad" font-size="11.5" text-anchor="middle">Alpine 沙盒 · Hands</text>
+      <text x="125" y="150" fill="#8b98ad" font-size="11.5" text-anchor="middle">记忆=Markdown 文件</text>
+      <rect x="250" y="60" width="170" height="120" rx="14" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="335" y="92" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">💻 Desktop</text>
+      <text x="335" y="114" fill="#8b98ad" font-size="11.5" text-anchor="middle">agent · Sentinel</text>
+      <text x="335" y="132" fill="#8b98ad" font-size="11.5" text-anchor="middle">Harness 插件 · Hands</text>
+      <text x="335" y="150" fill="#8b98ad" font-size="11.5" text-anchor="middle">记忆=SQLite+undo</text>
+      <rect x="720" y="60" width="160" height="120" rx="14" fill="rgba(167,139,250,.06)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="800" y="92" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">🌐 Web / iPhone</text>
+      <text x="800" y="114" fill="#8b98ad" font-size="11.5" text-anchor="middle">同一个人 · 同一段对话</text>
+      <text x="800" y="132" fill="#8b98ad" font-size="11.5" text-anchor="middle">iPhone 无 Hands</text>
+      <rect x="470" y="40" width="200" height="160" rx="14" fill="rgba(34,211,238,.05)" stroke="#22d3ee" stroke-width="2"/>
+      <text x="570" y="70" fill="#22d3ee" font-size="14" text-anchor="middle" font-weight="700">🔗 中继 Relay</text>
+      <text x="570" y="94" fill="#8b98ad" font-size="11.5" text-anchor="middle">签到 · 帧路由 · 账本</text>
+      <text x="570" y="112" fill="#8b98ad" font-size="11.5" text-anchor="middle">同步的对话文本</text>
+      <text x="570" y="134" fill="#34d399" font-size="11.5" text-anchor="middle">✓ 可自建（一台小鸡）</text>
+      <text x="570" y="152" fill="#f87171" font-size="11.5" text-anchor="middle">✗ 不碰文件/截图/结果</text>
+      <text x="570" y="172" fill="#8b98ad" font-size="11.5" text-anchor="middle">单进程 + SQLite · 85MB</text>
+      <line x1="210" y1="120" x2="470" y2="120" stroke="rgba(34,211,238,.5)" stroke-width="1.5"/>
+      <line x1="420" y1="120" x2="470" y2="120" stroke="rgba(34,211,238,.5)" stroke-width="1.5"/>
+      <line x1="670" y1="120" x2="720" y2="120" stroke="rgba(34,211,238,.5)" stroke-width="1.5"/>
+      <polygon points="460,114 470,120 460,126" fill="#22d3ee"/><polygon points="430,114 420,120 430,126" fill="#22d3ee"/>
+      <polygon points="710,114 720,120 710,126" fill="#22d3ee"/>
+      <text x="570" y="230" fill="#8b98ad" font-size="12.5" text-anchor="middle">Hub 帧协议 over WebSocket：look / act / ask / event / result</text>
+      <text x="570" y="252" fill="#8b98ad" font-size="12.5" text-anchor="middle">设备互派任务走帧；帧超限 / 10 分钟截断；一设备一时间只跑一个任务</text>
+      <text x="570" y="282" fill="#fbbf24" font-size="12.5" text-anchor="middle">不用中继也能跑：单设备 + 自己的 key，什么都不出门</text>
+    </svg>
+    <div class="figcap"><b>图 2 · nanoMuse 运行架构。</b>设备是完整的 agent 而非瘦客户端；中继是可选的"接线员"，不是大脑。类比：Muse 像"一个大脑+多个显示器"，nanoMuse 像"几个各有大脑的同事+一个群聊"。</div>
+  </div>
+
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span><b>这个 shape 是一次诚实的 trade-off。</b>Muse 用"每人一 VM"换来真隔离（seccomp + 内核级 taint 追踪），代价是订阅制、美国独占、闭源；nanoMuse 用"设备端 agent"换来可自托管和<b>屏幕操作能力</b>（云 VM 永远摸不到你手机里的银行 App），代价是安全边界从<b>特权边界</b>退化为<b>同进程策略边界</b>（详见 §11）。没有银弹，只有取舍——论文把这笔账算得很清楚。</div>
+</section>
+
+<!-- ============ 04 ============ -->
+<section class="block" id="s04">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>Hands：爬梯子，最后一 rung 才是读屏</h2></div>
+  <p class="sec-desc reveal">这是 nanoMuse 相对所有云 VM 路线最硬的差异化：云里的 agent 永远摸不到你手机上的银行 App。</p>
+
+  <div class="card reveal">
+    <h3>🪜 先爬梯子，够不着才用手 <span class="badge fact">Fact</span></h3>
+    <p>设计哲学叫 <b>ladder（梯子）</b>：skill → 命令行工具 / MCP → 带用户登录态的页面抓取 → 浏览器 → <b>最后才是屏幕</b>。Hands 默认<b>关闭</b>，是"实在没别的办法"时的最后一招——这与"把读屏当默认操作方式"的粗暴路线划清了界限。</p>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 330" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <text x="460" y="24" fill="#8b98ad" font-size="13" text-anchor="middle">目标：操作一个没有 API 的 App —— 从上往下试，取<b>最低的</b>能用的 rung</text>
+      <rect x="230" y="44" width="460" height="46" rx="10" fill="rgba(52,211,153,.08)" stroke="#34d399"/>
+      <text x="460" y="72" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">① skill / MCP / 命令行 —— 有现成工具就用工具</text>
+      <rect x="230" y="98" width="460" height="46" rx="10" fill="rgba(52,211,153,.06)" stroke="#34d399" opacity=".85"/>
+      <text x="460" y="126" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">② 带登录态的页面抓取 —— 复用你的登录</text>
+      <rect x="230" y="152" width="460" height="46" rx="10" fill="rgba(52,211,153,.05)" stroke="#34d399" opacity=".7"/>
+      <text x="460" y="180" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">③ 浏览器 —— 能当网页办就当网页办</text>
+      <rect x="230" y="206" width="460" height="52" rx="10" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="460" y="228" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">④ Hands 读屏 —— 默认关闭，最后一招</text>
+      <text x="460" y="248" fill="#fbbf24" font-size="12" text-anchor="middle">一次一截屏 · 一次一动作 · 每步都要"说话"</text>
+      <line x1="200" y1="67" x2="230" y2="67" stroke="#34d399" stroke-width="2"/><polygon points="228,61 238,67 228,73" fill="#34d399"/>
+      <line x1="200" y1="121" x2="230" y2="121" stroke="#34d399" stroke-width="2"/><polygon points="228,115 238,121 228,127" fill="#34d399"/>
+      <line x1="200" y1="175" x2="230" y2="175" stroke="#34d399" stroke-width="2"/><polygon points="228,169 238,175 228,181" fill="#34d399"/>
+      <line x1="200" y1="232" x2="230" y2="232" stroke="#fbbf24" stroke-width="2"/><polygon points="228,226 238,232 228,238" fill="#fbbf24"/>
+      <text x="150" y="72" fill="#8b98ad" font-size="12" text-anchor="middle">便宜</text>
+      <text x="150" y="180" fill="#8b98ad" font-size="12" text-anchor="middle">↕</text>
+      <text x="150" y="236" fill="#8b98ad" font-size="12" text-anchor="middle">贵/慢/险</text>
+      <text x="770" y="72" fill="#8b98ad" font-size="12">✅ 可靠、可审计</text>
+      <text x="770" y="126" fill="#8b98ad" font-size="12">✅ 复用登录态</text>
+      <text x="770" y="180" fill="#8b98ad" font-size="12">✅ 通用</text>
+      <text x="770" y="232" fill="#fbbf24" font-size="12">⚠️ 看图说话，易错</text>
+      <text x="460" y="292" fill="#8b98ad" font-size="12.5" text-anchor="middle">手机端 operator 移植自 MemGUI-Bench（MIT），桌面端移植自字节 UI-TARS-desktop；坐标系 999×999（Qwen-VL 方言）</text>
+      <text x="460" y="314" fill="#8b98ad" font-size="12.5" text-anchor="middle">iOS 无 Hands（系统不允许）；Linux Hands 仅 X11</text>
+    </svg>
+    <div class="figcap"><b>图 3 · Hands 的"梯子"。</b>读屏是成本最高、最不可靠的一 rung，所以被放在最后且默认关闭——这是工程成熟度的体现，不是功能缺失。</div>
+  </div>
+
+  <div class="card reveal">
+    <h3>🗣️ 治理靠"说话"，不靠"看图" <span class="badge fact">Fact</span> <span class="badge analysis">Analysis</span></h3>
+    <p>这是全项目我最欣赏的一个降维设计：确定性策略<b>判断不了一张图片</b>，但能判断模型<b>自己写的那句话</b>。所以 Hands 循环强制模型每步输出三样东西：<b>thought</b>（思考）+ <b>一句话人话</b>（"我将要做什么"，用户看得懂）+ <b>一个手势</b>（点/滑/输）。Sentinel 审查的是那句人话：</p>
+    <table>
+      <tr><th>模型说的话里出现…</th><th>判定</th></tr>
+      <tr><td>"确认支付 / 转账 / 提交订单 / 发送 / 删除"</td><td><b>整步变 sensitive，每次都要你点头</b></td></tr>
+      <tr><td>打字 + 回车一次完成（messenger 里回车 = 发送）</td><td><b>sensitive</b>——"一次输完就发出"太像手滑</td></tr>
+      <tr><td>tap 但没有 label（不知道点的是什么）</td><td>warning——"盲点"本身就可疑</td></tr>
+    </table>
+    <p>Android 上还会读无障碍树里<b>手指落点</b>的文本，取"模型说的话"和"落点文本"中更严格者。operator 的 prompt 里<b>明文禁止输入密码、PIN、卡号、验证码</b>——登录/支付这种事，Hands 只负责把你带到输入框，<b>手交给你</b>，点 <i>Done</i> 继续。</p>
+    <p><span class="badge analysis">Analysis</span>产品细节同样用心：手机操作时 App 上方悬浮<b>胶囊</b>（头像+当前步骤+红色 Stop），落点画圈；电脑端屏幕边缘<b>呼吸光</b>+落点标记；操作过程不录屏，而是存成 <b>trajectory</b>（每步截图+动作画线）进聊天记录。论文原话："我们做了 Muse 式的 dimmed live stage 然后扔掉了——<b>trajectory 可回看，动图不行</b>。"对"事后可审计"而言，这是对的。</p>
+  </div>
+</section>
+
+<!-- ============ 05 ============ -->
+<section class="block" id="s05">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>Sentinel：最值得抄走的设计</h2></div>
+  <p class="sec-desc reveal">如果只从这个项目带走一样东西，带走 Sentinel。不是代码（GPL），是它的决策思想。</p>
+
+  <div class="card reveal">
+    <h3>🚦 六步决策序：每个 tool call 的必经之路 <span class="badge fact">Fact</span></h3>
+    <p>agent <b>永远不直接执行工具</b>，一律走 <code>Sentinel.guard()</code>。六步中第一步命中的说了算：</p>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 420" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <rect x="330" y="10" width="260" height="44" rx="10" fill="rgba(34,211,238,.08)" stroke="#22d3ee"/>
+      <text x="460" y="37" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">📞 tool call 到达 guard()</text>
+      <rect x="300" y="72" width="320" height="52" rx="10" fill="rgba(248,113,113,.07)" stroke="#f87171"/>
+      <text x="460" y="94" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">① deny_tools / 用户 deny 规则</text>
+      <text x="460" y="112" fill="#8b98ad" font-size="12" text-anchor="middle">命中 → ❌ 拒绝</text>
+      <rect x="300" y="142" width="320" height="52" rx="10" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.25)"/>
+      <text x="460" y="164" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">② 用户自定义规则 [[sentinel.rules]]</text>
+      <text x="460" y="182" fill="#8b98ad" font-size="12" text-anchor="middle">tool glob + 参数 glob，第一条命中生效</text>
+      <rect x="300" y="212" width="320" height="52" rx="10" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.25)"/>
+      <text x="460" y="234" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">③ always_allow / always_ask 名单</text>
+      <text x="460" y="252" fill="#8b98ad" font-size="12" text-anchor="middle">白名单 / 必问名单</text>
+      <rect x="300" y="282" width="320" height="56" rx="10" fill="rgba(167,139,250,.07)" stroke="#a78bfa"/>
+      <text x="460" y="304" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">④ Risk × Mode 矩阵</text>
+      <text x="460" y="322" fill="#8b98ad" font-size="12" text-anchor="middle">safe→放行 · moderate→看模式 · sensitive→问</text>
+      <rect x="60" y="282" width="200" height="56" rx="10" fill="rgba(251,191,36,.07)" stroke="#fbbf24"/>
+      <text x="160" y="304" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">⑤ Taint（污点）</text>
+      <text x="160" y="322" fill="#fbbf24" font-size="12" text-anchor="middle">读过私密数据→对外发送必问</text>
+      <rect x="660" y="282" width="200" height="56" rx="10" fill="rgba(251,191,36,.07)" stroke="#fbbf24"/>
+      <text x="760" y="304" fill="#e6edf7" font-size="13" text-anchor="middle" font-weight="700">⑥ Warnings</text>
+      <text x="760" y="322" fill="#fbbf24" font-size="12" text-anchor="middle">rm -rf/sudo/curl|sh 必问</text>
+      <text x="160" y="366" fill="#8b98ad" font-size="12" text-anchor="middle">⑤⑥ 只能把 allow → ask，永不反向；auto 模式也拦不住</text>
+      <text x="760" y="366" fill="#8b98ad" font-size="12" text-anchor="middle">warning call 永远 once，"always"也不行</text>
+      <line x1="460" y1="54" x2="460" y2="72" stroke="rgba(255,255,255,.3)"/>
+      <line x1="460" y1="124" x2="460" y2="142" stroke="rgba(255,255,255,.3)"/>
+      <line x1="460" y1="194" x2="460" y2="212" stroke="rgba(255,255,255,.3)"/>
+      <line x1="460" y1="264" x2="460" y2="282" stroke="rgba(255,255,255,.3)"/>
+      <line x1="360" y1="310" x2="262" y2="310" stroke="rgba(251,191,36,.5)" stroke-dasharray="5 4"/>
+      <line x1="560" y1="310" x2="658" y2="310" stroke="rgba(251,191,36,.5)" stroke-dasharray="5 4"/>
+      <rect x="300" y="382" width="320" height="34" rx="17" fill="none" stroke="#34d399" stroke-dasharray="6 4"/>
+      <text x="460" y="404" fill="#34d399" font-size="12.5" text-anchor="middle">执行 → vault 占位符替换 → 结果 redact → audit.jsonl 落盘</text>
+    </svg>
+    <div class="figcap"><b>图 4 · Sentinel 六步决策。</b>⑤⑥ 是"安全带"：它们只能收紧、不能放松——这是整个设计里最关键的一行。</div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🎫 审批是 capability，不是心情 <span class="badge analysis">Analysis</span></h3>
+      <p>每个授权绑定 <b>grant key = 工具 + 触达目标</b>：<code>web_fetch:example.com</code>、<code>send_email:alice@x.com</code>、<code>shell:git</code>。批了 <code>git</code> 不代表批了 <code>curl</code>；<code>git status | head</code> 要逐个程序授权。时效分六档：<b>拒绝 / 仅此一次 / 本次对话 / 到重启 / 24小时 / 永久</b>（永久可随时撤销）。<b>带 warning 的调用永远只能"一次"</b>——付款、密码没有"总是允许"，用户说 always 也不行。</p>
+    </div>
+    <div class="card reveal">
+      <h3>📦 沙盒 + 凭据：纵深的两道墙 <span class="badge fact">Fact</span></h3>
+      <p><b>bubblewrap 沙盒</b>（Linux）：每个 shell/python 调用独立 namespace——workspace 是唯一可写区，<code>/usr</code> <code>/etc</code> 只读，<b>home 目录不存在</b>（vault、ssh key、云凭证全看不见），无网络除非调用被判定需要（<code>network=true</code> 即走 egress 审批）。环境变量大扫除：<code>*KEY*</code> <code>*TOKEN*</code> <code>*SECRET*</code> <code>AWS_*</code> <code>GH_*</code> 等全部剥离——<b>模型写的代码读不到模型自己的 key</b>。</p>
+      <p><b>Vault</b>：Fernet 加密，模型只见 <code>{{vault:NAME}}</code> 占位符；<code>shell</code> 里敢带占位符直接拒绝执行；任何 tool 输出里出现 secret 先 redact 再给模型看。</p>
+    </div>
+  </div>
+
+  <div class="callout red reveal"><span class="badge warn">诚实声明</span><b>Sentinel 是"策略边界"，不是"特权边界"。</b>论文原话："A policy boundary is not a privilege boundary."——它和 agent 跑在同一个进程、同一个信任域里。规则能拦住被说服的模型，但<b>设备被攻破 = agent 被攻破</b>，不像 Muse 那样有个"够不着"的外部 Sentinel。这是架构级差距，文档把这句话放在了最显眼的位置。</div>
+</section>
+
+<!-- ============ 06 ============ -->
+<section class="block" id="s06">
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>记忆：双轨制与诚实的短板</h2></div>
+  <p class="sec-desc reveal">"记忆是可改的 Markdown 文件"——这句话只说对了一半，另一半藏着 trade-off。</p>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 240" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <rect x="60" y="40" width="360" height="160" rx="14" fill="rgba(34,211,238,.05)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="240" y="70" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">📱 手机端：Markdown 文件</text>
+      <text x="240" y="96" fill="#8b98ad" font-size="12.5" text-anchor="middle">SOUL.md · USER.md · GLOBAL.md</text>
+      <text x="240" y="116" fill="#8b98ad" font-size="12.5" text-anchor="middle">日期 diary · HEARTBEAT.md（routine）</text>
+      <text x="240" y="140" fill="#34d399" font-size="12.5" text-anchor="middle">✓ 人和 agent 都能直接打开改</text>
+      <text x="240" y="162" fill="#8b98ad" font-size="12.5" text-anchor="middle">✓ 换模型、换设备都带得走</text>
+      <text x="240" y="184" fill="#fbbf24" font-size="12.5" text-anchor="middle">△ 手机算力弱，复杂召回做不了</text>
+      <rect x="500" y="40" width="360" height="160" rx="14" fill="rgba(167,139,250,.05)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="680" y="70" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">💻 桌面端：SQLite + 变更日志</text>
+      <text x="680" y="96" fill="#8b98ad" font-size="12.5" text-anchor="middle">每条记忆 = 一行 + changelog + undo</text>
+      <text x="680" y="116" fill="#8b98ad" font-size="12.5" text-anchor="middle">召回：rare-word（IDF，支持 CJK）/ embedding</text>
+      <text x="680" y="140" fill="#34d399" font-size="12.5" text-anchor="middle">✓ 改错了能撤销</text>
+      <text x="680" y="162" fill="#34d399" font-size="12.5" text-anchor="middle">✓ tidy-up 合并时"判断不了就拒绝"</text>
+      <text x="680" y="184" fill="#fbbf24" font-size="12.5" text-anchor="middle">△ 人不能直接打开改（走 App）</text>
+    </svg>
+    <div class="figcap"><b>图 5 · 记忆双轨。</b>"可读可改"和"可召回可撤销"各走一条路——手机要的是透明，桌面要的是能力。</div>
+  </div>
+
+  <div class="card reveal">
+    <h3>📝 自曝的短板：记忆没有"出身证明" <span class="badge fact">Fact</span></h3>
+    <p>论文 §7 原话大意：<b>弱模型随手写的一行，会被下周的强模型当事实来读</b>——store 只记了"什么时候改的"和"能撤销"，没记"哪个模型写的、可信度几分"，也没有"旧行重检"的规则。"在补上之前，记忆页应被当作<b>一位还不完全信任的同事的笔记</b>来读。"</p>
+    <p>roadmap 里排了修复项：<b>provenance on every line</b>（每行标注模型+日期+置信度）+ 重检规则。这恰恰是 openmuse 长期记忆 v1.1 可以提前加上的——比事后做 explain 更根本。</p>
+  </div>
+</section>
+
+<!-- ============ 07 ============ -->
+<section class="block" id="s07">
+  <div class="sec-head reveal"><span class="sec-num">07</span><h2>论文的隐藏价值：一份 Muse 逆向阅读报告</h2></div>
+  <p class="sec-desc reveal">论文第 3 章不写 nanoMuse，写的是" Muse 是怎么造的"——这是公开资料里对 Muse 架构最细的第三方拆解，本身就值得一读。</p>
+
+  <div class="card reveal">
+    <h3>🔍 四档来源标注：学术诚信的范本 <span class="badge fact">Fact</span></h3>
+    <p>作者基于四份 Meta 公开文档（发布公告、安全架构长文、设计长文、隐私帮助页）+ <b>一份 Muse 生产版 system prompt 拷贝</b> + 已发布客户端实测，还原了 Muse 的系统图（论文 Figure 3）。每一句话都标注来源档：</p>
+    <table>
+      <tr><th>标注</th><th>含义</th><th>例子</th></tr>
+      <tr><td><b>documented</b></td><td>Meta 公开说过的</td><td>每人一台 Linux VM、Sentinel 是"唯一授权方"</td></tr>
+      <tr><td><b>prompt</b></td><td>那份 prompt 拷贝里读到的</td><td>部署约每小时替换 VM、home 目录持久化</td></tr>
+      <tr><td><b>observed</b></td><td>已发布客户端里看到的</td><td>工具调用 chip、Feed/想法/目标五个房间</td></tr>
+      <tr><td><b>inferred</b></td><td>作者的推断</td><td>"这就是操作系统在沙盒渲染器和特权 broker 之间的经典拆分"</td></tr>
+    </table>
+    <p>作者还主动声明：prompt 拷贝的<b>来源无法验证</b>（只验证了它与另两份文档自洽），prompt 随部署一直在变，"10 月读到的可能不是你读这篇论文时跑的版本"——<b>标了 prompt/inferred 的结论要打折听</b>，Meta 出新资料他们会更正。</p>
+  </div>
+
+  <div class="grid g3">
+    <div class="mini reveal"><h4>🏆 为什么 Muse 赢</h4><p><span class="badge analysis">Analysis</span>论文的判断：Muse 不是赢在 benchmark，而是赢在 <b>shape</b>——"十个在一屏手机上看得见的决定"：一个有名字的 agent、一段长对话、工具 chip、审批卡片、可编辑的记忆文件……<b>把后台 agent 做"可读"（legible），人才敢让它一直跑着</b>。设计预算花在了 legibility 上。</p></div>
+    <div class="mini reveal"><h4>🛡️ 安全架构的精髓</h4><p>论文提炼：概率层（模型训练+分类器 ensemble）<b>减少</b>被说服的次数；确定性层（边界）<b>限定</b>被说服后能造成的伤害——"即使 Muse 被说服去做坏事，边界依然成立"。浏览器子 agent 只看<b>无障碍树快照</b>而非 DOM，是"用能力换安全"的刻意 trade-off。</p></div>
+    <div class="mini reveal"><h4>📉 能抄走 vs 抄不走</h4><p>论文结论：<b>能转移</b>的是"把所有安全机制放在 agent 够不着的地方"这条原则 + 花在 legibility 上的设计；<b>转移不了</b>的是每人一 VM 的成本结构和自研模型。这正是 nanoMuse 只抄前者、用"设备端+策略边界"替代后者的原因。</p></div>
+  </div>
+</section>
+
+<!-- ============ 08 ============ -->
+<section class="block" id="s08">
+  <div class="sec-head reveal"><span class="sec-num">08</span><h2>五问三环：个人智能体"应该"是什么样子</h2></div>
+  <p class="sec-desc reveal">论文第 4 章是纯观点，作者明说"要超越今年秋天的一切，包括我们自己的"。这是全篇思想密度最高的一节。</p>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 380" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <circle cx="460" cy="190" r="150" fill="none" stroke="rgba(34,211,238,.35)" stroke-width="1.5"/>
+      <circle cx="460" cy="190" r="105" fill="none" stroke="rgba(167,139,250,.4)" stroke-width="1.5"/>
+      <circle cx="460" cy="190" r="60" fill="none" stroke="rgba(251,191,36,.45)" stroke-width="1.5"/>
+      <text x="460" y="120" fill="#22d3ee" font-size="11" text-anchor="middle">2026 已有</text>
+      <text x="460" y="160" fill="#a78bfa" font-size="11" text-anchor="middle">开源接着做</text>
+      <text x="460" y="196" fill="#fbbf24" font-size="11" text-anchor="middle">多年以后</text>
+      <text x="460" y="60" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">❓ 它知道什么 <tspan fill="#8b98ad" font-weight="400">· 记忆</tspan></text>
+      <text x="760" y="120" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">❓ 它在哪动手 <tspan fill="#8b98ad" font-weight="400">· Hands</tspan></text>
+      <text x="760" y="270" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">❓ 它向谁负责 <tspan fill="#8b98ad" font-weight="400">· 审批</tspan></text>
+      <text x="160" y="270" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">❓ 它怎么学 <tspan fill="#8b98ad" font-weight="400">· 主动性</tspan></text>
+      <text x="160" y="120" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">❓ 谁出钱谁治理</text>
+      <text x="460" y="345" fill="#8b98ad" font-size="12.5" text-anchor="middle">定义：personal = 属于一个人的 agent —— 在他的账号和设备上替他行动、记住他、该开口时开口、事后向他交代。</text>
+      <line x1="460" y1="75" x2="460" y2="42" stroke="rgba(255,255,255,.2)"/>
+      <line x1="640" y1="130" x2="745" y2="108" stroke="rgba(255,255,255,.2)"/>
+      <line x1="640" y1="255" x2="745" y2="262" stroke="rgba(255,255,255,.2)"/>
+      <line x1="280" y1="255" x2="175" y2="262" stroke="rgba(255,255,255,.2)"/>
+      <line x1="280" y1="130" x2="175" y2="108" stroke="rgba(255,255,255,.2)"/>
+    </svg>
+    <div class="figcap"><b>图 6 · 五问三环</b>（仿论文 Figure 4）。五个问题是扇区，三层时间是同心环：内环是 2026 已有，中环是开源接着做的事，外环是"能用很多年"的 agent。</div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal"><h3>🧠 它知道什么——记忆要能"带走"</h3><p>一个记你很多年的 agent，会持有世上<b>最完整的关于你的记录</b>。它应该是<b> plain files、你的语言</b>，你能打开、改、删、导出给别的 agent——<b>这是 agent 能活得比模型和设备更久的前提</b>。还要有 provenance（哪行哪个模型何时写的、可信度几分）和重检规则：<b>人写的一行，永远压过模型写的一行</b>。</p></div>
+    <div class="card reveal"><h3>✋ 它在哪动手——"一只 agent，很多手"</h3><p>人不该有"每个 App 一个 agent"，而该有<b>一个</b>常任代表。凡是有屏/麦克风/马达的东西，都是它的一双手。2026 年的手是云电脑+浏览器+语音；nanoMuse 加上了<b>手机自己的屏幕</b>；再往后是机器人和家电——"不共享主人 agent 的机器人，只是家电"。</p></div>
+    <div class="card reveal"><h3>🤝 它向谁负责——审批是"信任的语法"</h3><p>发送、付款、删除、签署——不可撤销的事，授权与收回就是人和 agent 谈论信任的语言。应该是一套<b>小而规律</b>的语言：一次/本次对话/永久+可撤销，在哪台设备上都能问，批的东西<b>原样展示</b>。有些授权<b>不该存在</b>：付款和密码，永远不设"记住"，用户说多少次 always 都不行。</p></div>
+    <div class="card reveal"><h3>🌱 它怎么学 & 谁出钱——把账算清</h3><p>agent 和助手的区别是 <b>agent 会先开口</b>——这也是它最容易失去你的地方。打扰的门槛必须<b>看得见、搬得动</b>。而"谁出钱"决定"听谁的"：一台 VM 一人的 agent 只能靠订阅或大厂别的生意养；开源对位应该让人<b>直接向 provider 付费</b>，或花一台小鸡的钱自建中继。远期是 <b>commons（公地）</b>：技能、评测、开放模型由数据的主人共治。</p></div>
+  </div>
+</section>
+
+<!-- ============ 09 ============ -->
+<section class="block" id="s09">
+  <div class="sec-head reveal"><span class="sec-num">09</span><h2>成本与体量：小到能装进口袋</h2></div>
+  <p class="sec-desc reveal">"nano"的含义：整套东西小到你自己跑得起、部署得起。论文 Table 2 原样转述。</p>
+  <div class="card reveal">
+    <table>
+      <tr><th>部件</th><th>体量 / 成本</th><th>怎么来的</th></tr>
+      <tr><td><b>Android App</b></td><td>下载 38MB（arm64）</td><td>release 文件实测</td></tr>
+      <tr><td><b>桌面端</b></td><td>下载 256MB（Linux）~ 498MB（macOS）；Linux 安装后 928MB；idle 约 0.5GB 内存</td><td>release 文件 + 本机实测</td></tr>
+      <tr><td><b>中继</b></td><td>单进程 + SQLite，idle 约 85MB；1vCPU/1GB 的小鸡可跑</td><td>实测 + 自托管文档</td></tr>
+      <tr><td><b>自建中继</b></td><td>约 <b>¥30–60/月</b>（国内）或 $4–6/月（国外）+ 模型费用</td><td>自托管文档估算</td></tr>
+      <tr><td><b>模型调用</b></td><td>Bailian 10 月价目：聊天模型 ¥2/¥8 每百万 tokens（输入/输出），Hands 模型 ¥3/¥12；<b>聊一天约几分钱</b></td><td>provider 价目表</td></tr>
+    </table>
+    <p><span class="badge analysis">Analysis</span>对比 Muse"一台 VM 一人"的托管经济学，nanoMuse 把<b>固定成本压到了一台小鸡+几分钱 token</b>。这是"开源对位"能成立的经济基础——不是情怀，是算过账的。</p>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="block" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>对 openmuse 的启示：红线与可借鉴清单</h2></div>
+  <p class="sec-desc reveal">本馆馆长自己的项目 openmuse（MIT）与 nanoMuse 路线互补，这一节是"能拿走什么、不能碰什么"的清单。</p>
+
+  <div class="callout red reveal"><span class="badge warn">红线</span><b>GPL-3.0-or-later 有传染性：nanoMuse 的代码不能直接搬进 MIT 协议的 openmuse</b>，否则整个项目会被迫转 GPL。可以借鉴的是<b>思想、协议设计、决策流程</b>（idea 不受版权保护），不要复制代码段。论文本身按 arXiv 惯例是 CC BY，引用观点没问题。</div>
+
+  <div class="card reveal">
+    <h3>✅ 可借鉴的思想（按价值排序） <span class="badge analysis">Analysis</span></h3>
+    <ol>
+      <li><b>Sentinel 六步决策序</b>——deny → 用户规则 → allow/ask 名单 → risk×mode → <b>taint</b> → warnings。openmuse 的工具审批若还没成体系，这套可直接当设计蓝本；第 5 步 taint 规则（"读过私密数据后对外 egress 一律 ask，auto 也不豁免"）是对抗 prompt injection 外带数据最便宜的确定性防线。</li>
+      <li><b>Approval as capability</b>——grant key 绑定"工具+目标"、六档时效、warning call 永不"always"。比二元"允许一次/始终允许"细腻一个量级。</li>
+      <li><b>Hands 的"语言治理"</b>——让模型用一句话说出将要做什么，用确定性策略审查这句话。openmuse 若做 device 端操作，这是"屏幕操作可治理化"的现成思路。</li>
+      <li><b>bubblewrap 沙盒设计</b>——workspace 唯一可写、home 不可见、按需给网、环境变量 scrub。openmuse 的 E2B 侧已有 VM 隔离，<b>device 侧执行</b>缺的正是这一块。</li>
+      <li><b>Trajectory 存档而非直播</b>——操作过程存为可回看的步骤序列，比实时录屏更利于事后审计，也更便宜。</li>
+      <li><b>记忆 provenance</b>——每行记"哪个模型、何时、几分可信"，openmuse 长期记忆 v1.1 可提前加上，比事后 explain 更根本。</li>
+    </ol>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🔀 路线互补，不是替代</h3>
+      <p>openmuse = <b>per-user 云 sandbox（E2B）+ 强隔离</b>；nanoMuse = <b>设备端 agent + 可选 relay + 屏幕操作</b>。前者在隔离性上更强，后者补的是"够到用户真实设备"这一块。若 openmuse 未来做 companion device / 本地执行，nanoMuse 的 hub 帧协议和 Sentinel 是现成的思想库。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🔭 值得跟进的 roadmap</h3>
+      <p><b>Hands 评估套件</b>（AndroidWorld / OSWorld / MemGUI-Bench / OS-Harm 并跑，每版本出分）——这个思路可直接抄：给 computer-use 建回归基准。<b>自研 open hands model</b>（用户自愿贡献的 traces 训练）——"最敏感的环路不依赖 vendor 模型"，长期方向与 Anthropic Mods、Google Agent Sandbox 的思路同频。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="block" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>短板与风险：论文自己承认的七件事</h2></div>
+  <p class="sec-desc reveal">第 7 章是全篇最诚实的一章，转述如下——一个敢把"不覆盖清单"写进论文的项目，可信度本身就加分。</p>
+
+  <div class="grid g2">
+    <div class="mini reveal"><h4>1️⃣ 策略边界 ≠ 特权边界</h4><p>Sentinel 与 agent <b>同进程同信任域</b>。规则能拦住被说服的模型，但设备被攻破 = agent 被攻破。这是<b>架构级</b>差距，不是调参能补的。</p></div>
+    <div class="mini reveal"><h4>2️⃣ Hands 没有测量数据</h4><p>原话："我们没有成功率，也没有人工接管次数——<b>这个数字还不存在，我们宁愿承认也不编一个</b>。"生产环境用 Hands 做关键操作目前是盲飞。</p></div>
+    <div class="mini reveal"><h4>3️⃣ 中继存文本</h4><p>同步的对话文本存在中继服务器上；社区中继是项目方一台机器上的单进程。自建可解，但默认是信任项目方。</p></div>
+    <div class="mini reveal"><h4>4️⃣ "帮助改进模型"默认开启</h4><p>opt-out 开关，论文自认"这是本项目<b>最没把握</b>的一个选择"——用默认换开源模型，对隐私最不友好。</p></div>
+    <div class="mini reveal"><h4>5️⃣ 平台限制</h4><p>iOS 无 Hands（系统不允许）；Linux Hands <b>仅 X11</b>，Wayland 不行；macOS/Windows 上 bubblewrap 沙盒不工作，shell 直接以用户身份跑。</p></div>
+    <div class="mini reveal"><h4>6️⃣ 默认不安全项</h4><p>API 默认 <b>HTTP 明文 + Bearer token</b>（文档自己喊"别暴露到公网"）；vault.key 默认躺在 data dir 旁边，能读目录就能解密；DNS rebinding 未完全防住。</p></div>
+    <div class="mini reveal"><h4>7️⃣ Approval fatigue</h4><p>文档原话："如果卡片不看就点通过，以上全白费。"再好的 Sentinel 也救不了全点"允许"的用户。</p></div>
+  </div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="block" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>验证方法与资料</h2></div>
+  <p class="sec-desc reveal">本页所有"Fact"类断言的来源，以及我是怎么知道的——复现路径。</p>
+  <div class="card reveal">
+    <h3>🔬 我是怎么验证的</h3>
+    <ul>
+      <li><code>git clone --depth 1</code> 全仓，实读 README、<code>docs/architecture.md</code>、<code>docs/sentinel.md</code>、<code>docs/hub.md</code>（144–481 行量级）</li>
+      <li>论文 PDF 下载后 <code>pdftotext</code> <b>全文实读 12 页</b>（含 Table 1/2、Figure 3–6、47 篇引用）</li>
+      <li>实读 <code>nanomuse/sentinel/{gate,policy,grants,audit}.py</code>、<code>nanomuse/phone/operator.py</code>（999 grid、MemGUI 方言注释）、<code>nanomuse/channels/</code></li>
+      <li>GitHub API 实测：702 stars / 69 forks，<code>pushed_at</code> 2026-10-10（当日活跃）</li>
+      <li><b>没做的</b>：没装 APK/桌面端实测 Hands 成功率（论文自己都说没数据）；没跑自托管脚本——以上两点标为未验证</li>
+    </ul>
+    <h3 style="margin-top:18px">🔗 一手资料</h3>
+    <ul>
+      <li>论文：<a href="https://arxiv.org/abs/2610.08699" style="color:var(--cyan)">arXiv:2610.08699</a>（CC BY）</li>
+      <li>仓库：<a href="https://github.com/nano-muse/nanoMuse" style="color:var(--cyan)">github.com/nano-muse/nanoMuse</a>（GPL-3.0-or-later）</li>
+      <li>项目主页：<a href="https://nanomuse.cn" style="color:var(--cyan)">nanomuse.cn</a> · 在线 Demo：<a href="https://nanomuse.cn/web/" style="color:var(--cyan)">nanomuse.cn/web/</a></li>
+      <li>HF 论文页：<a href="https://huggingface.co/papers/2610.08699" style="color:var(--cyan)">huggingface.co/papers/2610.08699</a></li>
+    </ul>
+  </div>
+  <div class="callout violet reveal"><b>研读方法论（馆长注）：</b>这份笔记是"反复阅读正文"后写成的——论文读了两遍（摘要+全文），核心源码读了四遍（Sentinel 全家桶、phone operator、hub 协议、记忆 store）。凡标 <span class="badge fact">Fact</span> 的均可在仓库/论文中找到原文；<span class="badge analysis">Analysis</span> 是我的工程判断；<span class="badge hypo">Hypothesis</span> 是推测。欢迎拿原文来杠。</div>
+</section>
+
+</main>
+
+<footer>
+  <div>Agent Sandbox Archive · CASE 004 · nanoMuse 深度解读 · 由 muse 精读论文与源码后生成 · 2026-10-10</div>
+  <div style="margin-top:8px">标 <span class="badge fact">Fact</span> 的断言均有仓库/论文原文可查；<span class="badge analysis">Analysis</span> 为工程判断。许可：本页文字 CC BY，引用 nanoMuse 项目内容遵循其 GPL-3.0。</div>
+  <div style="margin-top:10px"><a href="index.html">← 返回档案馆首页</a></div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: .06 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
