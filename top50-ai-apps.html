@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消费级 AI 应用 Top 50 · 按月收入排名 — 沙盒档案馆</title>
+<style>
+  :root {
+    --bg: #070b14; --bg2: #0b1120;
+    --card: rgba(255,255,255,.035); --border: rgba(255,255,255,.09);
+    --txt: #e6edf7; --sub: #8b98ad;
+    --cyan: #22d3ee; --violet: #a78bfa; --amber: #fbbf24; --green: #34d399; --pink: #f472b6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg); color: var(--txt);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    line-height: 1.7; overflow-x: hidden;
+  }
+  .glow { position: fixed; border-radius: 50%; filter: blur(120px); opacity: .16; pointer-events: none; z-index: 0; }
+  .glow.g1 { width: 520px; height: 520px; background: #0ea5e9; top: -160px; left: -120px; }
+  .glow.g2 { width: 460px; height: 460px; background: #7c3aed; top: 30%; right: -160px; }
+  .glow.g3 { width: 420px; height: 420px; background: #059669; bottom: -140px; left: 30%; }
+  nav { position: fixed; top:0; left:0; right:0; z-index:100; backdrop-filter: blur(14px);
+    background: rgba(7,11,20,.72); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 1180px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:15px; letter-spacing:.5px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display:flex; align-items:center; gap:8px; text-decoration:none; }
+  .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .nav-links { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; }
+  .nav-links a { color:var(--sub); text-decoration:none; font-size:13px; padding:6px 12px; border-radius:8px; transition:all .2s; }
+  .nav-links a:hover { color:var(--txt); background:rgba(255,255,255,.06); }
+  header { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:150px 24px 40px; }
+  .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:2px; color:var(--cyan);
+    border:1px solid rgba(34,211,238,.3); border-radius:99px; padding:5px 14px; margin-bottom:22px; font-family:Consolas, monospace; }
+  h1 { font-size:clamp(32px,5vw,54px); font-weight:900; letter-spacing:-1px; line-height:1.15; margin-bottom:16px; }
+  h1 .grad { background:linear-gradient(90deg, var(--cyan), var(--violet), var(--pink));
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--sub); font-size:15px; max-width:760px; }
+  .hero-sub b { color:var(--txt); font-weight:600; }
+  .hero-sub a { color:var(--cyan); }
+  section { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:44px 24px 8px; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; margin-bottom:8px; }
+  .sec-num { font-family:Consolas, monospace; font-size:13px; color:var(--cyan);
+    border:1px solid rgba(34,211,238,.3); border-radius:6px; padding:2px 8px; }
+  h2 { font-size:26px; font-weight:800; letter-spacing:-.5px; }
+  .sec-desc { color:var(--sub); font-size:14px; margin-bottom:24px; max-width:780px; }
+  .reveal { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+  .method { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 28px; }
+  .method dl { display:grid; grid-template-columns:110px 1fr; gap:10px 18px; font-size:14px; }
+  .method dt { color:var(--cyan); font-weight:700; white-space:nowrap; }
+  .method dd { color:var(--sub); }
+  .method dd b, .method dd a { color:var(--txt); } .method dd a { color:var(--cyan); }
+  .warn { margin-top:16px; font-size:13px; color:var(--amber); border:1px dashed rgba(251,191,36,.4);
+    border-radius:12px; padding:12px 16px; background:rgba(251,191,36,.05); }
+  .grid { display:grid; gap:16px; }
+  .g3 { grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; }
+  .card h4 { font-size:15px; font-weight:700; margin-bottom:10px; }
+  .card p { font-size:13.5px; color:var(--sub); } .card p b { color:var(--txt); }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+  .chip { font-size:13px; font-weight:600; padding:7px 16px; border-radius:99px; cursor:pointer;
+    background:rgba(255,255,255,.04); color:var(--sub); border:1px solid var(--border); transition:all .2s; }
+  .chip:hover { color:var(--txt); border-color:var(--gc, var(--cyan)); }
+  .chip.on { color:#04121a; background:var(--gc, var(--cyan)); border-color:var(--gc, var(--cyan)); }
+  #apps { display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:14px; }
+  .app { display:flex; gap:16px; background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:20px; transition:transform .22s, border-color .22s, box-shadow .22s, opacity .3s; }
+  .app:hover { transform:translateY(-4px); border-color:rgba(34,211,238,.35); box-shadow:0 12px 36px rgba(0,0,0,.35); }
+  .app.hide { display:none; }
+  .app.top1 { border-color:rgba(251,191,36,.55); background:linear-gradient(180deg, rgba(251,191,36,.07), rgba(255,255,255,.035)); }
+  .app.top2 { border-color:rgba(203,213,225,.45); background:linear-gradient(180deg, rgba(203,213,225,.06), rgba(255,255,255,.035)); }
+  .app.top3 { border-color:rgba(217,119,6,.5); background:linear-gradient(180deg, rgba(217,119,6,.07), rgba(255,255,255,.035)); }
+  .app.top10 { border-color:rgba(34,211,238,.3); }
+  .rank { flex:0 0 54px; font-family:Consolas, monospace; font-size:24px; font-weight:800; color:var(--sub);
+    display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .top1 .rank { color:var(--amber); } .top2 .rank { color:#cbd5e1; } .top3 .rank { color:#d97706; }
+  .top10 .rank { color:var(--cyan); }
+  .app-name a { color:var(--txt); text-decoration:none; font-size:17px; font-weight:800; }
+  .app-name a:hover { color:var(--cyan); }
+  .app-name a::after { content:"↗"; font-size:12px; color:var(--sub); margin-left:5px; }
+  .app-tags { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 10px; }
+  .gtag { font-size:11px; font-weight:700; padding:2px 10px; border-radius:99px;
+    background:color-mix(in srgb, var(--gc) 12%, transparent); color:var(--gc); border:1px solid color-mix(in srgb, var(--gc) 35%, transparent); }
+  .ctag { font-size:11px; color:var(--sub); padding:2px 10px; border-radius:99px; border:1px solid var(--border); }
+  .app-desc { font-size:13.5px; color:var(--sub); margin-bottom:10px; }
+  .app-note { font-size:12.5px; color:var(--sub); border-top:1px dashed var(--border); padding-top:10px; }
+  .app-note b { color:var(--green); }
+  .count { font-family:Consolas, monospace; font-size:12px; color:var(--sub); margin-bottom:14px; }
+  footer { position:relative; z-index:1; max-width:1180px; margin:70px auto 0; padding:50px 24px 60px;
+    color:var(--sub); font-size:12.5px; text-align:center; border-top:1px solid var(--border); }
+  @media (max-width:640px) { header { padding-top:170px; } .method dl { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html"><span class="logo-dot"></span>SANDBOX ARCHIVE · 沙盒档案馆</a>
+    <div class="nav-links">
+      <a href="index.html#projects">收录项目</a>
+      <a href="index.html#interviews">访谈笔记</a>
+      <a href="top50-ai-apps.html">Top 50 榜单</a>
+      <a href="index.html#method">方法论</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-kicker">TOP 50 · CONSUMER AI APPS · BY MONTHLY REVENUE</div>
+  <h1>消费级 AI 应用 <span class="grad">Top 50</span><br>按月收入排名</h1>
+  <p class="hero-sub">数据来自 <b>a16z《The Top 100 Gen AI Consumer Apps》第七版报告</b>（2026-10-05 发布）：首次引入的月收入付费榜单。<b>50</b> 个产品全收录，每个都附中文介绍与值得记住的关键事实，可按赛道筛选。</p>
+</header>
+
+<section id="methodology">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>榜单口径</h2></div>
+  <p class="sec-desc reveal">先看方法论，再看排名——这决定了榜单能说明什么、不能说明什么。</p>
+  <div class="method reveal">
+    <dl>
+      <dt>发布方</dt><dd>Andreessen Horowitz（a16z），合伙人 Olivia Moore 操刀的系列报告，自 2023 年 9 月起持续发布</dd>
+      <dt>发布时间</dt><dd>2026 年 10 月 5 日 · 第七版 · 首次引入「按月收入」付费榜单</dd>
+      <dt>数据来源</dt><dd><b>YipitData</b> 的美国消费者信用卡收据面板（U.S. consumer card spending panel）</dd>
+      <dt>统计方式</dt><dd>按 <b>2026 年 6–8 月</b>在美国观察到的实际支出排名，覆盖 Web 订阅与 App 内购</dd>
+      <dt>交叉验证</dt><dd>Meshy 官方宣布第 31 名、Evoto 官方新闻稿宣布第 41 名，头部顺序与本页一致</dd>
+      <dt>原文链接</dt><dd><a href="https://a16z.com/100-gen-ai-apps-7/" target="_blank" rel="noopener">a16z.com/100-gen-ai-apps-7/</a></dd>
+    </dl>
+    <div class="warn">⚠️ 数据仅覆盖美国、基于面板采样而非普查：不能解读为公司全球总营收。n8n（#45）、OpenRouter（#13）等 prosumer / 开发者工具的上榜也说明，榜单统计的是「为 AI 付费的订阅支出」，而非字面意义的 C 端 App 榜。</div>
+  </div>
+</section>
+
+<section id="insights">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>五个值得记住的洞察</h2></div>
+  <p class="sec-desc reveal">把 50 个名字连起来看，浮现出的结构性信号。</p>
+  <div class="grid g3">
+
+    <div class="card reveal" style="border-top:3px solid #a78bfa">
+      <h4 style="color:#a78bfa">黑马 Higgsfield（#5）</h4><p>它不是自研模型，而是一个「视频模型聚合订阅」——一份订阅即可调用 Kling / Veo / Seedance 等 15+ 款视频模型。纯渠道型产品反超 Runway（#25）排到第 5，说明视频生成赛道用户正在为「模型选择权」付费。</p>
+    </div>
+
+    <div class="card reveal" style="border-top:3px solid #fbbf24">
+      <h4 style="color:#fbbf24">最重磅的资本事件：Hugging Face（#39）</h4><p>2026 年 9 月，Nvidia 宣布以 129.3 亿美元收购 Hugging Face——这是榜单上所有公司里最重量级的一笔交易，也解释了为什么一个「开发者社区」会出现在消费支出榜上。</p>
+    </div>
+
+    <div class="card reveal" style="border-top:3px solid #22d3ee">
+      <h4 style="color:#22d3ee">「消费榜」里的非典型选手</h4><p>OpenRouter（#13，模型 API 聚合）和 n8n（#45，开源工作流自动化）说明：这个榜单统计的其实是 prosumer / 创作者的订阅支出，而非字面意义上的 C 端 App。</p>
+    </div>
+
+    <div class="card reveal" style="border-top:3px solid #f472b6">
+      <h4 style="color:#f472b6">中国公司占据两席</h4><p>Kling AI 可灵（#26，快手旗下，号称服务 6000 万创作者）；MiniMax（#42，2026-01-09 已在港交所上市 0100.HK，招股书披露 2025 前三季 To C 收入占比 71.1%，M2 模型位列 Artificial Analysis 全球前五、开源第一）。</p>
+    </div>
+
+    <div class="card reveal" style="border-top:3px solid #34d399">
+      <h4 style="color:#34d399">Agent 公司的变现分化</h4><p>Manus（#19）B 轮融资 7500 万美元、估值 5 亿美元（Benchmark 领投）；Cognition（#46，Devin 母公司）ARR run rate 突破 10 亿美元、估值 480 亿美元——但它只排 #46。榜单反映的是「观察到的消费支出」，不是公司估值；头部仍是 OpenAI / Anthropic / Canva 三家订阅巨头。</p>
+    </div>
+  </div>
+</section>
+
+<section id="list">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>完整榜单</h2></div>
+  <p class="sec-desc reveal">点击产品名跳转官网。按赛道筛选，看看钱都流向了哪里。</p>
+  <div class="chips reveal" id="chips">
+<button class="chip on" data-f="全部">全部 50</button>
+<button class="chip" data-f="智能助手与搜索" style="--gc:#22d3ee">智能助手与搜索</button>
+<button class="chip" data-f="图像与设计" style="--gc:#f472b6">图像与设计</button>
+<button class="chip" data-f="视频与数字人" style="--gc:#a78bfa">视频与数字人</button>
+<button class="chip" data-f="音乐与音频" style="--gc:#34d399">音乐与音频</button>
+<button class="chip" data-f="写作与内容" style="--gc:#fbbf24">写作与内容</button>
+<button class="chip" data-f="代码与开发" style="--gc:#60a5fa">代码与开发</button>
+<button class="chip" data-f="办公与效率" style="--gc:#fb923c">办公与效率</button>
+  </div>
+  <div class="count reveal" id="count"></div>
+  <div id="apps">
+
+    <div class="app top1 reveal" data-group="智能助手与搜索" data-rank="1">
+      <div class="rank">🥇<span>01</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://openai.com" target="_blank" rel="noopener">OpenAI</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#22d3ee">智能助手与搜索</span>
+          <span class="ctag">AI助手</span>
+        </div>
+        <p class="app-desc">全球最大的消费级 AI 公司，旗下产品 ChatGPT 提供对话、写作、编程、深度研究、图像生成等综合能力，另有 Codex 编程智能体与开发者 API 平台。亮点是模型迭代最快（GPT-5 系列、推理模型 Sol/Thinking），个人订阅覆盖 Free、Go（$8/月）、Plus（$20/月）、Pro（$100/$200 两档），团队与企业版另有 Business/Enterprise。</p>
+        <p class="app-note"><b>值得记住：</b>ChatGPT Go（$8/月）2026 年 1 月从印度首发扩展至全球，同时官方宣布将在 Free 与 Go 档测试投放广告（macrumors.com 2026-01-16 报道）。</p>
+      </div>
+    </div>
+
+    <div class="app top2 reveal" data-group="智能助手与搜索" data-rank="2">
+      <div class="rank">🥈<span>02</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://anthropic.com" target="_blank" rel="noopener">Anthropic</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#22d3ee">智能助手与搜索</span>
+          <span class="ctag">AI助手</span>
+        </div>
+        <p class="app-desc">由前 OpenAI 团队创立的 AI 实验室，旗下 AI 助手 Claude 以长上下文、编程与写作见长，最新模型为 Opus 5.5 / Sonnet 5。订阅含 Free、Pro（月付 $20、年付约 $17/月）、Max（$100/$200/月）三档，Pro/Max 订阅均包含 Claude Code 编程智能体与 Claude Cowork；另有 Team/Enterprise 团队版与开发者 API。</p>
+        <p class="app-note"><b>值得记住：</b>官方定价页显示 Claude Pro 订阅包含 Claude Code、Cowork、Design、Science 等套件，Pro 年付 $200 即约 $17/月（anthropic.com/pricing，2026 年 8 月抓取验证）。</p>
+      </div>
+    </div>
+
+    <div class="app top3 reveal" data-group="图像与设计" data-rank="3">
+      <div class="rank">🥉<span>03</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://canva.com" target="_blank" rel="noopener">Canva</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI设计</span>
+        </div>
+        <p class="app-desc">全球主流的在线设计平台，拖拽式编辑器加海量模板、素材库，Magic Studio、Dream Lab 等 AI 功能可一键做图、扩图、换背景。核心亮点是永久免费版真实可用、门槛极低；Pro 版约 $15/月解锁全部 AI 工具与 500 月度 AI 点数，团队档为 Canva Business（按席位），教育与非营利可免费升级。</p>
+        <p class="app-note"><b>值得记住：</b>Canva 与 ChatGPT/Claude/Gemini 深度集成，官方称其 ChatGPT 应用 2025 年 10 月对话量超过 2600 万（thefuturesignal.com 引述 Canva 官方）。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="办公与效率" data-rank="4">
+      <div class="rank"><span>04</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://superhuman.com" target="_blank" rel="noopener">Superhuman</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI邮箱助手</span>
+        </div>
+        <p class="app-desc">定位高净值职场人士的 AI 原生邮件客户端，替代 Gmail/Outlook 界面，主打键盘流操作（100+ 快捷键）、Split Inbox 分类与邮件读写状态追踪。AI 功能包括一句话自动摘要、依个人语气代写邮件、Auto Drafts 自动跟进、Ask AI 自然语言检索；起价 Starter $30/月，完整 AI 功能需 Business $40/月，无免费档。</p>
+        <p class="app-note"><b>值得记住：</b>官方声称用户平均每周节省约 4 小时（第三方评测 aitoolscoop.com 引用 Superhuman 官方说法）；2026 年 5 月官方定价页确认完整的收件箱 AI（Auto Drafts、Ask AI）仅 Business 档可用。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="视频与数字人" data-rank="5">
+      <div class="rank"><span>05</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://higgsfield.ai" target="_blank" rel="noopener">Higgsfield</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI视频生成</span>
+        </div>
+        <p class="app-desc">AI 原生影像创作套件，核心卖点是一个订阅聚合 15+ 主流视频模型（Kling、Veo、Seedance、Wan 等），另有 Soul ID 角色一致性、口型同步、UGC 工厂与营销素材流水线。按点数计费的订阅制：Starter 约 $15/月、Plus 约 $39–49/月、Ultra 约 $99–129/月，不同模型单次生成消耗点数差异极大；另有免费档（限量模型）。</p>
+        <p class="app-note"><b>值得记住：</b>付费档在部分精选模型上提供限时无限量生成（例如 Kling 3.0），但不适用于全部高级视频模型（premiumpeek.com 2026 年评测整理官方定价）。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="代码与开发" data-rank="6">
+      <div class="rank"><span>06</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://replit.com" target="_blank" rel="noopener">Replit</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">代码开发</span>
+        </div>
+        <p class="app-desc">浏览器里的云端开发环境加 AI 编程智能体，Agent 4 从一句话需求完成规划、写代码、测试到一键发布上线，自带数据库与托管。亮点是全链路打通（开发→部署→运维一体），免费 Starter 可试用，Core $20/月（含等值额度）、Pro $100/月，2026 年起采用 effort-based 按任务复杂度计费的点数体系。</p>
+        <p class="app-note"><b>值得记住：</b>Rokt 曾在 24 小时内用 Replit 建出 135 个内部应用（replit.com 官方页面案例）；2026 年 2 月起订阅模型改为 Credit Economy。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="音乐与音频" data-rank="7">
+      <div class="rank"><span>07</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://suno.com" target="_blank" rel="noopener">Suno</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#34d399">音乐与音频</span>
+          <span class="ctag">AI音乐</span>
+        </div>
+        <p class="app-desc">AI 音乐生成的头部产品，一句文字描述即可生成带人声、歌词、伴奏的完整歌曲，支持自定义歌词、歌曲扩展、干声分轨与 MIDI 导出（Suno Studio）。免费档每天 50 点数（约 10 首），Pro $10/月（年付 $8/月）、Premier $30/月（年付 $24/月），付费档才享有商业使用权与下载额度。</p>
+        <p class="app-note"><b>值得记住：</b>2025 年 11 月完成 $250M 融资，估值达 $24.5 亿美元，并与华纳音乐达成合作、训练改用授权曲库（fahimai.com 2026 年整理）。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="代码与开发" data-rank="8">
+      <div class="rank"><span>08</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://lovable.dev" target="_blank" rel="noopener">Lovable</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">代码开发</span>
+        </div>
+        <p class="app-desc">对话式全栈应用构建器，一句话描述即生成可上线的网站或 Web App，自带托管（lovable.app 域名）、可绑自定义域名，支持 GitHub 同步导出代码。按工作区共享点数计费而非按席位：免费档每天 5 点、Pro $25/月（100 点/月）、Business $50/月，企业版为平台费加用量计价。</p>
+        <p class="app-note"><b>值得记住：</b>Business 档价格是 Pro 两倍但点数同为 100/月，多出的费用买的是 SSO、RBAC 等治理能力而非容量（dev.to 2026 年 10 月比价，依据官方定价页）。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="智能助手与搜索" data-rank="9">
+      <div class="rank"><span>09</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://perplexity.ai" target="_blank" rel="noopener">Perplexity</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#22d3ee">智能助手与搜索</span>
+          <span class="ctag">AI搜索</span>
+        </div>
+        <p class="app-desc">AI 答案引擎：联网实时搜索并附引用来源，回答直接给出结论加出处，Pro 档可选多个前沿模型、支持 Deep Research、文件问答与图片/视频生成，还发布了自带 AI 助手的 Comet 浏览器。免费档可用，Pro $20/月（年付约 $17/月），重度用户有 Max $200/月（含 10,000 Computer 智能体点数），另有教育版 $10/月与企业版。</p>
+        <p class="app-note"><b>值得记住：</b>Max 月费是 Pro 的十倍，主打 Computer 智能体等 Agentic 功能而非更好搜索（dev.to 2026 年 10 月官方定价解析）；免费档约每天 3–5 次 Pro 搜索。</p>
+      </div>
+    </div>
+
+    <div class="app top10 reveal" data-group="音乐与音频" data-rank="10">
+      <div class="rank"><span>10</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://elevenlabs.io" target="_blank" rel="noopener">ElevenLabs</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#34d399">音乐与音频</span>
+          <span class="ctag">语音合成</span>
+        </div>
+        <p class="app-desc">AI 语音合成头部平台，以高自然度 TTS、即时/专业声音克隆、视频配音工作室与语音智能体（Conversational AI）见长，支持 32 种语言。全系按字符计费的点数制：免费 10,000 点/月，Starter $6/月、Creator $22/月（最受欢迎）、Pro $99/月，Scale $299/月、Business $990/月，年付约打 83 折，企业版定制。</p>
+        <p class="app-note"><b>值得记住：</b>所有档位的语音智能体统一按 $0.08/分钟计费，另加 LLM 与电话通道费用（cloudzero.com 2026 年 9 月基于官方定价的分析）；付费档未用点数可有限结转。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="11">
+      <div class="rank"><span>11</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://midjourney.com" target="_blank" rel="noopener">Midjourney</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI图像生成</span>
+        </div>
+        <p class="app-desc">文本生成图像的开创性产品，以默认出图的高审美水准著称，prompt 不用写太细也能得到精美结果；从 Discord 起家，现已拥有独立网页版、编辑器与社区画廊。采用纯订阅制、无免费档：Basic $10/月、Standard $30/月、Pro $60/月、Mega $120/月（按年付约八折），Standard 以上无限次 Relax 慢速生成。</p>
+        <p class="app-note"><b>值得记住：</b>2025 年 8 月 Meta 与 Midjourney 达成技术合作（TechCrunch 2026-10-12 可见引用）。公司长期保持自筹盈利、未接受外部融资，是 AI 绘画领域最具代表性的品牌。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="12">
+      <div class="rank"><span>12</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://openart.ai" target="_blank" rel="noopener">OpenArt</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI图像生成</span>
+        </div>
+        <p class="app-desc">模型不可知（model-agnostic）的 AI 创作工作台，聚合了 100+ 个图像/视频/音频/3D 模型，同一提示词可跑多个模型横向对比。亮点是角色一致性（Character Builder）、AI 分镜/导演（Director，最长 5 分钟多场景视频）、画布内编辑与 4K 放大。注册送免费试用额度，付费计划 Starter $14/月起，Plus（$34/月）及以上解锁商用授权。</p>
+        <p class="app-note"><b>值得记住：</b>其官方博客披露聚合模型包括 GPT Image 2、Nano Banana Pro、Seedream 5.0、Flux 2 Pro 等一线模型；商业授权从 Plus 档（$34/月）起，定位“AI 创作界的瑞士军刀”。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="13">
+      <div class="rank"><span>13</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://openrouter.ai" target="_blank" rel="noopener">OpenRouter</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">AI模型聚合</span>
+        </div>
+        <p class="app-desc">AI 模型统一网关：用一个 OpenAI 兼容的 API 即可调用数百个来自 OpenAI、Anthropic、Google、Meta 等厂商的模型，内置自动故障转移与负载均衡。收费按 token 计量，推理价格原样转嫁上游供应商（不加价），另有 BYOK 自带密钥模式；部分模型提供免费额度，是开发者尝鲜多模型的首选入口。</p>
+        <p class="app-note"><b>值得记住：</b>据其官方模型目录与第三方统计（agence-scroll，2026 年 8 月），平台在售模型达 417 个、来自 59 个供应商家族，免费模型 20 个左右。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="14">
+      <div class="rank"><span>14</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://otter.ai" target="_blank" rel="noopener">Otter.ai</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">会议记录</span>
+        </div>
+        <p class="app-desc">AI 会议助手，可作为虚拟参会者自动加入 Zoom、Google Meet、Microsoft Teams 会议，实时转写并生成会议摘要与行动项；会后可全文搜索、打标协作。免费 Basic 档每月 300 分钟（单次最长 30 分钟），Pro 档 $8.33/人/月（年付）解锁 1200 分钟与无限历史记录，Business 档 $19.99/人/月面向团队。</p>
+        <p class="app-note"><b>值得记住：</b>免费档每月 300 分钟转写（TechRepublic 2026 评测）；其 OtterPilot 机器人自动参会+实时转写的模式是 AI 会议记录赛道的经典形态。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="15">
+      <div class="rank"><span>15</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://figma.com" target="_blank" rel="noopener">Figma</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI设计</span>
+        </div>
+        <p class="app-desc">浏览器原生协作 UI 设计平台，实时多人协作、组件系统与 Dev Mode 交付是其护城河；AI 能力（Figma Make 提示词生成界面、AI 内容/改名/搜索）以额度制计费，随席位附赠。免费 Starter 档每月 500 AI credits；Professional 全席 $16/月（3000 credits）、Organization $55/月（3500）、Enterprise $90/月（4250），超额可按 $0.03/credit 按量购买。</p>
+        <p class="app-note"><b>值得记住：</b>付费计划按档位捆绑 AI 额度（Professional 3000、Organization 3500、Enterprise 4250/月，therundown.ai 2026 年 8 月核价）；是产品设计团队的事实标准工具。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="16">
+      <div class="rank"><span>16</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://plaud.ai" target="_blank" rel="noopener">Plaud</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI录音硬件+转写</span>
+        </div>
+        <p class="app-desc">AI 录音硬件公司：旗舰 Plaud Note 是信用卡大小的卡片录音机（约 $159，磁吸贴手机），NotePin 是可穿戴录音吊坠；双模式录制通话与现场，录音同步到 Plaud AI 云端做 112 种语言转写、发言人识别与模板化摘要。设备随附每月 300 分钟免费转写额度，高级功能可订阅升级，官网自称“全球第一 AI 录音笔”。</p>
+        <p class="app-note"><b>值得记住：</b>2024 年推出穿戴式 NotePin（Reuters/The Hindu 报道），预售价 $169、附赠高级会员；官网披露产品线覆盖 170+ 国家、200 万+ 专业用户（plaud.se 官方页）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="17">
+      <div class="rank"><span>17</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://notion.com" target="_blank" rel="noopener">Notion</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI笔记</span>
+        </div>
+        <p class="app-desc">一体化工作空间：笔记、文档、数据库、项目管理合一，AI 深度嵌入——Notion Agent 可跨库检索代办，AI Meeting Notes 自动转写会议。2025 年 5 月后独立 AI 插件不再对新用户销售，完整 AI 功能打包进 Business 档（$20/人/月年付）；Free 与 Plus 档仅享有限试用，企业档支持零数据留存与审计。</p>
+        <p class="app-note"><b>值得记住：</b>独立 $8–10/人的 AI 插件已于 2025 年 5 月停止对新用户销售（dev.to/eesel.ai 2026 评测），想用完整 AI 的新用户至少需 Business 档 $20/人/月。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="18">
+      <div class="rank"><span>18</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://reface.app" target="_blank" rel="noopener">Reface</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI换脸</span>
+        </div>
+        <p class="app-desc">AI 换脸娱乐 App：自拍一张即可把脸无缝贴进海量 GIF、短视频、名人模板，还能生成 AI 头像、职业证件照、宝宝预测脸、照片唱歌跳舞等病毒式内容。免费 App 内含广告与水印，内购/订阅解锁全部功能、去水印去广告，声称在 100 多个国家拥有数百万用户。</p>
+        <p class="app-note"><b>值得记住：</b>Reface 是 Doublicat 的改名后续（freesoft.net）；最初靠一键 deepfake meme 在全球病毒式传播，是换脸娱乐赛道的标志性产品。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="智能助手与搜索" data-rank="19">
+      <div class="rank"><span>19</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://manus.im" target="_blank" rel="noopener">Manus</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#22d3ee">智能助手与搜索</span>
+          <span class="ctag">AI智能体</span>
+        </div>
+        <p class="app-desc">通用 AI Agent：给一句指令，它能自主规划多步任务——实时联网调研、写代码跑数据分析、生成可交付文件，还提供“Manus&#x27;s Computer”让用户旁观并随时介入执行过程。按 credit 收费：Free 档每日 300 credits；Pro 起 $20/月（4000 credits/月），更高档 $40/月（8000 credits/月），Team 席位另计。</p>
+        <p class="app-note"><b>值得记住：</b>由蝴蝶效应（Butterfly Effect，前 Monica.im 团队）2025 年 3 月推出，邀请制上线演示视频 20 小时破百万播放（Wikipedia）；2025 年 4 月完成约 7500 万美元 B 轮融资，估值约 5 亿美元（Benchmark 领投）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="音乐与音频" data-rank="20">
+      <div class="rank"><span>20</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://speechify.com" target="_blank" rel="noopener">Speechify</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#34d399">音乐与音频</span>
+          <span class="ctag">文字转语音</span>
+        </div>
+        <p class="app-desc">文字转语音 App：把网页、PDF、文档甚至纸质书扫描变成自然朗读，支持 60+ 语言、离线收听、Chrome 插件与移动端同步。免费档真正可用（无信用卡，朗读速度上限 1.5x）；Premium 档 $139/年（约 $11.58/月）或 $29/月，解锁 1000+ 高质量自然语音、4.5x 语速与全文拍照识别。另有面向开发者的 SpeechifyAI TTS API 按字符收费。</p>
+        <p class="app-note"><b>值得记住：</b>Premium 提供 1000+ 高质量 AI 语音与最高 4.5 倍语速（memeburn 2026 评测）；认证学生可通过 UNiDAYS 享 25% 折扣（speechify.com 官方博客）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="21">
+      <div class="rank"><span>21</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://descript.com" target="_blank" rel="noopener">Descript</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI音视频编辑</span>
+        </div>
+        <p class="app-desc">一款「像编辑文档一样剪视频」的 AI 音视频编辑工具，核心亮点是转录文本编辑（删字即剪画面）、Underlord AI 剪辑助手、Studio Sound 音质增强与 Overdub 语音克隆。收费按上传素材的「媒体分钟数」和 AI 点数计费，免费版每月 60 分钟素材、100 AI 点数，付费档从 Hobbyist $16/人/月（年付）起。</p>
+        <p class="app-note"><b>值得记住：</b>由 Groupon 创始人 Andrew Mason 于 2017 年创立；2022 年 11 月获 OpenAI Startup Fund 领投 5000 万美元 C 轮，累计融资超 1 亿美元（TechCrunch 报道）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="22">
+      <div class="rank"><span>22</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://zeely.ai" target="_blank" rel="noopener">Zeely</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI广告营销</span>
+        </div>
+        <p class="app-desc">面向中小电商卖家的 AI 广告创意平台：输入产品链接即可自动抓取素材并生成图文广告、AI UGC 视频广告、模特试穿视频等，还能一键在 Facebook/Instagram 上发起并管理广告投放。核心亮点是「创作+投放」一体化工作流。收费按广告活动数和素材额度分档，Starter 约 $29.95/月起，无免费版。</p>
+        <p class="app-note"><b>值得记住：</b>公司官网称 2022 年创立于乌克兰；2023 年 4 月获 TechCrunch 报道的 100 万美元种子轮；是 Meta 官方合作伙伴（Meta Business Partner）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="23">
+      <div class="rank"><span>23</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://heygen.com" target="_blank" rel="noopener">HeyGen</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">数字人</span>
+        </div>
+        <p class="app-desc">AI 数字人视频生成平台，输入脚本即可生成照片级逼真的虚拟主播口播视频，支持 100+ 数字形象、声音克隆，以及 175+ 语言的视频翻译配音（保留原声并对齐口型）。收费按点数计费：免费版每月 3 条带水印视频，Creator 版 $29/月（年付 $24/月）起。</p>
+        <p class="app-note"><b>值得记住：</b>2024 年 6 月获 Benchmark 领投 6000 万美元 A 轮，投后估值超 5 亿美元；公司披露 ARR 在一年多内从 100 万美元增至 3500 万美元（公司官方公告）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="24">
+      <div class="rank"><span>24</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://jumpspeak.com" target="_blank" rel="noopener">Jumpspeak</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI英语口语</span>
+        </div>
+        <p class="app-desc">主打「开口说」的 AI 外语口语练习 App，提供真实场景对话课程、实时语音识别发音反馈，以及可自由聊天的 AI 语言导师（覆盖英/西/法/德/意等多语）。核心卖点是每天 3 分钟碎片化练习+不评判的 AI 对练环境。订阅制：年费约 $79.99，官网首年常有 $69–$79 促销价；官网首次购买支持 100 天退款。</p>
+        <p class="app-note"><b>值得记住：</b>2026 年 9 月美区 App Store 评分 4.6/5（约 1.6 万条评分），Trustpilot 3.2/5——口碑两极分化，主要集中在续费条款争议（StoryLearning 2026 年 9 月评测）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="25">
+      <div class="rank"><span>25</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://runway.com" target="_blank" rel="noopener">Runway</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI视频生成</span>
+        </div>
+        <p class="app-desc">生成式 AI 影视创作平台，旗舰模型 Gen-4.5 支持文生/图生/视频转视频，核心亮点是 Motion Brush（指定画面区域运动）、精细镜头控制（推拉摇移）与多场景角色一致性。收费按点数计费：免费层一次性 125 点数，Standard $12/月（年付，625 点数/月）起，Pro $28/月。</p>
+        <p class="app-note"><b>值得记住：</b>Gen-4 系列被业内视为专业级 AI 视频生成的标杆模型之一，在 Artificial Analysis 文生视频榜上曾位列第一（GitHub 社区知识库引用的 2026 年数据）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="26">
+      <div class="rank"><span>26</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://klingai.com" target="_blank" rel="noopener">Kling AI（可灵）</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI视频生成</span>
+        </div>
+        <p class="app-desc">快手研发的 AI 视频生成模型及创作平台，支持文生视频、图生视频、以图控动作等，核心亮点是接近电影级的画面真实感、流畅的人物动作与 3D 人脸重建、唇形同步。收费按点数计费：免费版每天 66 点数（带水印），付费版约 $6.99/月起，最新 Kling 3.0 支持最高 4K。</p>
+        <p class="app-note"><b>值得记住：</b>公司宣称已有 6000 万创作者与 3 万家企业客户使用，是 Sora 商业版应用关停后（2026 年 4 月）全球商用 AI 视频市场的主要玩家之一（CloudZero 2026 年 9 月分析，引官方说法）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="27">
+      <div class="rank"><span>27</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://topazlabs.com" target="_blank" rel="noopener">Topaz Labs</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI视频增强</span>
+        </div>
+        <p class="app-desc">专注照片与视频画质修复的 AI 工具公司，产品线包括 Topaz Photo（降噪/锐化/修复）、Gigapixel（最高 6 倍放大）、Topaz Video（视频放大/防抖/补帧）。核心亮点是按任务专门训练的深度学习模型，本地渲染为主。2025 年 10 月起停售永久授权转为订阅制，单应用约 $149–$299/年，全家桶 Topaz Studio $399/年。</p>
+        <p class="app-note"><b>值得记住：</b>官方资料称产品被超 100 万名摄影师与电影制作人使用；Pro 版本面向年收入超 100 万美元的机构提供完整商用授权（第三方工具目录 aitools.fyi 汇总）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="28">
+      <div class="rank"><span>28</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://invideo.io" target="_blank" rel="noopener">Invideo</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI视频生成</span>
+        </div>
+        <p class="app-desc">「一句话成片」的 AI 视频生成与编辑平台：输入提示词即可自动生成脚本、配音、剪辑成片，内置 200+ 底层模型（含 Sora 2、Veo 3.1、Kling 3.0、Seedance 2.0），还带 1600 万+ 正版素材库与 Magic Box 文本指令剪辑。收费按点数计费：免费版带水印，付费版 Starter 年付约 $20/席位/月（400 点数/月）起。</p>
+        <p class="app-note"><b>值得记住：</b>是少数同时集成 OpenAI Sora 2 与 Google Veo 3.1 的平台之一，且各档位均开放全部 200+ 模型库、不按模型设功能门槛（TechRadar 2026 年评测）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="29">
+      <div class="rank"><span>29</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://topview.ai" target="_blank" rel="noopener">Topview</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI广告营销</span>
+        </div>
+        <p class="app-desc">面向电商的 AI 广告视频智能体：粘贴产品链接即可自动生成爆款风格的带货短视频，支持 AI UGC 真人试用、虚拟试穿、痛点剧情广告等多种模板，并提供爆款视频库与趋势发现工具。核心亮点是「一条爆款视频→同款带货广告」的复刻工作流。月订阅制（官网有免费试用）。</p>
+        <p class="app-note"><b>值得记住：</b>公司新闻稿称平台已服务超 100 万名联盟营销者与 Shopify/亚马逊卖家；2025 年 10 月发布了基于 Sora 2 的 Viral Video Agent（PR Newswire 新闻稿）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="30">
+      <div class="rank"><span>30</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://gamma.app" target="_blank" rel="noopener">Gamma</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI演示文稿</span>
+        </div>
+        <p class="app-desc">AI 演示文稿/文档/微型网站生成工具，输入一句话或粘贴大纲即可在 60 秒内生成排版精美的卡片式内容，支持 100+ 主题、一键 AI 改图、实时协作与数据分析。免费版赠送 400 一次性 AI 点数（约做 8–10 份文档），付费版 Plus $8/用户/月（年付）、Pro $18/用户/月起。</p>
+        <p class="app-note"><b>值得记住：</b>据评测报道其用户规模已超 7000 万，是 AI 演示文稿赛道用户量最大的产品之一（fahimai 2026 年评测；该数字为第三方引述）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="31">
+      <div class="rank"><span>31</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://meshy.ai" target="_blank" rel="noopener">Meshy.ai</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">3D建模</span>
+        </div>
+        <p class="app-desc">文字/图片转 3D 模型生成平台：输入文本描述或上传图片，几十秒即可生成带 PBR 纹理的 3D 资产，并支持 AI 自动贴图、重拓扑、绑定与动画，导出 FBX/OBJ/GLB/STL 等 8 种格式。收费采用 Freemium + credit 点数制：免费版每月 100 credit（免信用卡），付费 Pro 约 $20/月（年付折合约 $16/月）起。</p>
+        <p class="app-note"><b>值得记住：</b>2023 年创立于美国的初创公司，员工规模 50–99 人（SaaSHub 资料）；第三方测评称其被 a16z 选中、全球 600 万创作者使用（YouTube 测评频道描述，非官方一手数据）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="写作与内容" data-rank="32">
+      <div class="rank"><span>32</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://quillbot.com" target="_blank" rel="noopener">QuillBot</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fbbf24">写作与内容</span>
+          <span class="ctag">AI写作辅助</span>
+        </div>
+        <p class="app-desc">老牌 AI 改写润色工具套件：核心是 Paraphraser（10+ 种改写模式，如 Standard/Fluency/Formal），另含语法检查、查重、摘要、翻译、AI 检测器与 AI Humanizer。收费为 Freemium：免费版改写限 125 词/2 种模式，Premium 年付约 $8.33/月、月付 $19.95/月，另有团队版。</p>
+        <p class="app-note"><b>值得记住：</b>官网定价页（quillbot.com/pricing）确认：免费版 125 词改写上限、Premium 年付 $8.33/月；融资/收购与用户规模信息本次未检索到可验证来源，待确认。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="写作与内容" data-rank="33">
+      <div class="rank"><span>33</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://novelai.net" target="_blank" rel="noopener">NovelAI</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fbbf24">写作与内容</span>
+          <span class="ctag">AI小说生成</span>
+        </div>
+        <p class="app-desc">以 AI 小说创作与二次元风格图像生成闻名的平台：AI Storyteller 可交互式续写小说（自研文本模型），图像生成器（NAI Diffusion 系列）以日式动画风见长，支持 inpainting、Director Tools 等精修功能。无永久免费版（注册送一次性试用：文本 50 次 + 图像 30 张），订阅三档：Tablet $10/月、Scroll $15/月、Opus $25/月。</p>
+        <p class="app-note"><b>值得记住：</b>运营方为 Anlatan Inc.，订阅经 Paddle 结算（第三方目录援引官网 footer）；订阅三档 $10/$15/$25 出自官方文档（docs.novelai.net）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="写作与内容" data-rank="34">
+      <div class="rank"><span>34</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://justdone.com" target="_blank" rel="noopener">JustDone</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fbbf24">写作与内容</span>
+          <span class="ctag">AI写作辅助</span>
+        </div>
+        <p class="app-desc">一站式 AI 写作与内容优化平台，覆盖改写、语法润色、摘要、查重，并以「AI 检测 + AI Humanizer（人性化改写）」的一体化流程为卖点，另提供浏览器插件与 API。收费为订阅制：无完全免费档，仅有短文本演示；Unlimited 年付约 $9.99/月、月付约 $19.99/月，另有试用档 $2/7 天。</p>
+        <p class="app-note"><b>值得记住：</b>SaaSHub 资料：塞浦路斯初创公司，创立于 2023 年，员工 50–99 人；定价档位引自 Cybernews 测评。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="35">
+      <div class="rank"><span>35</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://fireflies.ai" target="_blank" rel="noopener">Fireflies.ai</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI会议记录</span>
+        </div>
+        <p class="app-desc">AI 会议记录助手：以日历联动的 Notetaker 机器人自动加入 Zoom/Meet/Teams 会议，转录并生成摘要、待办事项，支持 100+ 语言，内置 AskFred 全库问答助手与 100+ 集成（CRM/任务工具）。收费为 Freemium：免费版即提供不限时长转录（存储有限），Pro $10/人/月（年付）、Business $19/人/月（年付）、Enterprise $39/人/月。</p>
+        <p class="app-note"><b>值得记住：</b>官方定价页（fireflies.ai/pricing）确认：免费档不限转录时长、支持 100+ 语言；Pro $10/人/月年付。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="写作与内容" data-rank="36">
+      <div class="rank"><span>36</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://sudowrite.com" target="_blank" rel="noopener">Sudowrite</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fbbf24">写作与内容</span>
+          <span class="ctag">AI小说生成</span>
+        </div>
+        <p class="app-desc">专为小说作者设计的 AI 写作伙伴：围绕虚构创作流程打造 Story Engine（大纲转分章草稿）、Story Bible（人物/世界观/剧情线持久记忆）、Canvas 长文编辑器、Brainstorm 与 Rewrite 工具，自研 Muse 模型专为小说文体训练。无永久免费版（免卡试用约 10K 词），订阅按 credit 计费：Hobby $10/月年付（22.5 万 credit），Professional $22/月，Max $44/月。</p>
+        <p class="app-note"><b>值得记住：</b>2020 年由 James Yu 与 Amit Gupta 创立（Lemonsight）；自研 Muse 模型专为出版小说训练、获纽约时报/New Yorker/The Verge 报道（第三方 ai-megalist 资料，非官方一手）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="写作与内容" data-rank="37">
+      <div class="rank"><span>37</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://jasper.ai" target="_blank" rel="noopener">Jasper</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fbbf24">写作与内容</span>
+          <span class="ctag">AI写作辅助</span>
+        </div>
+        <p class="app-desc">面向营销团队的生成式 AI 内容平台：核心卖点是 Brand Voice（可学习品牌语调）、知识资产与营销 Agent，可批量生产广告、邮件、落地页、社媒等 on-brand 内容。无免费版（仅 7 天试用），Pro $59/月（年付）/$69/月（月付、单席位），Business 定制报价。</p>
+        <p class="app-note"><b>值得记住：</b>官网宣称超 10 万家企业使用、10k+ 评价 4.8/5（jasper.ai）；融资历史本次未检索到可验证来源，待确认。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="38">
+      <div class="rank"><span>38</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://photoroom.com" target="_blank" rel="noopener">Photoroom</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI修图</span>
+        </div>
+        <p class="app-desc">AI 产品图/修图工具：一键抠图去背景、AI 生成场景背景、阴影与产品摆拍、批量处理与 API，深度绑定电商卖家（支持 Shopify 同步）。收费为 Freemium 双轨：免费版每月 250 次带水印导出；App 订阅 Pro $7.50/月、Max $20.99/月、Ultra $82.50/月；另有按量计费的图像处理 API（Basic $20/月起）。</p>
+        <p class="app-note"><b>值得记住：</b>定价引自 SourceForge 汇总与 TechRadar 测评；官网确认免费版 250 次带水印导出；融资/营收信息待确认。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="39">
+      <div class="rank"><span>39</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://huggingface.co" target="_blank" rel="noopener">Hugging Face</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">AI开发者社区</span>
+        </div>
+        <p class="app-desc">AI 开发者的「GitHub」：基于 Git 的开放平台，托管数百万预训练模型、数据集与 Spaces 演示应用，配套开源 transformers 库让开发者一行代码加载任意模型。基础托管与公开模型完全免费；收费主要来自 Team/Enterprise 档（私有仓库、推理端点 Inference Endpoints、Spaces 算力等企业级服务）。</p>
+        <p class="app-note"><b>值得记住：</b>2026 年 9 月 Nvidia 宣布以 $12.93B 收购（temperature2/coin360 等多家媒体援引 Nvidia 公告）；2016 年由 Clément Delangue、Julien Chaumond、Thomas Wolf 创立。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="智能助手与搜索" data-rank="40">
+      <div class="rank"><span>40</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://genspark.ai" target="_blank" rel="noopener">Genspark</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#22d3ee">智能助手与搜索</span>
+          <span class="ctag">AI搜索智能体</span>
+        </div>
+        <p class="app-desc">MainFunc 出品的一体化 AI 工作台：以「Mixture-of-Agents」架构（GPT/Claude/Gemini 多模型路由）为核心，提供 Super Agent（深度研究、多步任务执行）、AI Slides/Sheets/Docs、AI 浏览器与自主打电话等能力，从 AI 搜索起家扩展为 agent 办公套件。免费版每日约 100 credit；Plus $24.99/月，Pro $249.99/月。</p>
+        <p class="app-note"><b>值得记住：</b>MainFunc 出品（everydev.ai）；第三方视频称 30 人团队、上线 6 个月估值达 10 亿美元（lilys.ai 转录，非官方一手数据）；定价引自 webtechhelp.org。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="41">
+      <div class="rank"><span>41</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://evoto.ai" target="_blank" rel="noopener">Evoto AI</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI修图</span>
+        </div>
+        <p class="app-desc">面向专业摄影师与创意团队的 AI 人像修图软件，覆盖桌面、移动、iPad 和网页端，支持人像精修、背景替换、调色和批量处理。核心亮点是自然的 AI 修图效果与预设同步批量修图，大幅节省修图时间。采用 credit 制收费：注册送欢迎 credits，多数功能按导出图片计 1 credit，另有按需购买 credit 包和年度订阅。</p>
+        <p class="app-note"><b>值得记住：</b>旗下有三条产品线：Evoto Photo Editor（AI 修图）、Evoto Instant（联机拍摄即时修图交付）和 Evoto Video（AI 视频修图）（来源：evoto.ai 官方 FAQ）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="42">
+      <div class="rank"><span>42</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://minimax.io" target="_blank" rel="noopener">MiniMax</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">开源大模型</span>
+        </div>
+        <p class="app-desc">中国 AI 大模型公司 MiniMax（稀宇科技）旗下 AI 原生产品矩阵，包括海螺 AI（AI 视频/图像生成）、Talkie 与星野（AI 陪伴/角色互动）、MiniMax Agent 等。核心亮点是全模态自研模型（文本 M2、Hailuo 视频、Speech 语音）加全球化 C 端运营。变现以应用内充值和订阅为主，To C 产品占其 2025 年前三季收入的 71.1%。</p>
+        <p class="app-note"><b>值得记住：</b>2026 年 1 月 9 日在港交所主板上市（0100.HK），从成立到 IPO 仅用四年多，创下全球 AI 公司最快上市纪录；MiniMax M2 发布即登 Artificial Analysis 全球前五、开源第一（来源：维基百科、网易科技招股书报道）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="办公与效率" data-rank="43">
+      <div class="rank"><span>43</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://beautiful.ai" target="_blank" rel="noopener">Beautiful.ai</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#fb923c">办公与效率</span>
+          <span class="ctag">AI演示文稿</span>
+        </div>
+        <p class="app-desc">AI 演示文稿制作平台，用户输入一句话提示、大纲或文档即可生成设计精美的整套幻灯片。核心亮点是 Smart Slides 智能模板——内容增删时版式、间距、配色自动适配，始终保持专业水准，另有品牌主题锁定与团队协作功能。免费试用，付费计划覆盖个人、团队和企业版。</p>
+        <p class="app-note"><b>值得记住：</b>公司总部位于美国旧金山，成立于 2016 年（LinkedIn 公司页），是较早一批把 AI 生成与自动设计结合的演示工具，长期服务销售、咨询、企业培训团队。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="44">
+      <div class="rank"><span>44</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://fal.ai" target="_blank" rel="noopener">fal</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">AI模型推理平台</span>
+        </div>
+        <p class="app-desc">生成式媒体模型的推理云与 API 平台，一个统一 API 即可调用 1000+ 个图像、视频、音频、3D 生成模型（如 FLUX、Veo 3、Kling、Wan）。核心亮点是自研 fal Inference Engine，媒体生成速度快、冷启动低，还支持自定义模型 Serverless 部署与 LoRA 微调。按使用量付费（per-output 计费，预付 credits，无月费），另有 GPU 小时计费与专属集群选项。</p>
+        <p class="app-note"><b>值得记住：</b>其推理云上运行着包括 FLUX、Veo 3、Kling 2.5、Wan 2.5、Nano Banana 在内的旗舰模型，是开发者构建 AI 图像/视频应用最常用的模型聚合 API 之一（来源：api-evangelist/fal-ai GitHub 档案）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="45">
+      <div class="rank"><span>45</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://n8n.io" target="_blank" rel="noopener">n8n</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">自动化工作流</span>
+        </div>
+        <p class="app-desc">fair-code 开源的工作流自动化平台，用拖拽节点画布编排跨应用自动化，对标 Zapier/Make 但更偏开发者友好。核心亮点是自托管社区版免费且执行次数无上限，节点内可写原生 JavaScript/Python，原生支持 OpenAI/Claude 等 AI 节点与 MCP，可构建 AI agent 工作流。云版收费：Starter $20/月（年付，2500 次执行），按工作流执行次数计费。</p>
+        <p class="app-note"><b>值得记住：</b>采用 Sustainable Use License（fair-code，非 OSI 认证的开源许可），GitHub 上是最流行的开源自动化工具之一，是当下 AI agent 工作流实践中最常用的低代码编排底座（来源：n8n.io 定价页、dev.to 2026 年评测）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="46">
+      <div class="rank"><span>46</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://cognition.ai" target="_blank" rel="noopener">Cognition</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">AI编程智能体</span>
+        </div>
+        <p class="app-desc">Devin 的开发公司，产品 Devin 是号称「世界首个 AI 软件工程师」的全自主编程智能体，可端到端规划、写代码、调试、部署。核心亮点是 agentic 工程能力——8 个月遗留系统现代化项目可被压缩到数天完成，95% 自家代码由 Devin 编写。企业按席位/用量付费（Team 版约 $500/月起），是企业级 AI 编程基础设施的代表。</p>
+        <p class="app-note"><b>值得记住：</b>2026 年 9 月完成超 $20 亿 Series E 融资，估值 $480 亿；2026 年 9 月年化收入 run rate 已突破 $10 亿，客户包括 NVIDIA、Citi、GE Aerospace、奔驰、高盛等（来源：维基百科、TechCrunch/Bloomberg 报道汇总）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="图像与设计" data-rank="47">
+      <div class="rank"><span>47</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://faceapp.com" target="_blank" rel="noopener">FaceApp</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#f472b6">图像与设计</span>
+          <span class="ctag">AI变老换脸</span>
+        </div>
+        <p class="app-desc">AI 自拍/人像编辑 App，提供 60+ 逼真滤镜：变老/变年轻、性别转换、发型发色、美妆、微笑、背景光效等，一键生成可直接分享的社交级照片。核心亮点是神经网络驱动的逼真人像变换，2019 年「变老滤镜」病毒式传播。免费下载，高级滤镜与无水印功能通过应用内订阅/Pro 版解锁。</p>
+        <p class="app-note"><b>值得记住：</b>Google Play 累计安装量约 5.9 亿、评分 4.3（527 万条评价），是 Photography 类收入榜常年前列的全球级爆款修图 App（来源：AppBrain 2026-10-07 数据）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="音乐与音频" data-rank="48">
+      <div class="rank"><span>48</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://moises.ai" target="_blank" rel="noopener">Moises</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#34d399">音乐与音频</span>
+          <span class="ctag">AI音乐</span>
+        </div>
+        <p class="app-desc">面向音乐人的 AI 音乐练习 App，能把任意歌曲用 AI 分离成独立音轨（人声、鼓、贝斯、吉他、钢琴等），并支持消音、变调、变速、和弦检测、智能节拍器和循环练习。核心亮点是「AI 乐队伙伴」式的练习体验：歌手消人声练唱、乐手单独扒鼓/吉他声部。免费版基础分轨，Premium 约 $3.99/月起解锁无限分轨与高级分离模型，另有 Pro 版面向制作人（Hi-Fi 分离、VST 插件）。</p>
+        <p class="app-note"><b>值得记住：</b>覆盖 iOS、Android、网页与桌面端，是音乐人社区公认的标杆级 AI 分轨工具，NAMM 2026 重点展示产品（来源：App Store/Google Play 官方描述）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="视频与数字人" data-rank="49">
+      <div class="rank"><span>49</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://synthesia.io" target="_blank" rel="noopener">Synthesia</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#a78bfa">视频与数字人</span>
+          <span class="ctag">AI数字人</span>
+        </div>
+        <p class="app-desc">AI 数字人视频生成平台：输入脚本即可生成由逼真 AI 主播播报的专业视频，无需摄像机、演员或录音棚。核心亮点是 200+ 超写实 AI 形象、160+ 语言配音、AI 配音翻译与 SCORM/LMS 导出，主攻企业培训、入职、合规与内部沟通。免费 Basic 套餐（每月 10 分钟带水印），Starter 约 $18/月（年付），Creator/Enterprise 更高阶。</p>
+        <p class="app-note"><b>值得记住：</b>官网宣称获 90%+ 世界 500 强（Fortune 100）企业使用，平台用户超 200 万；2026 年行业评测称其估值约 $40 亿、ARR 超 $1.5 亿美元（来源：synthesia.io 官网、2026 年多份行业评测）。</p>
+      </div>
+    </div>
+
+    <div class="app reveal" data-group="代码与开发" data-rank="50">
+      <div class="rank"><span>50</span></div>
+      <div class="app-body">
+        <div class="app-name"><a href="https://nousresearch.com" target="_blank" rel="noopener">Nous Research</a></div>
+        <div class="app-tags">
+          <span class="gtag" style="--gc:#60a5fa">代码与开发</span>
+          <span class="ctag">开源大模型</span>
+        </div>
+        <p class="app-desc">开源 AI 研究集体（Discord/Twitter 社区起家，2023 年正式化），以 Hermes 系列开源大语言模型闻名——强调可操控性、函数调用与去审查的中性对齐。旗下 Hermes 3/4 覆盖 8B 到 405B 参数规模，在 Ollama 和 Hugging Face 上深受欢迎。模型免费开源商用，另有 Nous Portal 提供 API 服务。</p>
+        <p class="app-note"><b>值得记住：</b>据《华尔街日报》报道，2026 年 10 月 Nous Research 完成 $9000 万融资，估值 $15 亿，用于把 Hermes 从开发者/爱好者社区推向企业部署（来源：techdefused 引 WSJ，2026-10-07）。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Agent Sandbox Archive · 数据口径归 a16z / YipitData 所有，产品介绍为独立调研整理 · 2026-10-12</div>
+  <div style="margin-top:8px">排名为 2026 年 6–8 月美国市场观察值；产品信息可能随版本与定价调整而变化。</div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+  }), { threshold: .05 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const chips = document.getElementById('chips');
+  const count = document.getElementById('count');
+  const cards = [...document.querySelectorAll('.app')];
+  function update(f) {
+    let n = 0;
+    cards.forEach(c => {
+      const show = f === '全部' || c.dataset.group === f;
+      c.classList.toggle('hide', !show);
+      if (show) n++;
+    });
+    count.textContent = f === '全部' ? '共 50 个产品 · 按月收入排名' : f + ' · ' + n + ' 个产品';
+  }
+  chips.addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    chips.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    b.classList.add('on'); update(b.dataset.f);
+  });
+  update('全部');
+</script>
+</body>
+</html>
