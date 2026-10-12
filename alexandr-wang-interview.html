@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「打造 Muse」— Alexandr Wang × David Senra 访谈笔记 · 72 分钟深度对谈</title>
+<style>
+  :root {
+    --bg: #070b14; --bg2: #0b1120;
+    --card: rgba(255,255,255,.035); --border: rgba(255,255,255,.09);
+    --txt: #e6edf7; --sub: #8b98ad;
+    --cyan: #22d3ee; --violet: #a78bfa; --amber: #fbbf24;
+    --green: #34d399; --pink: #f472b6; --red: #f87171;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg); color:var(--txt);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC","Segoe UI",sans-serif;
+    line-height:1.75; overflow-x:hidden; }
+  .glow { position:fixed; border-radius:50%; filter:blur(120px); opacity:.14; pointer-events:none; z-index:0; }
+  .glow.g1 { width:520px; height:520px; background:#0ea5e9; top:-160px; left:-120px; }
+  .glow.g2 { width:460px; height:460px; background:#7c3aed; top:30%; right:-160px; }
+  .glow.g3 { width:420px; height:420px; background:#059669; bottom:-140px; left:30%; }
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; backdrop-filter:blur(14px);
+    background:rgba(7,11,20,.72); border-bottom:1px solid var(--border); }
+  .nav-inner { max-width:1180px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:14px; letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--cyan),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent;
+    display:flex; align-items:center; gap:8px; text-decoration:none; }
+  .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .nav-links { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; }
+  .nav-links a { color:var(--sub); text-decoration:none; font-size:12.5px; padding:6px 10px; border-radius:8px; transition:all .2s; }
+  .nav-links a:hover { color:var(--txt); background:rgba(255,255,255,.06); }
+  header { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:140px 24px 40px; }
+  .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:2px; color:var(--amber);
+    border:1px solid rgba(251,191,36,.3); border-radius:99px; padding:5px 14px; margin-bottom:22px; font-family:Consolas,monospace; }
+  h1 { font-size:clamp(32px,5vw,56px); font-weight:900; letter-spacing:-1px; line-height:1.2; margin-bottom:18px; }
+  h1 .grad { background:linear-gradient(90deg,var(--amber),var(--pink),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--sub); font-size:16px; max-width:760px; }
+  .hero-sub b { color:var(--txt); font-weight:600; }
+  .meta-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .meta-chip { font-size:13px; color:var(--sub); border:1px solid var(--border); border-radius:99px; padding:6px 14px; background:var(--card); }
+  .meta-chip a { color:var(--cyan); text-decoration:none; }
+  .meta-chip a:hover { text-decoration:underline; }
+  section { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:44px 24px 8px; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; margin-bottom:8px; flex-wrap:wrap; }
+  .sec-num { font-family:Consolas,monospace; font-size:13px; color:var(--amber); border:1px solid rgba(251,191,36,.3); border-radius:6px; padding:2px 8px; }
+  h2 { font-size:26px; font-weight:800; letter-spacing:-.5px; }
+  .sec-desc { color:var(--sub); font-size:14px; margin-bottom:24px; max-width:780px; }
+  .reveal { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+  .grid { display:grid; gap:16px; }
+  .g2 { grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); }
+  .g3 { grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+  @media (max-width:520px){ .g2{grid-template-columns:1fr;} }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+  .card h3 { font-size:17px; margin-bottom:10px; font-weight:700; }
+  .card p, .prose p { color:#c6d2e3; font-size:15px; margin-bottom:14px; }
+  .card p:last-child, .prose p:last-child { margin-bottom:0; }
+  .prose p b, .card p b { color:var(--txt); }
+  .badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:1px; border-radius:6px; padding:2px 9px; margin-right:8px; vertical-align:2px; }
+  .badge.fact { background:rgba(34,211,238,.12); color:var(--cyan); border:1px solid rgba(34,211,238,.35); }
+  .badge.analysis { background:rgba(167,139,250,.12); color:var(--violet); border:1px solid rgba(167,139,250,.35); }
+  .badge.hypo { background:rgba(251,191,36,.1); color:var(--amber); border:1px solid rgba(251,191,36,.35); }
+  .badge.warn { background:rgba(248,113,113,.1); color:var(--red); border:1px solid rgba(248,113,113,.35); }
+  .quote { border-left:3px solid var(--violet); padding:10px 18px; margin:18px 0; color:#d7e0ef; font-size:15px; background:rgba(167,139,250,.06); border-radius:0 12px 12px 0; }
+  .quote .src { display:block; margin-top:6px; font-size:12.5px; color:var(--sub); }
+  .callout { border-radius:14px; padding:20px 22px; margin:20px 0; font-size:15px; }
+  .callout.amber { background:rgba(251,191,36,.07); border:1px solid rgba(251,191,36,.25); }
+  .callout.violet { background:rgba(167,139,250,.07); border:1px solid rgba(167,139,250,.25); }
+  .callout.cyan { background:rgba(34,211,238,.07); border:1px solid rgba(34,211,238,.25); }
+  .callout.green { background:rgba(52,211,153,.07); border:1px solid rgba(52,211,153,.25); }
+  .tldr { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin:24px 0; }
+  .tldr-item { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+  .tldr-item .n { font-family:Consolas,monospace; color:var(--amber); font-size:12px; letter-spacing:1px; }
+  .tldr-item p { font-size:14.5px; color:#c6d2e3; margin-top:6px; }
+  .tldr-item p b { color:var(--txt); }
+  .fig { background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:16px; padding:28px 20px 14px; margin:24px 0; overflow-x:auto; }
+  .fig svg { display:block; margin:0 auto; max-width:100%; height:auto; }
+  .figcap { text-align:center; color:var(--sub); font-size:13px; margin-top:10px; padding-bottom:6px; }
+  .chap-nav { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 8px; }
+  .chap-nav a { font-size:12.5px; color:var(--sub); text-decoration:none; border:1px solid var(--border); border-radius:8px; padding:5px 10px; transition:all .2s; font-family:Consolas,monospace; }
+  .chap-nav a:hover { color:var(--amber); border-color:rgba(251,191,36,.4); }
+  .timeline-row { display:flex; gap:0; margin:20px 0; }
+  .fact-table { width:100%; border-collapse:collapse; font-size:14px; margin:16px 0; }
+  .fact-table th { text-align:left; color:var(--sub); font-weight:600; padding:10px 12px; border-bottom:1px solid var(--border); font-size:13px; }
+  .fact-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.05); color:#c6d2e3; vertical-align:top; }
+  .fact-table td:first-child { color:var(--txt); font-weight:600; white-space:nowrap; }
+  .klist { list-style:none; margin:12px 0; }
+  .klist li { padding:10px 0 10px 28px; position:relative; color:#c6d2e3; font-size:15px; border-bottom:1px dashed rgba(255,255,255,.07); }
+  .klist li:last-child { border-bottom:none; }
+  .klist li::before { content:"▸"; position:absolute; left:6px; color:var(--amber); }
+  .klist li b { color:var(--txt); }
+  footer { position:relative; z-index:1; max-width:1180px; margin:60px auto 0; padding:30px 24px 60px; color:var(--sub); font-size:13px; border-top:1px solid var(--border); }
+  footer a { color:var(--cyan); text-decoration:none; }
+  .sketch { font-family:"Comic Sans MS","Segoe Print","Chalkboard SE","PingFang SC",cursive; }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav><div class="nav-inner">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>AGENT SANDBOX 档案馆</a>
+  <div class="nav-links">
+    <a href="#tldr">一眼看懂</a><a href="#map">访谈地图</a><a href="#why-personal">为何个人智能体</a>
+    <a href="#grind">七个月打磨</a><a href="#trust">信任阶梯</a><a href="#deal">交易始末</a>
+    <a href="#lab">重建实验室</a><a href="#diamond">钻石矿</a><a href="#ambition">人类野心</a><a href="#takeaway">工程启示</a>
+  </div>
+</div></nav>
+
+<header>
+  <div class="hero-kicker">INTERVIEW NOTES · 72 MIN · 2026-10-11</div>
+  <h1>「打造 Muse」<br><span class="grad">Alexandr Wang × David Senra</span><br>72 分钟对谈 · 深度笔记</h1>
+  <p class="hero-sub">Meta 首席 AI 官 <b>Alexandr Wang</b>（29 岁）接受播客主 <b>David Senra</b> 长访谈，完整复盘了 <b>Muse</b>——Meta 个人超级智能 agent——从一份备忘录到 App Store 登顶的全过程，以及他离开 Scale AI、重建 Meta AI 实验室的幕后故事。本笔记基于对 72 分钟文字稿的<b>逐章精读</b>与多家媒体交叉核实写成，结论先行、事实与分析分层标注。</p>
+  <div class="meta-row">
+    <span class="meta-chip">🎬 <a href="https://www.youtube.com/watch?v=S6l3aRsecuE" target="_blank" rel="noopener">YouTube · 1:12:17</a></span>
+    <span class="meta-chip">🎙️ <a href="https://www.davidsenra.com/episode/alexandr-wang" target="_blank" rel="noopener">节目官方页</a></span>
+    <span class="meta-chip">📅 发布于 2026-10-11 · 约 87K 观看</span>
+    <span class="meta-chip">📝 17 个章节 · 逐章精读摘要</span>
+  </div>
+</header>
+
+<section id="tldr">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>一眼看懂：五个核心判断</h2></div>
+  <p class="sec-desc reveal">先给结论，细节在后面。以下每一条都可以在正文里找到出处。</p>
+  <div class="tldr reveal">
+    <div class="tldr-item"><div class="n">JUDGMENT 01</div><p><b>Meta 赌的是「个人智能体」，不是代码智能体。</b>当全行业认为 Claude 在代码领域遥遥领先、代码 agent 是唯一形态时，Meta 反其道而行：35 亿日活的分发 +「人们想做的事」的产品基因，是别人抄不走的护城河。</p></div>
+    <div class="tldr-item"><div class="n">JUDGMENT 02</div><p><b>Muse 的魔法来自「不性感的苦功」，不是突破。</b>7 个月里团队列出上百项模型行为、逐项建评估、把红行清成绿行，直到第一个「全绿」检查点才发布。OpenClaw 有魔法时刻但不可靠，Meta 把魔法变成了确定性。</p></div>
+    <div class="tldr-item"><div class="n">JUDGMENT 03</div><p><b>增长 = 信任阶梯 + 截图。</b>用户从小事开始，一次次成功后才敢托付大事；最好的营销是三四张能在群聊里「飞起来」的截图，Jolly 吉祥物让人一眼认出这是 Muse。</p></div>
+    <div class="tldr-item"><div class="n">JUDGMENT 04</div><p><b>组织上，MSL 是「反官僚」的钻石矿。</b>200+ 直接下属、新人进「TBD」组、技术负责人一锤定音。AI 实验室的回报是幂律分布：给天才空间试疯狂的想法，而不是用运营指标挤压。</p></div>
+    <div class="tldr-item"><div class="n">JUDGMENT 05</div><p><b>终局是「每个人的能动性被完全点亮」。</b>Wang 把 Muse 当第二大脑；他认为 AI 的承诺是让人不再把时间花在「不得不做」的事上，扫除守门人，让人终身保持「美丽的不满足」。</p></div>
+  </div>
+</section>
+
+<section id="map">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>访谈地图：17 章节时间线</h2></div>
+  <p class="sec-desc reveal">全片 1:12:17。点击时间戳可跳转到 YouTube 对应位置（新标签页打开）。</p>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1100 340" width="1100" height="340" role="img" aria-label="访谈章节时间线">
+    <defs>
+      <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter>
+    </defs>
+    <!-- 主轴 -->
+    <path d="M40,170 C300,165 800,175 1060,168" stroke="#3b4761" stroke-width="3" fill="none" filter="url(#rough)"/>
+    <!-- 节点 -->
+    <g font-family="Consolas,monospace" font-size="12">
+      <circle cx="60" cy="169" r="9" fill="#fbbf24" filter="url(#rough)"/><text x="60" y="205" text-anchor="middle" fill="#fbbf24">00:00</text><text x="60" y="140" text-anchor="middle" fill="#e6edf7" font-size="13">愿景备忘录</text>
+      <circle cx="180" cy="168" r="7" fill="#22d3ee"/><text x="180" y="205" text-anchor="middle" fill="#22d3ee">01:32</text><text x="180" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">OpenClaw 时刻</text>
+      <circle cx="290" cy="169" r="7" fill="#22d3ee"/><text x="290" y="205" text-anchor="middle" fill="#22d3ee">03:34</text><text x="290" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">三年心理治疗</text>
+      <circle cx="400" cy="168" r="9" fill="#fbbf24" filter="url(#rough)"/><text x="400" y="205" text-anchor="middle" fill="#fbbf24">05:46</text><text x="400" y="140" text-anchor="middle" fill="#e6edf7" font-size="13">7 个月打磨</text>
+      <circle cx="510" cy="169" r="9" fill="#a78bfa" filter="url(#rough)"/><text x="510" y="205" text-anchor="middle" fill="#a78bfa">09:16</text><text x="510" y="140" text-anchor="middle" fill="#e6edf7" font-size="13">为何赌个人 AI</text>
+      <circle cx="620" cy="168" r="7" fill="#22d3ee"/><text x="620" y="205" text-anchor="middle" fill="#22d3ee">16:51</text><text x="620" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">Zuckerberg 侧写</text>
+      <circle cx="720" cy="169" r="7" fill="#22d3ee"/><text x="720" y="205" text-anchor="middle" fill="#22d3ee">20:15</text><text x="720" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">何时算 ready</text>
+      <circle cx="810" cy="168" r="7" fill="#22d3ee"/><text x="810" y="205" text-anchor="middle" fill="#22d3ee">23:32</text><text x="810" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">单一观点</text>
+      <circle cx="895" cy="169" r="7" fill="#f472b6"/><text x="895" y="205" text-anchor="middle" fill="#f472b6">25:56</text><text x="895" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">Meme 营销</text>
+      <circle cx="975" cy="168" r="7" fill="#22d3ee"/><text x="975" y="205" text-anchor="middle" fill="#22d3ee">34:38</text><text x="975" y="140" text-anchor="middle" fill="#8b98ad" font-size="12">信任阶梯</text>
+    </g>
+    <g font-family="Consolas,monospace" font-size="12">
+      <circle cx="120" cy="268" r="7" fill="#22d3ee"/><text x="120" y="300" text-anchor="middle" fill="#22d3ee">38:43</text><text x="120" y="245" text-anchor="middle" fill="#8b98ad" font-size="12">人类野心</text>
+      <circle cx="260" cy="268" r="9" fill="#fbbf24" filter="url(#rough)"/><text x="260" y="300" text-anchor="middle" fill="#fbbf24">45:22</text><text x="260" y="245" text-anchor="middle" fill="#e6edf7" font-size="13">那通电话</text>
+      <circle cx="400" cy="268" r="7" fill="#22d3ee"/><text x="400" y="300" text-anchor="middle" fill="#22d3ee">52:13</text><text x="400" y="245" text-anchor="middle" fill="#8b98ad" font-size="12">离开 Scale</text>
+      <circle cx="540" cy="268" r="9" fill="#a78bfa" filter="url(#rough)"/><text x="540" y="300" text-anchor="middle" fill="#a78bfa">55:19</text><text x="540" y="245" text-anchor="middle" fill="#e6edf7" font-size="13">重建实验室</text>
+      <circle cx="680" cy="268" r="7" fill="#22d3ee"/><text x="680" y="300" text-anchor="middle" fill="#22d3ee">58:13</text><text x="680" y="245" text-anchor="middle" fill="#8b98ad" font-size="12">创始人→教练</text>
+      <circle cx="820" cy="268" r="7" fill="#22d3ee"/><text x="820" y="300" text-anchor="middle" fill="#22d3ee">1:05:55</text><text x="820" y="245" text-anchor="middle" fill="#8b98ad" font-size="12">19 岁生日派对</text>
+      <circle cx="960" cy="268" r="9" fill="#fbbf24" filter="url(#rough)"/><text x="960" y="300" text-anchor="middle" fill="#fbbf24">1:08:04</text><text x="960" y="245" text-anchor="middle" fill="#e6edf7" font-size="13">钻石矿 vs 摩天楼</text>
+    </g>
+    <path d="M40,268 C300,263 700,273 1020,266" stroke="#3b4761" stroke-width="3" fill="none" filter="url(#rough)"/>
+    <text x="1060" y="272" fill="#8b98ad" font-size="12" font-family="Consolas,monospace">1:12:17 结束</text>
+    <text x="40" y="60" fill="#8b98ad" font-size="13" class="sketch">上：产品与战略（00:00 – 34:38）</text>
+    <text x="40" y="330" fill="#8b98ad" font-size="13" class="sketch">下：人与组织（38:43 – 1:12:17）</text>
+  </svg>
+  <div class="figcap">手绘时间线：上半程讲产品与战略，下半程讲人与组织。金色节点为本笔记重点章节。</div>
+  </div>
+  <div class="chap-nav reveal">
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=0s" target="_blank" rel="noopener">00:00 愿景</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=92s" target="_blank" rel="noopener">01:32 个人 agent 的发现</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=214s" target="_blank" rel="noopener">03:34 三年心理治疗</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=346s" target="_blank" rel="noopener">05:46 7 个月打造</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=556s" target="_blank" rel="noopener">09:16 为何赌个人 AI</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=1011s" target="_blank" rel="noopener">16:51 Zuckerberg 痴迷产品</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=1215s" target="_blank" rel="noopener">20:15 何时算 ready</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=1412s" target="_blank" rel="noopener">23:32 单一观点</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=1556s" target="_blank" rel="noopener">25:56 Meme 营销</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=2078s" target="_blank" rel="noopener">34:38 信任</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=2323s" target="_blank" rel="noopener">38:43 人类野心</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=2722s" target="_blank" rel="noopener">45:22 那通电话</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=3133s" target="_blank" rel="noopener">52:13 离开 Scale</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=3319s" target="_blank" rel="noopener">55:19 重建实验室</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=3493s" target="_blank" rel="noopener">58:13 创始人→教练</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=3955s" target="_blank" rel="noopener">1:05:55 19 岁派对</a>
+    <a href="https://www.youtube.com/watch?v=S6l3aRsecuE&t=4084s" target="_blank" rel="noopener">1:08:04 钻石矿</a>
+  </div>
+</section>
+
+<section id="origin">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>起点：一份备忘录，和一个开源项目</h2></div>
+  <p class="sec-desc reveal">对应章节 00:00 / 01:32 / 03:34。Muse 不是追热点的产物，它的剧本在智能体真正兴起之前就写好了。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>一切始于 <b>2025 年 6 月</b>的一份备忘录，由 Zuckerberg 主导、Wang 与 Nat Friedman 等人共同撰写，标题是 <b>Personal Super Intelligence（个人超级智能）</b>。备忘录提出的核心问题是：如何打造真正强大、能广泛提升人类生活体验的 AI。当时 AI 智能体尚未真正兴起，但这份文件已经勾勒出后来 Muse 的雏形，并确立了 Meta Superintelligence Labs（MSL）的方向。</p>
+    <p><span class="badge fact">Fact</span>真正的转折点在 <b>2026 年 2 月</b>。开源项目 <b>OpenClaw</b> 让团队看到了个人智能体的未来：Nat Friedman 是 MSL 内部第一个深度尝试的人，他的体验被形容为「介于惊恐与狂喜之间」——他几乎完全信任它，甚至让它「盯着」监控画面提醒自己多喝水。Wang 认为 Nat 是顶级信号源：GitHub 早期参与者、无数开源项目的先行者，他的强烈反应意味着「这里有真正神奇的东西」。随后 Wang 自己也沉浸式用了数周。</p>
+    <p><span class="badge fact">Fact</span>最戏剧性的一幕：Nat 写了一个对自己做「完整精神分析」的提示词，进行多轮深度心理剖析；Wang 经推荐也试了一次，形容那是一次极其高强度的体验，效果堪比「三年心理治疗」——因为 AI 能调取他的邮件等个人信息拼凑成完整画像，整个过程让他感到极度脆弱。两人各自写了备忘录递交给 Meta 董事会：Wang 的版本提出「超级智能体是最终的消费级产品」；Nat 的版本以「信任是必须的」为核心，奠定了后续产品构建的原则。<b>两周内，团队就做出了原型并演示给董事会。</b></p>
+  </div>
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span>注意这个决策链条：<b>愿景备忘录（6 月）→ 亲身体验带来的确信（2 月）→ 董事会备忘录 → 两周原型</b>。没有委员会式的可行性论证，是「顶级人才被真实体验击中」驱动的。Wang 反复强调：只有真正信任并把智能体带进生活，才能感受到它的能力边界——这后来成了 Muse 产品哲学的源头（信任阶梯）。</div>
+</section>
+
+<section id="why-personal">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>为什么赌「个人智能体」，而不是代码智能体</h2></div>
+  <p class="sec-desc reveal">对应章节 09:16。这是全片最关键的战略判断，也是 Meta 与所有人分道扬镳的地方。</p>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-label="代码智能体 vs 个人智能体战略对比">
+    <defs><filter id="rough2"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>
+    <!-- 左：代码智能体 -->
+    <rect x="30" y="60" width="430" height="300" rx="14" fill="rgba(248,113,113,.06)" stroke="#f87171" stroke-width="2.5" filter="url(#rough2)"/>
+    <text x="245" y="100" text-anchor="middle" fill="#f87171" font-size="19" font-weight="700">代码智能体</text>
+    <text x="245" y="128" text-anchor="middle" fill="#8b98ad" font-size="13">2026 年初的主流共识</text>
+    <text x="70" y="170" fill="#c6d2e3" font-size="14">• Claude 在代码领域遥遥领先</text>
+    <text x="70" y="205" fill="#c6d2e3" font-size="14">• 行业弥漫恐慌：「代码 agent</text>
+    <text x="70" y="230" fill="#c6d2e3" font-size="14">  是唯一重要的形态」</text>
+    <text x="70" y="275" fill="#c6d2e3" font-size="14">• Meta 若跟进 = 在别人的</text>
+    <text x="70" y="300" fill="#c6d2e3" font-size="14">  主场打客场</text>
+    <text x="245" y="340" text-anchor="middle" fill="#f87171" font-size="15" class="sketch">✗ 不是 Meta 的战场</text>
+    <!-- 右：个人智能体 -->
+    <rect x="540" y="60" width="430" height="300" rx="14" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="2.5" filter="url(#rough2)"/>
+    <text x="755" y="100" text-anchor="middle" fill="#34d399" font-size="19" font-weight="700">个人智能体</text>
+    <text x="755" y="128" text-anchor="middle" fill="#8b98ad" font-size="13">Meta 的反共识下注</text>
+    <text x="580" y="170" fill="#c6d2e3" font-size="14">• 每天触达 <tspan font-weight="700" fill="#e6edf7">35 亿</tspan> 用户的分发</text>
+    <text x="580" y="205" fill="#c6d2e3" font-size="14">• 产品代表人们「想做」的事：</text>
+    <text x="580" y="230" fill="#c6d2e3" font-size="14">  家人、兴趣、社交（人文基因）</text>
+    <text x="580" y="275" fill="#c6d2e3" font-size="14">• AI 的承诺：把时间从「不得不做」</text>
+    <text x="580" y="300" fill="#c6d2e3" font-size="14">  挪到「想做」的事上</text>
+    <text x="755" y="340" text-anchor="middle" fill="#34d399" font-size="15" class="sketch">✓ 别人抄不走的护城河</text>
+    <!-- vs -->
+    <text x="500" y="225" text-anchor="middle" fill="#fbbf24" font-size="26" font-weight="800" class="sketch">VS</text>
+    <text x="500" y="60" text-anchor="middle" fill="#8b98ad" font-size="13" class="sketch">2026 年 2 月的分叉口</text>
+  </svg>
+  <div class="figcap">战略分叉：跟随共识打代码 agent，还是用分发优势开辟个人智能体。Meta 选了后者。</div>
+  </div>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>2026 年初，Claude 在代码领域爆发增长，整个行业弥漫着恐慌，主流观点认为「代码智能体是唯一重要的形态」。Meta 的判断恰恰相反。Wang 对 Zuckerberg 的论证有两层：<b>人文层面</b>，AI 的承诺是让人不再把时间花在「不得不做」的事上，而 Meta 的产品（Instagram、WhatsApp、Facebook）恰恰代表人们「想做」的事——这是公司的人文基因；<b>商业层面</b>，Meta 每天触达 35 亿用户，分发能力无人能及。</p>
+    <p><span class="badge analysis">Analysis</span>这是一个经典的「打自己擅长的仗」：在代码 agent 赛道，Meta 永远追着 Anthropic 跑；但在个人智能体赛道，Meta 的分发和用户关系是结构性优势。个人智能体曾经「来过又走」，正因为体验不够精致——而这恰好是 Meta 最擅长的（把粗糙的东西打磨到极致）。战略判断 + 组织能力对上了。</p>
+  </div>
+</section>
+
+<section id="grind">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>七个月打磨：把「红行」清成「绿行」</h2></div>
+  <p class="sec-desc reveal">对应章节 05:46 / 20:15。从两周原型到 9 月发布，中间是漫长而痛苦的可靠性工程。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>最终 Muse 产品中的关键决策，早在第一版原型里就已存在（包括早期版本的 Muse Charm）。从 2 月原型到发布，团队花了 <b>7 个月</b>，把一个「偶尔神奇、大多不好用」的原型打磨成可靠的消费级产品。Wang 坦言 OpenClaw 爆红又迅速沉寂，正因为魔法时刻之外大多不可靠——而 Meta 的优势恰恰是「不性感」的苦功：无数次模型迭代，把模型路线图对准个人超级智能。</p>
+    <p><span class="badge fact">Fact</span>具体做法：团队列出<b>上百项模型必须具备的具体行为与能力</b>（「数百乃至上千行」的追踪表格），<b>逐项建立评估、开评审会</b>，把短板一项项补齐。每行都设定了「发布拦截线」和「优秀线」——比如 80 行绿、20 行红就不够格；直到出现第一个「全绿」的模型检查点（一个专门训练的版本，字幕记作 Musepark 1.3，即 Muse Spark 1.3 的特别调优版）才算达标。另一半判断标准是体感：亲自试用后能明显感到「比之前任何版本都好得多」。模型 + 产品团队总共<b>不到 200 人</b>，在大公司里算非常精简。</p>
+  </div>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1000 400" width="1000" height="400" role="img" aria-label="行为追踪表：红行变绿行">
+    <defs><filter id="rough3"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.5"/></filter></defs>
+    <text x="180" y="40" text-anchor="middle" fill="#8b98ad" font-size="14" class="sketch">2 月：原型阶段</text>
+    <text x="820" y="40" text-anchor="middle" fill="#8b98ad" font-size="14" class="sketch">9 月：发布检查点</text>
+    <!-- 左表 -->
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="60" y="60" width="240" height="34" rx="6" fill="rgba(248,113,113,.12)" stroke="#f87171" stroke-width="2" filter="url(#rough3)"/><text x="180" y="82" text-anchor="middle" fill="#f87171">✗ 日历冲突处理</text>
+      <rect x="60" y="102" width="240" height="34" rx="6" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="180" y="124" text-anchor="middle" fill="#34d399">✓ 表单自动填写</text>
+      <rect x="60" y="144" width="240" height="34" rx="6" fill="rgba(248,113,113,.12)" stroke="#f87171" stroke-width="2" filter="url(#rough3)"/><text x="180" y="166" text-anchor="middle" fill="#f87171">✗ 主动追问确认</text>
+      <rect x="60" y="186" width="240" height="34" rx="6" fill="rgba(248,113,113,.12)" stroke="#f87171" stroke-width="2" filter="url(#rough3)"/><text x="180" y="208" text-anchor="middle" fill="#f87171">✗ 跨应用任务编排</text>
+      <rect x="60" y="228" width="240" height="34" rx="6" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="180" y="250" text-anchor="middle" fill="#34d399">✓ 自然语言沟通</text>
+      <rect x="60" y="270" width="240" height="34" rx="6" fill="rgba(248,113,113,.12)" stroke="#f87171" stroke-width="2" filter="url(#rough3)"/><text x="180" y="292" text-anchor="middle" fill="#f87171">✗ …（上百行）</text>
+    </g>
+    <!-- 箭头 -->
+    <path d="M330,180 C420,170 480,190 560,180" stroke="#fbbf24" stroke-width="3" fill="none" marker-end="url(#arr)" filter="url(#rough3)"/>
+    <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#fbbf24"/></marker></defs>
+    <text x="445" y="150" text-anchor="middle" fill="#fbbf24" font-size="14" class="sketch">逐项建评估</text>
+    <text x="445" y="172" text-anchor="middle" fill="#fbbf24" font-size="14" class="sketch">开评审会清红行</text>
+    <!-- 右表 -->
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="700" y="60" width="240" height="34" rx="6" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="820" y="82" text-anchor="middle" fill="#34d399">✓ 日历冲突处理</text>
+      <rect x="700" y="102" width="240" height="34" rx="6" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="820" y="124" text-anchor="middle" fill="#34d399">✓ 表单自动填写</text>
+      <rect x="700" y="144" width="240" height="34" rx="6" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="820" y="166" text-anchor="middle" fill="#34d399">✓ 主动追问确认</text>
+      <rect x="700" y="186" width="240" height="34" rx="6" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="820" y="208" text-anchor="middle" fill="#34d399">✓ 跨应用任务编排</text>
+      <rect x="700" y="228" width="240" height="34" rx="6" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="820" y="250" text-anchor="middle" fill="#34d399">✓ 自然语言沟通</text>
+      <rect x="700" y="270" width="240" height="34" rx="6" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-width="2" filter="url(#rough3)"/><text x="820" y="292" text-anchor="middle" fill="#34d399">✓ …（全绿）</text>
+    </g>
+    <text x="500" y="350" text-anchor="middle" fill="#8b98ad" font-size="14">每行 = 一个可测量的模型行为 · 「发布拦截线」+「优秀线」· 80 绿 20 红 = 不够格</text>
+    <text x="500" y="378" text-anchor="middle" fill="#34d399" font-size="15" font-weight="700" class="sketch">第一个「全绿」检查点 → Muse Spark 1.3 特别调优版 → 发布</text>
+  </svg>
+  <div class="figcap">发布门禁：上百行行为追踪表，每行独立评估。示意行为为笔者根据访谈描述整理，非官方原表。</div>
+  </div>
+  <div class="callout amber reveal"><span class="badge analysis">Analysis</span>这是整篇访谈里<b>对做 agent 产品最有价值的一段</b>：把「模型好不好」拆成上百个可测量的具体行为，每个行为有评估、有拦截线，用评审会驱动清零。本质上是把 <b>SRE 的 SLO 思想搬进了模型训练</b>——发布标准不是「感觉不错」，而是「表格全绿」。Wang 的原话逻辑是：如果 Muse 成为增长最快的 AI 产品，原因不是某项突破，而是「Meta 拒绝在表格变绿之前发布」。</div>
+  <div class="callout cyan reveal"><span class="badge fact">Fact</span>被问及「为什么 Meta 能做到而 OpenClaw 团队没做到」时，Wang 先向 OpenClaw 作者 Peter Steinberger 致敬，称创造 OpenClaw 的头脑是神奇的——而 Muse 的魔法来自「把每个细节打磨到位」的 grind。发布后数据：<b>9 月 8 日上线，约 10 天后登顶美国 App Store 并超过 ChatGPT</b>，22 天内美国下载超 500 万（第三方机构 Apptopia 估计），Meta 股价自发布上涨近 20%。</div>
+</section>
+
+<section id="trust">
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>信任阶梯：从小事到「信任之跃」</h2></div>
+  <p class="sec-desc reveal">对应章节 34:38。获客之后，真正的战场是信任——而信任是爬上去的，不是宣布的。</p>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1000 430" width="1000" height="430" role="img" aria-label="信任阶梯示意图">
+    <defs><filter id="rough4"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>
+    <!-- 阶梯 -->
+    <g stroke="#34d399" stroke-width="4" fill="none" filter="url(#rough4)" stroke-linecap="round">
+      <path d="M120,360 L120,300 L240,300 L240,240 L360,240 L360,180 L480,180 L480,120 L620,120"/>
+    </g>
+    <g font-size="14" fill="#c6d2e3">
+      <text x="130" y="345">查个天气、定个闹钟</text>
+      <text x="250" y="285">填表、订餐厅</text>
+      <text x="370" y="225">规划行程、比价下单</text>
+      <text x="490" y="165">管钱、管日程、管生活</text>
+    </g>
+    <g font-family="Consolas,monospace" font-size="12" fill="#8b98ad">
+      <text x="130" y="325" fill="#34d399">✓ 办成了 → 「哇」</text>
+      <text x="250" y="265" fill="#34d399">✓ 又办成了</text>
+      <text x="370" y="205" fill="#34d399">✓ 还办成了</text>
+    </g>
+    <!-- trust fall -->
+    <path d="M620,120 C700,100 760,60 830,55" stroke="#fbbf24" stroke-width="4" fill="none" stroke-dasharray="10,7" filter="url(#rough4)"/>
+    <text x="740" y="45" text-anchor="middle" fill="#fbbf24" font-size="20" font-weight="800" class="sketch">trust fall · 信任之跃</text>
+    <text x="740" y="70" text-anchor="middle" fill="#8b98ad" font-size="13">敢把真正重要的事交出去</text>
+    <!-- Jolly -->
+    <circle cx="880" cy="120" r="34" fill="rgba(251,191,36,.15)" stroke="#fbbf24" stroke-width="3" filter="url(#rough4)"/>
+    <text x="880" y="132" text-anchor="middle" font-size="30">🙂</text>
+    <text x="880" y="175" text-anchor="middle" fill="#fbbf24" font-size="13" class="sketch">Jolly 吉祥物</text>
+    <text x="880" y="195" text-anchor="middle" fill="#8b98ad" font-size="12">截图里一眼认出 Muse</text>
+    <text x="120" y="410" fill="#8b98ad" font-size="14">Muse 要做的：把用户带上这架阶梯，<tspan fill="#e6edf7" font-weight="700">让每一次都成功</tspan>。一次失败就可能掉下去。</text>
+  </svg>
+  <div class="figcap">信任阶梯：小事 → 大事 → 信任之跃。每一步成功都是下一步的入场券。</div>
+  </div>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>Wang 描述的机制很简单：用户先交给 AI 一件小事，它办成了——「哇」；再给一件稍大的事，又办成了；如此一步步升级成「信任之跃」（trust fall）。Muse 要做的就是把用户带上这个阶梯，<b>让每一次都成功</b>。增长主要靠口碑：David 自己就是被朋友发来的 Muse 使用截图「种草」的。</p>
+    <p><span class="badge fact">Fact</span>访谈里最生动的例子：一位执掌千亿美元公司的朋友把证件落在 FlexJet 专机上，Muse 全程安排快递、搞定办公室安保，把证件送了回来——「最好的营销就是三四张截图」。现代产品营销是截图驱动的：截图必须能在群聊和网上「飞起来」；而截图里 <b>Jolly 吉祥物</b>的形象一眼就能让人认出「这是 Muse」，这是最好的营销。</p>
+  </div>
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span>把两件事连起来看：<b>信任阶梯是留存机制，截图是增长机制</b>。截图恰好是「信任阶梯爬到高处」的副产品——只有当用户敢把「证件落专机上」这种事交给 AI 并成功时，才会产生值得转发的截图。所以增长飞轮的起点不是营销，而是<b>可靠性</b>（回到第 05 节的红绿表）。这也解释了为什么 Wang 敢让 meme 成为增长策略：meme 只能放大已有的口碑，放大不了不存在的东西。</div>
+</section>
+
+<section id="meme">
+  <div class="sec-head reveal"><span class="sec-num">07</span><h2>Meme 营销：让 Meta「变酷」</h2></div>
+  <p class="sec-desc reveal">对应章节 25:56。一位首席 AI 官在开会时满脑子想 meme——这不是不务正业，是战略。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>Wang 的 X 账号画风清奇：发布后发了 300 多条帖子，其中 5 天内发了 100 多条，大量内容是 Muse 吉祥物 Jolly 的 meme、用户好评截图和对竞争对手的调侃。他在访谈里承认，开会时满脑子都是新的 meme 点子，「得赶紧发出去」；同事对传播效果「有点惊讶」。但他说得很直白：<b>「它确实对增长产生了影响，这有点好笑。」</b></p>
+    <p><span class="badge fact">Fact</span>背后的目标是让 Meta「cool again（重新变酷）」：「尽管拥有 Instagram、Facebook 这样不可思议的文化软件，历史上 Meta 并不酷。」而他的方法论只有一句话：<b>互联网奖励冒险（the internet rewards risk）</b>。有些推文他根本没多想——「去他的，发吧。」</p>
+  </div>
+  <div class="quote reveal">「尽管拥有 Instagram 和 Facebook 这样不可思议的文化软件，历史上，Meta 并不酷。我记得，互联网奖励冒险。」<span class="src">—— Alexandr Wang，访谈 25:56 章节（大意转述）</span></div>
+  <div class="callout amber reveal"><span class="badge analysis">Analysis</span>这件事值得玩味：一个 29 岁的首席 AI 官，用「不体面」的方式做增长，恰恰击中了互联网的情绪——人们厌倦了四十多岁 CEO 们四平八稳的官宣，欢迎一个「有无限精力、刚被赋予 AI 时代权力」的年轻人的真实感。<b>Meme 在这里不是装饰，是「信任前置」</b>：一个敢发 meme 的高管，暗示着一家敢冒险、产品有活力的公司。这和「单一观点」的产品哲学是同一枚硬币的两面。</div>
+</section>
+
+<section id="pov">
+  <div class="sec-head reveal"><span class="sec-num">08</span><h2>单一观点 vs「PM 地狱」</h2></div>
+  <p class="sec-desc reveal">对应章节 23:32。录制当天恰逢乔布斯逝世 15 周年——这个话题来得正是时候。</p>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1000 380" width="1000" height="380" role="img" aria-label="单一观点 vs 弗兰肯斯坦产品">
+    <defs><filter id="rough5"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>
+    <!-- 左：弗兰肯斯坦 -->
+    <text x="250" y="40" text-anchor="middle" fill="#f87171" font-size="17" font-weight="700">大公司的通病</text>
+    <g filter="url(#rough5)">
+      <rect x="90" y="70" width="120" height="90" rx="8" fill="rgba(248,113,113,.08)" stroke="#f87171" stroke-width="2.5"/><text x="150" y="120" text-anchor="middle" fill="#f87171" font-size="13">PM A 的功能</text>
+      <rect x="220" y="70" width="120" height="90" rx="8" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="2.5"/><text x="280" y="120" text-anchor="middle" fill="#fbbf24" font-size="13">PM B 的需求</text>
+      <rect x="90" y="170" width="120" height="90" rx="8" fill="rgba(167,139,250,.08)" stroke="#a78bfa" stroke-width="2.5"/><text x="150" y="220" text-anchor="middle" fill="#a78bfa" font-size="13">PM C 的 KPI</text>
+      <rect x="220" y="170" width="120" height="90" rx="8" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="2.5"/><text x="280" y="220" text-anchor="middle" fill="#22d3ee" font-size="13">合规塞的弹窗</text>
+    </g>
+    <text x="250" y="300" text-anchor="middle" fill="#8b98ad" font-size="14">多种观点拼凑的「弗兰肯斯坦」</text>
+    <text x="250" y="326" text-anchor="middle" fill="#8b98ad" font-size="14">每个 PM 都要塞自己的东西</text>
+    <text x="250" y="352" text-anchor="middle" fill="#f87171" font-size="14" class="sketch">→ 最后搅成一杯「冰沙」</text>
+    <!-- 右：单一观点 -->
+    <text x="750" y="40" text-anchor="middle" fill="#34d399" font-size="17" font-weight="700">Muse 的做法</text>
+    <circle cx="750" cy="165" r="95" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="3" filter="url(#rough5)"/>
+    <text x="750" y="158" text-anchor="middle" fill="#34d399" font-size="16" font-weight="700">一个连贯统一</text>
+    <text x="750" y="184" text-anchor="middle" fill="#34d399" font-size="16" font-weight="700">的体验</text>
+    <text x="750" y="300" text-anchor="middle" fill="#8b98ad" font-size="14">只传达一种品味、一种视角</text>
+    <text x="750" y="326" text-anchor="middle" fill="#8b98ad" font-size="14">「被视为一件艺术品」</text>
+    <text x="750" y="352" text-anchor="middle" fill="#34d399" font-size="14" class="sketch">→ 用户感觉不到拼凑</text>
+    <text x="500" y="200" text-anchor="middle" fill="#fbbf24" font-size="24" font-weight="800" class="sketch">VS</text>
+  </svg>
+  <div class="figcap">产品哲学的二选一：观点拼凑 vs 单一观点。Muse 选择了后者，并为此保持团队精简。</div>
+  </div>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>Wang 批评大公司产品的通病：变成多种观点拼凑的「弗兰肯斯坦」（他用了「克罗嫩伯格式混合体」的比喻），陷入「PM 地狱」——每个产品经理都要塞自己的东西，最后搅成一杯「冰沙」，用户能感觉到产品是七拼八凑的。Muse 必须反其道而行：<b>只传达一个连贯统一的体验</b>。</p>
+    <p><span class="badge fact">Fact</span>David 引用了对乔布斯最精妙的一句描述：「Apple is just Steve Jobs with 10,000 lives.」（苹果就是拥有了一万条命的乔布斯）——产品的品味、视角和观点即创始人的延伸。Wang 认为 Zuckerberg 的品味同样值得称道，最终塑造了 Muse。被问及用户数时，Wang 只肯说「数百万」，并转发过暗示 Muse 是「史上增长最快的消费级应用」的图表；David 追问具体数字，Wang 笑称「数百万也可能是数亿」。</p>
+  </div>
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span>「单一观点」不是审美偏好，是<b>组织设计</b>：不到 200 人的团队、高管层知情但克制不膨胀、把产品当艺术品——这些都是为了防止观点被稀释。很多大公司的 agent 产品做出来像「功能清单」，根子就在这里：每个团队塞一个 capability，最后没有统一的人格。Muse 的答案是：<b>先有人格，再有功能</b>。</div>
+</section>
+
+<section id="zuck">
+  <div class="sec-head reveal"><span class="sec-num">09</span><h2>Zuckerberg 侧写：不性感的超能力</h2></div>
+  <p class="sec-desc reveal">对应章节 16:51。透过 Wang 的眼睛看 Zuckerberg——一个「永远对产品现状不满意」的人。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>David 提到 Jeremy Stern 在 Colossus 上发表的 15000 字 Zuckerberg 特稿（Wang 笑称太长没读）。Zuckerberg 在文中谈到自己相对 Elon 等人的优势：「很不性感，但我擅长组建团队，然后长期缓慢地改进产品。」这正是 Muse 7 个月打磨期的写照——<b>AI 时间的 7 个月相当于非 AI 时间的十年</b>，需要极大的耐心、克制和对过程的信任。</p>
+    <p><span class="badge fact">Fact</span>2 月到 9 月，Zuckerberg 在财报电话会上不断暗示个人智能体的进展；公司内部不乏怀疑，华尔街的主流叙事是「Meta 在烧钱」「Zuckerberg 赢不了 AI」；但 Stern 私下访谈竞争对手时，对方坦言「不想跟他们竞争」。Wang 说 Zuckerberg 的超能力是「永远对产品现状不满意」；他虽被形容为「独裁者」，却极度重视团队凝聚力。</p>
+    <p><span class="badge fact">Fact</span>另一个细节：David 提到 1957 年出版的《拿破仑之心》，书中反复强调「犹豫是致命的」——行动之前深思熟虑、做足研究，一旦选定方向就全力投入。Wang 认同这正是 Zuckerberg 的风格：<b>先充分 deliberation 确保方向正确，然后全力押注</b>。他真正内化了「失败不重要，重要的是赢得有多大」，因此能无所畏惧地承担风险——「在一个时刻变化的世界里，最大的风险就是不冒风险」。</p>
+  </div>
+  <div class="callout cyan reveal"><span class="badge analysis">Analysis</span>把 Zuckerberg 的决策风格抽象一下：<b>慢思考、快下注、大耐心</b>。慢思考（deliberation 到方向正确）→ 快下注（一旦选定就「打空弹匣」式 all in）→ 大耐心（7 个月打磨期顶住华尔街质疑）。这对做 agent 的人有个直接启示：agent 是非确定性系统，质量曲线是指数型的——前 80% 的时间看起来都没什么进展，最后一跃才显现。没有大耐心的人会在拐点前放弃。</div>
+</section>
+
+<section id="deal">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>交易始末：143 亿美元与「实验室的再创办」</h2></div>
+  <p class="sec-desc reveal">对应章节 45:22 / 52:13。从一通消息到宣布交易，只用了约五周。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>两人结识于 2021 或 2022 年：经 Meta 长期高管 Alex Schultz 介绍，约了一次聊 AI 的会面——光是约上这次会就花了近一年（Zuckerberg 的日程极度饱和、只聚焦最重要的事）。之后两人大约每半年通一次话，Meta 是 Scale 的重要客户；让 Wang 印象深刻的是，Zuckerberg 能在 WhatsApp 上极快地写出又长又严谨的回复。</p>
+    <p><span class="badge fact">Fact</span>转折点在 <b>Llama 4 之后</b>：Llama 4 没走在 Meta 想要的轨道上，而 AI 又越来越重要。Zuckerberg 身边有一群世界级创业者，他会逐个请教「如果是你会怎么做」——这种谦逊让 Wang 印象深刻。<b>从第一次联系到宣布交易只用了约五周</b>，快得惊人。交易结构：<b>Meta 投资 143 亿美元、持有 Scale 49% 股份</b>（估值超 290 亿美元），Scale 继续独立运营，Wang 带少数人加入 Meta。</p>
+    <p><span class="badge fact">Fact</span>Wang 起初觉得「这说不通」：Meta 的标志性收购（Instagram、WhatsApp）都有清晰的产品逻辑，而 Scale 是深度的企业/政府销售业务，完全是另一个世界。但显然 Zuckerberg 主要想要的是 Llama 项目和人才。决定过程花了好几周，他反复问自己「这合理吗？」——放手「自己的孩子」很难：从创办到交易整整 9 年，而他还不到 30 岁，一直把 Scale 当作「毕生的事业」。最终打动他的是两点：一是对各方都好的交易（Scale 股东拿到好条件）；二是看到了在 Meta 可能发生的事——当时 Meta 的 AI 看起来像「受损资产」，但这反而激发了他的创业者本能：<b>可以亲手「重建实验室」，从零确立原则和文化——一次「实验室的再创办」</b>。</p>
+  </div>
+  <div class="callout amber reveal"><span class="badge analysis">Analysis</span>注意 Wang 的决策逻辑：他不是被钱打动的（交易对 Scale 股东好是前提），而是被「重建」本身打动的。一个 29 岁的人，刚刚把 9 年心血交出去，选择去一家 AI 声誉受损的大公司从零搭实验室——这只有一种解释：<b>他判断「建实验室」这件事的期望值，高于守住 Scale</b>。这和他后来的「钻石矿」理论完全一致：他在 Meta 挖钻石，在 Scale 建摩天楼。</div>
+</section>
+
+<section id="lab">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>重建实验室：200+ 直接下属的「反官僚」实验</h2></div>
+  <p class="sec-desc reveal">对应章节 55:19 / 58:13 / 01:09:21。从 founder 到 coach，Wang 换了一整套管理哲学。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>在 Scale，Wang 内化了一条信条：创始人要「会干每一份工作」，对每件小事都有强烈观点——结果公司成了他个人意志的产物，但他自己也成了最大的瓶颈。在 Meta 任务完全不同：要在极短时间内做成极多事，没有「每份工作都亲自干」的奢侈。于是他换了一套哲学：<b>创造环境</b>。头号任务是招聘——在每个领域都招最顶尖的人。</p>
+    <p><span class="badge fact">Fact</span>MSL 的组织 thesis 是：<b>极致的人才密度 + 极扁的层级</b>。Wang 有 <b>200 多名直接下属</b>；新招的研究员被放进一个叫 <b>「TBD」</b> 的组——字面意思就是反官僚。逻辑是：招的都是已经证明过自己卓越的人，不需要被微观管理；需要的是<b>技术领导力</b>——各小组的技术负责人负责在技术决策上「一锤定音」。很多决策集体讨论，让一群天才充分辩论。Wang 坦言：「要说我是 200 多人的最佳管理者，那是在撒谎」——关键在于他们不需要管理者，需要的是好环境。</p>
+    <p><span class="badge fact">Fact</span>他能招到人的两个原因：一是 MSL 创办时刻的感召力——从零建实验室、方向清晰（个人超级智能）、「能讲给妈妈奶奶听」；二是 Meta 的资源：不缺算力、不缺基建。顶尖人才会吸引顶尖人才；加上 OpenAI、Anthropic 股价大涨，对很多人来说加入 Meta 在经济上基本「打平」。他还谈到 AI 本质是科学探索：人类根本不知道模型的极限在哪，需要试错、需要天才、需要给空间、时间和资源。<b>Nat Friedman 就是例子：如果说 Muse 透出了某个人的单一观点，那就是他。</b></p>
+  </div>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1000 360" width="1000" height="360" role="img" aria-label="MSL 反官僚组织结构">
+    <defs><filter id="rough6"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>
+    <rect x="420" y="30" width="160" height="64" rx="12" fill="rgba(251,191,36,.1)" stroke="#fbbf24" stroke-width="3" filter="url(#rough6)"/>
+    <text x="500" y="58" text-anchor="middle" fill="#fbbf24" font-size="15" font-weight="700">Alexandr Wang</text>
+    <text x="500" y="80" text-anchor="middle" fill="#8b98ad" font-size="12">教练 + 环境管家</text>
+    <g stroke="#3b4761" stroke-width="2.5" filter="url(#rough6)">
+      <path d="M500,94 L200,150 M500,94 L420,150 M500,94 L580,150 M500,94 L800,150"/>
+    </g>
+    <g font-size="13">
+      <rect x="110" y="150" width="180" height="90" rx="10" fill="rgba(34,211,238,.07)" stroke="#22d3ee" stroke-width="2.5" filter="url(#rough6)"/>
+      <text x="200" y="182" text-anchor="middle" fill="#22d3ee" font-weight="700">「TBD」组</text>
+      <text x="200" y="206" text-anchor="middle" fill="#8b98ad" font-size="12">新人直达 · 反官僚</text>
+      <rect x="330" y="150" width="180" height="90" rx="10" fill="rgba(167,139,250,.07)" stroke="#a78bfa" stroke-width="2.5" filter="url(#rough6)"/>
+      <text x="420" y="182" text-anchor="middle" fill="#a78bfa" font-weight="700">模型团队</text>
+      <text x="420" y="206" text-anchor="middle" fill="#8b98ad" font-size="12">技术负责人一锤定音</text>
+      <rect x="550" y="150" width="180" height="90" rx="10" fill="rgba(52,211,153,.07)" stroke="#34d399" stroke-width="2.5" filter="url(#rough6)"/>
+      <text x="640" y="182" text-anchor="middle" fill="#34d399" font-weight="700">产品团队</text>
+      <text x="640" y="206" text-anchor="middle" fill="#8b98ad" font-size="12">单一观点 · 不到 200 人</text>
+      <rect x="770" y="150" width="180" height="90" rx="10" fill="rgba(244,114,182,.07)" stroke="#f472b6" stroke-width="2.5" filter="url(#rough6)"/>
+      <text x="860" y="182" text-anchor="middle" fill="#f472b6" font-weight="700">… 200+ 直属</text>
+      <text x="860" y="206" text-anchor="middle" fill="#8b98ad" font-size="12">集体辩论做决策</text>
+    </g>
+    <text x="500" y="290" text-anchor="middle" fill="#8b98ad" font-size="14">管理公式：<tspan fill="#e6edf7" font-weight="700">已证明卓越的人 × 好环境 × 技术领导力</tspan> ＝ 不需要被管理</text>
+    <text x="500" y="320" text-anchor="middle" fill="#fbbf24" font-size="14" class="sketch">「他们都极其聪明能干，只需要空间去发挥」</text>
+  </svg>
+  <div class="figcap">MSL 组织逻辑：扁平到反常识，用人才密度代替管理层级。示意结构基于访谈描述整理。</div>
+  </div>
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span>「200+ 直接下属」听起来像管理灾难，但在 Wang 的框架里是自洽的：<b>管理的前提是「人需要被管理」，而他的前提是「天才只需要环境」</b>。TBD 组的名字本身就是文化宣言。这个模型能成立有三个前提——招聘标准极高（已证明卓越）、技术决策有人一锤定音（不是无政府）、使命足够清晰（个人超级智能，能讲给妈妈奶奶听）。缺任何一个，扁平就会变成混乱。</div>
+</section>
+
+<section id="diamond">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>钻石矿 vs 摩天楼：两种事业的回报分布</h2></div>
+  <p class="sec-desc reveal">对应章节 01:05:55 / 01:08:04。全片最精彩的管理隐喻，值得单独画出来。</p>
+  <div class="fig reveal">
+  <svg viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-label="钻石矿与摩天楼回报分布对比">
+    <defs><filter id="rough7"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>
+    <!-- 坐标轴 -->
+    <g stroke="#3b4761" stroke-width="2" filter="url(#rough7)">
+      <path d="M80,360 L80,60 M80,360 L480,360"/>
+      <path d="M560,360 L560,60 M560,360 L960,360"/>
+    </g>
+    <text x="60" y="50" fill="#8b98ad" font-size="12">回报</text><text x="490" y="385" fill="#8b98ad" font-size="12">投入</text>
+    <text x="540" y="50" fill="#8b98ad" font-size="12">回报</text><text x="970" y="385" fill="#8b98ad" font-size="12">投入</text>
+    <!-- 摩天楼：线性 -->
+    <path d="M95,330 L460,120" stroke="#22d3ee" stroke-width="4" filter="url(#rough7)" stroke-linecap="round"/>
+    <text x="280" y="40" text-anchor="middle" fill="#22d3ee" font-size="18" font-weight="700">🏢 建摩天楼</text>
+    <text x="280" y="395" text-anchor="middle" fill="#8b98ad" font-size="13">数据标注 · Prime 快递</text>
+    <text x="240" y="250" fill="#8b98ad" font-size="13" class="sketch" transform="rotate(-32 240 250)">线性回报：抠每一盎司优化</text>
+    <text x="280" y="415" text-anchor="middle" fill="#8b98ad" font-size="12">这里省 2%、那里省 1% · 靠运营</text>
+    <!-- 钻石矿：幂律 -->
+    <path d="M575,345 C700,340 780,330 830,300 C880,270 900,200 945,90" stroke="#fbbf24" stroke-width="4" fill="none" filter="url(#rough7)" stroke-linecap="round"/>
+    <circle cx="945" cy="90" r="10" fill="#fbbf24" filter="url(#rough7)"/>
+    <text x="760" y="40" text-anchor="middle" fill="#fbbf24" font-size="18" font-weight="700">💎 挖钻石</text>
+    <text x="760" y="395" text-anchor="middle" fill="#8b98ad" font-size="13">AI 实验室 · VC</text>
+    <text x="700" y="250" fill="#8b98ad" font-size="13" class="sketch">幂律分布：大多尝试都没用</text>
+    <text x="760" y="415" text-anchor="middle" fill="#fbbf24" font-size="13" class="sketch">但挖到一次 = 投入的百万倍</text>
+  </svg>
+  <div class="figcap">两种回报分布：摩天楼靠运营抠线性优化，钻石矿靠放手试错等幂律爆发。</div>
+  </div>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>Wang 提出两种事业的回报分布：<b>建摩天楼</b>式业务（如数据标注、Prime 快递）回报是线性的，靠运营——抠每一盎司的优化，这里省 2%、那里省 1%；<b>挖钻石</b>则是幂律分布：大部分尝试都没用，但一旦挖到，回报是投入的百万倍——做法是「放手让大家去试疯狂的想法」，再悉心培育有希望的苗子。VC 就是典型的钻石矿行业。<b>在 Meta，他觉得自己在挖钻石；在 Scale，他觉得自己在建摩天楼。</b></p>
+    <p><span class="badge fact">Fact</span>19 岁生日派对是这个理论的注脚：当时他是 MIT 大一新生，寒假在自营交易公司 HRT 实习。那批实习生只有十来人，几乎全是哈佛、MIT 的学生，彼此早在各类竞赛中就认识——其中出了 Hyperliquid 创始人 Jeffrey Yan、Cognition 创始人 Scott Wu、Anthropic 研究员 Vicky Ye。HRT 本身是个传奇：不到 1000 人，某季度创下 110 亿美元收入、约 80 亿美元利润的纪录。Wang 从小参加数学、科学、计算机竞赛，认识了全美各地同类少年；多年后再看这群人的去向，他觉得「很不真实」。把一群最聪明的人聚在一起，回报是幂律分布的。</p>
+  </div>
+  <div class="callout amber reveal"><span class="badge analysis">Analysis</span>这个隐喻直接决定了管理方式：<b>钻石矿不能用摩天楼的方法管</b>。用运营指标去挤压一个钻石矿，只会把疯狂的想法都挤掉——而疯狂的想法恰恰是钻石的来源。所以 MSL 的「TBD 组」「200+ 直属」「技术负责人一锤定音」不是任性，而是幂律分布下的最优组织形态。反过来想：如果你的团队在做线性回报的事（比如推理成本优化），那就该用摩天楼的方法——抠每一盎司。关键是先判断自己在挖什么矿。</div>
+</section>
+
+<section id="ambition">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>人类野心：如果每人都有「第二个头脑」</h2></div>
+  <p class="sec-desc reveal">对应章节 38:43。全片最哲学的一章，也是「个人超级智能」这个词的真正含义。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">Fact</span>Wang 自己把 Muse 当「第二大脑」用：搭建好各种工作流，平时不怎么开会。他写过一篇短文：如果每个人都拥有「第二个头脑」，做人意味着什么？这是他认为哲学上最有趣的问题。他相信个人智能体是长期形态，是帮人类实现目标的桥梁：<b>未来孩子会梦想拥有自己的星系，Muse 会帮他们实现</b>。他引用贝索斯股东信里的 <b>beautifully unsatisfied（美丽的不满足）</b>。</p>
+    <p><span class="badge fact">Fact</span>AI 会承担更多科学发现、渗入经济各环节，扫除「守门人」和障碍——「世界充满守门人」，而 Muse 能给每个人「童年时梦想过的成年生活」。孩子天生敢想敢梦，但上学、工作几年后，希望和野心就被「抽干」「打没了」，「我们都成了僵尸」，失去了能动性。<b>AI 的承诺是让能动性终身递增</b>：做更大的梦、实现它、再做更大的梦。他在短文中写道：人类从未见过「每个人的能动性都被完全点亮」的世界；那样的世界会疯狂、有趣、充满艺术性和多样性。他打了个比方：就像《瑞克和莫蒂》里的跨维度有线电视。</p>
+  </div>
+  <div class="quote reveal">「人类从未见过『每个人的能动性都被完全点亮』的世界。」<span class="src">—— Alexandr Wang 短文（访谈 38:43 章节转述，大意）</span></div>
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span>把这章和第 04 节连起来：Meta 的「人文基因」论证（产品代表人们「想做」的事）和这里的「能动性」论证是同一套世界观。<b>Muse 的终局不是「帮你办事」，而是「让你敢想」</b>——工具价值之上还有一层情绪价值：对抗成年后被磨掉的野心。这解释了为什么 Jolly 吉祥物、meme 营销这些「不严肃」的东西如此重要：一个要帮你「做更大的梦」的产品，自己不能先板起脸。</div>
+</section>
+
+<section id="takeaway">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>给 openmuse / Cassia 的工程启示</h2></div>
+  <p class="sec-desc reveal"><span class="badge analysis">Analysis</span>以下每一条都是从访谈事实推导出的、可直接落到我们自己产品上的结论。</p>
+  <div class="grid g2 reveal">
+    <div class="card"><h3>📋 1. 给 agent 建「行为追踪表」</h3><p>Muse 发布前有上百行行为 × 评估 × 拦截线。我们也可以为 openmuse 的核心 loop（工具调用成功率、多步任务完成率、追问时机、错误恢复）建立同样的 <b>eval gating</b>：每个版本发布前跑一遍，红行不清零不发布。这是把「感觉不错」变成「表格全绿」的最短路径。</p></div>
+    <div class="card"><h3>🪜 2. 设计「信任阶梯」，而不是功能清单</h3><p>用户不会因为你有 50 个工具而信任你，只会因为「上次那件小事办成了」。onboarding 应该设计成阶梯：第一件事必须小、必须成功、必须值得截图。每一次 agent 的成功都是一次「存款」，失败是一次「取款」——而且取款的汇率更高。</p></div>
+    <div class="card"><h3>🎭 3. 先有人格，再有功能</h3><p>Muse 的「单一观点」哲学 + Jolly 吉祥物，解决的是同一个问题：用户记住的是「谁」，不是「能干什么」。openmuse 也需要一个连贯的人格和视觉符号——尤其当截图在群聊里传播时，<b>一眼可识别</b>就是增长。</p></div>
+    <div class="card"><h3>💎 4. 判断自己在挖什么矿</h3><p>推理成本优化、sandbox 稳定性——这是摩天楼，用运营指标抠；agent 的新交互范式、新能力涌现——这是钻石矿，要给空间试错。两类工作混在一起管，就会用错方法。Wang 的提醒：<b>别用摩天楼的 KPI 去考核钻石矿</b>。</p></div>
+    <div class="card"><h3>📸 5. 截图是增长的原子单位</h3><p>「最好的营销就是三四张截图。」与其写长篇 release note，不如每次发布都准备好 3 张「能在群聊里飞起来」的截图：一个惊艳的任务完成瞬间、一个 Jolly 式的视觉钩子、一个真实用户的原话。这是可以直接抄的作业。</p></div>
+    <div class="card"><h3>🧪 6. 创始人的 dogfood 强度决定产品上限</h3><p>Wang、Nat、Zuckerberg 在 2 月都是把 agent「带进生活」的人——喝水提醒、MMA 视频分析、精神分析 prompt。agent 产品的 PM 如果自己不用 agent 处理真实生活，写出来的 PRD 永远隔一层。<b>每周至少让 agent 办一件你的真事</b>。</p></div>
+  </div>
+</section>
+
+<section id="facts">
+  <div class="sec-head reveal"><span class="sec-num">15</span><h2>事实核对表：Fact / Analysis / Hypothesis</h2></div>
+  <p class="sec-desc reveal">本笔记严格区分三层：访谈与公开报道确认的事实、笔者的分析推导、尚未证实的推测。</p>
+  <table class="fact-table reveal">
+    <tr><th>层级</th><th>内容</th></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>访谈时长 1:12:17，David Senra 对谈，发布于 2026-10-11；YouTube 章节 17 个（00:00–1:08:04）。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>2025 年 6 月「Personal Super Intelligence」备忘录（Zuckerberg + Wang + Nat Friedman 等）；MSL 方向就此确立。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>2026 年 2 月 OpenClaw 时刻 → 两周原型 → 7 个月打磨 → 2026 年 9 月 8 日发布。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>Meta 以 143 亿美元收购 Scale 49% 股份（2025 年 6 月，估值超 290 亿美元）；Wang 带少数人加入 Meta 任首席 AI 官。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>Muse 发布约 10 天后登顶美国 App Store 并超过 ChatGPT；22 天内美国下载超 500 万（Apptopia 估计）；Meta 股价同期上涨近 20%。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>模型 + 产品团队不到 200 人；Wang 有 200+ 直接下属；新人进「TBD」组。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>发布门禁：上百行行为追踪表，每行设「发布拦截线」与「优秀线」；首个「全绿」检查点为 Muse Spark 1.3 特别调优版。</td></tr>
+    <tr><td><span class="badge fact">Fact</span></td><td>Wang 发布后在 X 发帖 300+ 条，5 天内超 100 条；核心视觉符号为 Jolly 吉祥物。</td></tr>
+    <tr><td><span class="badge analysis">Analysis</span></td><td>「红绿表」本质是把 SRE 的 SLO 思想搬进模型训练；Muse 的护城河是「可靠性 × 分发」，不是单点模型能力。</td></tr>
+    <tr><td><span class="badge analysis">Analysis</span></td><td>信任阶梯（留存）+ 截图（增长）构成飞轮，但飞轮的起点是可靠性——meme 只能放大口碑，放大不了不存在的东西。</td></tr>
+    <tr><td><span class="badge analysis">Analysis</span></td><td>MSL 的扁平组织是幂律回报分布下的最优形态；前提是招聘标准、技术一锤定音、使命清晰三者齐备。</td></tr>
+    <tr><td><span class="badge hypo">Hypothesis</span></td><td>Wang 只肯说用户数「数百万」（笑称「也可能是数亿」）——真实数字可能远超公开猜测，但无从证实；第三方估计的 500 万美国下载仅为移动端部分口径。</td></tr>
+    <tr><td><span class="badge hypo">Hypothesis</span></td><td>访谈未谈技术细节（模型架构、训练方法、agent 框架实现）；「Muse Spark 1.3 特别调优版」的具体含义（微调/RL/系统 prompt 工程？）未知。</td></tr>
+    <tr><td><span class="badge warn">注意</span></td><td>YouTube 自动字幕存在专有名词误差（如 "Musepark 1.3" 实为 Muse Spark 1.3、"Natt Friedman" 实为 Nat Friedman）；本笔记已按上下文校正。访谈中的引语均为转述大意，非逐字引用。</td></tr>
+  </table>
+  <div class="callout cyan reveal">
+    <span class="badge fact">Fact</span><b>信息来源</b>：① 访谈视频 <a href="https://www.youtube.com/watch?v=S6l3aRsecuE" target="_blank" rel="noopener" style="color:var(--cyan)">YouTube</a> 文字稿逐章精读（17 章）；② <a href="https://www.davidsenra.com/episode/alexandr-wang" target="_blank" rel="noopener" style="color:var(--cyan)">节目官方页</a>；③ Business Insider 经 dnyuz 转载的 meme 营销报道；④ StartupHub.ai 的访谈梳理；⑤ 交易金额与发布数据的多家媒体交叉核实（VnExpress、Economic Times、The Outpost/Apptopia）。本笔记为原创总结与分析，未复制访谈原文。
+  </div>
+</section>
+
+<footer>
+  <p>📝 访谈笔记 · 「打造 Muse」Alexandr Wang × David Senra（2026-10-11） · 精读整理于 2026-10-12</p>
+  <p style="margin-top:8px;">本页为 <a href="index.html">Agent Sandbox 档案馆</a> 的访谈笔记系列。内容为原创总结与分析，事实部分标注来源；访谈原视频版权归其作者所有。</p>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } }), { threshold: .08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
