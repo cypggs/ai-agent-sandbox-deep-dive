@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「$100B 的豪赌」— Zuckerberg × Alexandr Wang × John Collison · Cheeky Pint 对谈笔记</title>
+<style>
+  :root {
+    --bg: #070b14; --bg2: #0b1120;
+    --card: rgba(255,255,255,.035); --border: rgba(255,255,255,.09);
+    --txt: #e6edf7; --sub: #8b98ad;
+    --cyan: #22d3ee; --violet: #a78bfa; --amber: #fbbf24;
+    --green: #34d399; --pink: #f472b6; --red: #f87171;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg); color:var(--txt);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC","Segoe UI",sans-serif;
+    line-height:1.75; overflow-x:hidden; }
+  .glow { position:fixed; border-radius:50%; filter:blur(120px); opacity:.14; pointer-events:none; z-index:0; }
+  .glow.g1 { width:520px; height:520px; background:#0ea5e9; top:-160px; left:-120px; }
+  .glow.g2 { width:460px; height:460px; background:#7c3aed; top:30%; right:-160px; }
+  .glow.g3 { width:420px; height:420px; background:#059669; bottom:-140px; left:30%; }
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; backdrop-filter:blur(14px);
+    background:rgba(7,11,20,.72); border-bottom:1px solid var(--border); }
+  .nav-inner { max-width:1180px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:14px; letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--cyan),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent;
+    display:flex; align-items:center; gap:8px; text-decoration:none; }
+  .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .nav-links { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; }
+  .nav-links a { color:var(--sub); text-decoration:none; font-size:12.5px; padding:6px 10px; border-radius:8px; transition:all .2s; }
+  .nav-links a:hover { color:var(--txt); background:rgba(255,255,255,.06); }
+  header { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:140px 24px 40px; }
+  .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:2px; color:var(--amber);
+    border:1px solid rgba(251,191,36,.3); border-radius:99px; padding:5px 14px; margin-bottom:22px; font-family:Consolas,monospace; }
+  h1 { font-size:clamp(30px,5vw,54px); font-weight:900; letter-spacing:-1px; line-height:1.25; margin-bottom:18px; }
+  h1 .grad { background:linear-gradient(90deg,var(--amber),var(--pink),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--sub); font-size:16px; max-width:780px; }
+  .hero-sub b { color:var(--txt); font-weight:600; }
+  .meta-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .meta-chip { font-size:13px; color:var(--sub); border:1px solid var(--border); border-radius:99px; padding:6px 14px; background:var(--card); }
+  .meta-chip a { color:var(--cyan); text-decoration:none; }
+  .meta-chip a:hover { text-decoration:underline; }
+  section { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:44px 24px 8px; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; margin-bottom:8px; flex-wrap:wrap; }
+  .sec-num { font-family:Consolas,monospace; font-size:13px; color:var(--amber); border:1px solid rgba(251,191,36,.3); border-radius:6px; padding:2px 8px; }
+  h2 { font-size:26px; font-weight:800; letter-spacing:-.5px; }
+  .sec-desc { color:var(--sub); font-size:14px; margin-bottom:24px; max-width:800px; }
+  .reveal { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+  .grid { display:grid; gap:16px; }
+  .g2 { grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); }
+  .g3 { grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+  @media (max-width:520px){ .g2{grid-template-columns:1fr;} }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+  .card h3 { font-size:17px; margin-bottom:10px; font-weight:700; }
+  .card p, .prose p { color:#c6d2e3; font-size:15px; margin-bottom:14px; }
+  .card p:last-child, .prose p:last-child { margin-bottom:0; }
+  .prose p b, .card p b { color:var(--txt); }
+  .badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:1px; border-radius:6px; padding:2px 9px; margin-right:8px; vertical-align:2px; }
+  .badge.fact { background:rgba(34,211,238,.12); color:var(--cyan); border:1px solid rgba(34,211,238,.35); }
+  .badge.analysis { background:rgba(167,139,250,.12); color:var(--violet); border:1px solid rgba(167,139,250,.35); }
+  .badge.hypo { background:rgba(251,191,36,.1); color:var(--amber); border:1px solid rgba(251,191,36,.35); }
+  .quote { border-left:3px solid var(--violet); padding:10px 18px; margin:18px 0; color:#d7e0ef; font-size:15px; background:rgba(167,139,250,.06); border-radius:0 12px 12px 0; }
+  .quote .src { display:block; margin-top:6px; font-size:12.5px; color:var(--sub); }
+  .callout { border-radius:14px; padding:20px 22px; margin:20px 0; font-size:15px; color:#c6d2e3; }
+  .callout.amber { background:rgba(251,191,36,.07); border:1px solid rgba(251,191,36,.25); }
+  .callout.violet { background:rgba(167,139,250,.07); border:1px solid rgba(167,139,250,.25); }
+  .callout.cyan { background:rgba(34,211,238,.07); border:1px solid rgba(34,211,238,.25); }
+  .callout.green { background:rgba(52,211,153,.07); border:1px solid rgba(52,211,153,.25); }
+  .callout b { color:var(--txt); }
+  .tldr { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin:24px 0; }
+  .tldr-item { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+  .tldr-item .n { font-family:Consolas,monospace; color:var(--amber); font-size:12px; letter-spacing:1px; }
+  .tldr-item p { font-size:14.5px; color:#c6d2e3; margin-top:6px; }
+  .tldr-item p b { color:var(--txt); }
+  .fig { background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:16px; padding:28px 20px 14px; margin:24px 0; overflow-x:auto; }
+  .fig svg { display:block; margin:0 auto; max-width:100%; height:auto; }
+  .figcap { text-align:center; color:var(--sub); font-size:13px; margin-top:10px; padding-bottom:6px; }
+  .chap-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; margin:20px 0; }
+  .chap { display:block; text-decoration:none; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; transition:all .2s; }
+  .chap:hover { border-color:rgba(251,191,36,.45); transform:translateY(-2px); }
+  .chap .t { font-family:Consolas,monospace; font-size:12px; color:var(--amber); }
+  .chap .h { font-size:14.5px; color:var(--txt); font-weight:600; margin-top:4px; }
+  .chap .d { font-size:12.5px; color:var(--sub); margin-top:4px; }
+  .klist { list-style:none; margin:12px 0; }
+  .klist li { padding:10px 0 10px 28px; position:relative; color:#c6d2e3; font-size:15px; border-bottom:1px dashed rgba(255,255,255,.07); }
+  .klist li:last-child { border-bottom:none; }
+  .klist li::before { content:"▸"; position:absolute; left:6px; color:var(--amber); }
+  .klist li b { color:var(--txt); }
+  .fact-table { width:100%; border-collapse:collapse; font-size:14px; margin:16px 0; }
+  .fact-table th { text-align:left; color:var(--sub); font-weight:600; padding:10px 12px; border-bottom:1px solid var(--border); font-size:13px; }
+  .fact-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.05); color:#c6d2e3; vertical-align:top; }
+  .fact-table td:first-child { color:var(--txt); font-weight:600; white-space:nowrap; }
+  footer { position:relative; z-index:1; max-width:1180px; margin:60px auto 0; padding:30px 24px 60px; color:var(--sub); font-size:13px; border-top:1px solid var(--border); }
+  footer a { color:var(--cyan); text-decoration:none; }
+  footer p { margin-bottom:10px; }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav><div class="nav-inner">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>AGENT SANDBOX 档案馆</a>
+  <div class="nav-links">
+    <a href="#tldr">一眼看懂</a><a href="#map">章节地图</a><a href="#usecases">用例</a><a href="#wonder">Muse Wonder</a>
+    <a href="#training">训练方法论</a><a href="#bet">百亿豪赌</a><a href="#commerce">Agentic Commerce</a>
+    <a href="#future">后手机时代</a><a href="#msl">MSL</a><a href="#takeaway">工程启示</a>
+  </div>
+</div></nav>
+
+<header>
+  <div class="hero-kicker">INTERVIEW NOTES · 128 MIN · 2026-10-12</div>
+  <h1>「$100B 的豪赌」<br><span class="grad">Zuckerberg × Alexandr Wang</span><br>Cheeky Pint 2 小时对谈 · 深度笔记</h1>
+  <p class="hero-sub">Meta 创始人兼 CEO <b>Mark Zuckerberg</b> 与首席 AI 官 <b>Alexandr Wang</b>，在 <b>Muse Wonder</b> 发布当天坐上 Stripe 联合创始人 <b>John Collison</b> 的播客 <b>Cheeky Pint</b>，用 2 小时 08 分钟聊透：模型还没影子就敢签 $100B 算力支票的决策逻辑、Muse Wonder 的三根技术支柱、agentic commerce 的终局、以及亲手 reboot 掉整个 AI 实验室的幕后。本笔记基于官方文字稿的<b>逐章精读</b>与公开报道交叉核实写成，<b>事实 / 分析 / 推测</b>分层标注。</p>
+  <div class="meta-row">
+    <span class="meta-chip">🎬 <a href="https://www.youtube.com/watch?v=XfdIhd1g6EI" target="_blank" rel="noopener">YouTube · 2:08:11</a></span>
+    <span class="meta-chip">📝 <a href="https://cheekypint.substack.com/p/muse-wonder-zuckerberg-and-wangs" target="_blank" rel="noopener">官方文字稿 · Substack</a></span>
+    <span class="meta-chip">🎙️ Cheeky Pint · John Collison 主持</span>
+    <span class="meta-chip">📅 2026-10-12 发布 · 12 个章节</span>
+  </div>
+</header>
+
+<section id="tldr">
+  <div class="sec-head reveal"><span class="sec-num">00</span><h2>一眼看懂：六个核心判断</h2></div>
+  <p class="sec-desc reveal">如果你只有三分钟，记住这六句。每一句后面都有两小时的论证。</p>
+  <div class="tldr">
+    <div class="tldr-item reveal"><div class="n">01 / THE BET</div><p><b>发牌前就 All-in。</b>模型还没影子，$100B–$200B 的算力支票已经签了。对冲逻辑不是"算它一定成"，而是"要亏掉它，需要整个 AI 行业失败，而不只是 Meta 失败"——<b>算力期权</b>思维。</p></div>
+    <div class="tldr-item reveal"><div class="n">02 / MODEL AS PRODUCT</div><p><b>模型即产品。</b>Muse 里真正的产品工作是隐私与安全模型；能力、人格、主动性全都训进模型里。各家 agent 的"手感"差异，规格书其实写在训练方法里。</p></div>
+    <div class="tldr-item reveal"><div class="n">03 / WONDER</div><p><b>Muse Wonder 三支柱：</b>模型原生的 <b>Active Memory</b>（主动记忆）、长程任务的 <b>Active Focus</b>（主动专注）、从 pre-training 开始灌的<b>领域专长</b>。训练方法是"爬梯子"：每级放大 4–5 倍。</p></div>
+    <div class="tldr-item reveal"><div class="n">04 / COMMERCE</div><p><b>Agentic commerce 三段式：</b>browser use 打底（零集成）→ 头部商家 API 招安 → 每个企业都有自己的 agent。最锋利的一句：<b>"Agent 将拥有账号"</b>——TAM 会因此数量级膨胀。</p></div>
+    <div class="tldr-item reveal"><div class="n">05 / COMPETITION</div><p><b>为什么不是赢家通吃：</b>执行力波动互相拉平、蒸馏是反霸权力量、生态用脚投票不想要"一家公司即终点"。小模型正在比一年前的最大模型还强。</p></div>
+    <div class="tldr-item reveal"><div class="n">06 / ORG</div><p><b>MSL 是一次刻意设计的 reboot：</b>研究团队不到 200 人、人才密度第一；Wang 名下近 200 个 direct reports，目标是<b>消灭非技术管理者</b>；无 deadline，靠自我驱动。</p></div>
+  </div>
+  <div class="callout amber reveal"><b>阅读说明：</b>本页所有观点均为对 2 小时官方文字稿的<b>转述、提炼与分析</b>，未复制原文。对话中的数字（$100B、$15B/GW 等）均为嘉宾口述量级，不代表审计数据。文中 <span class="badge fact">FACT</span> 为视频中明确陈述的事实，<span class="badge analysis">ANALYSIS</span> 为基于事实的推理，<span class="badge hypo">HYPOTHESIS</span> 为待验证的推测——三者严格区分。</div>
+</section>
+
+<section id="map">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>章节地图</h2></div>
+  <p class="sec-desc reveal">12 个章节，点击时间戳直达 YouTube 对应位置。</p>
+  <div class="chap-grid">
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=24s" target="_blank" rel="noopener"><div class="t">00:00:24</div><div class="h">Muse 的 breakout 用例</div><div class="d">买茶 agent 与 MMA 回合间教练</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=448s" target="_blank" rel="noopener"><div class="t">00:07:28</div><div class="h">为什么模型即产品</div><div class="d">产品层变薄，差异写在训练里</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=875s" target="_blank" rel="noopener"><div class="t">00:14:35</div><div class="h">Meet Muse Wonder</div><div class="d">双版本、三支柱、爬梯子训练</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=1496s" target="_blank" rel="noopener"><div class="t">00:24:56</div><div class="h">前沿模型如何实际建成</div><div class="d">人才密度、SFT+RL、吉瓦算力</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=2906s" target="_blank" rel="noopener"><div class="t">00:48:26</div><div class="h">Betting $100B</div><div class="d">发牌前 All-in 的决策逻辑</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=4041s" target="_blank" rel="noopener"><div class="t">01:07:21</div><div class="h">Agentic commerce</div><div class="d">Agent 成为经济主体</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=4774s" target="_blank" rel="noopener"><div class="t">01:19:34</div><div class="h">OpenRouter</div><div class="d">Stripe 收购中的模型网关</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=4806s" target="_blank" rel="noopener"><div class="t">01:20:06</div><div class="h">Beyond the smartphone</div><div class="d">语音三难、眼镜、Gadgets</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=5220s" target="_blank" rel="noopener"><div class="t">01:27:00</div><div class="h">Funding</div><div class="d">钱从哪来：四件套+隐藏印钞机</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=5646s" target="_blank" rel="noopener"><div class="t">01:34:06</div><div class="h">为什么不是赢家通吃</div><div class="d">三层反霸权机制</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=6046s" target="_blank" rel="noopener"><div class="t">01:40:46</div><div class="h">Meta Superintelligence Labs</div><div class="d">教科书级 reboot 全复盘</div></a>
+    <a class="chap reveal" href="https://www.youtube.com/watch?v=XfdIhd1g6EI&t=7691s" target="_blank" rel="noopener"><div class="t">02:08:11</div><div class="h">为 Zuckerberg 工作</div><div class="d">"Very Bayesian" 的决策机器</div></a>
+  </div>
+</section>
+
+<section id="usecases">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>Breakout 用例：委托式行动已经发生</h2></div>
+  <p class="sec-desc reveal">开场 20 分钟没有一句宏大叙事，全是两个人真实在用的东西——而这恰恰是最有力的产品论证。</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🍵 Wang 的买茶 agent</h3>
+      <p><span class="badge fact">FACT</span>Wang 给自己的 Muse 起了名字，它每周替他从台湾、日本越来越冷门的茶庄搜罗茶叶——从选品、下单到跨境寄回，全程自主。</p>
+      <p><span class="badge analysis">ANALYSIS</span>注意这不是 demo，是"委托式购物"第一次真实跑通：用户表达一次偏好，agent 持续执行、持续交付。这正是 Muse 与聊天机器人的分水岭——<b>价值按结果交付，而不是按对话轮次交付</b>。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🥊 Zuckerberg 的 MMA 回合间教练</h3>
+      <p><span class="badge fact">FACT</span>健身房装了摄像头，Muse 在 MMA 实战回合之间仅 60 秒的休息里看录像、给技术反馈（重心、髋部位置、拿 underhook 的时机）。他不断逼它更快——花 30 秒给反馈就太慢了。而 agent 自己写出了一整套视频抽帧加图像处理的流水线，<b>用户全程没写一行代码</b>。</p>
+      <p><span class="badge analysis">ANALYSIS</span>这同时是 Zuckerberg 的私人产品 eval：一个创始人亲测的硬任务，代替了抽象指标。更锋利的是那句判断——<b>未来人人都在写代码，只是不自知</b>：代码被折叠成实现细节，这是 agent 产品 PMF 的强信号。</p>
+    </div>
+  </div>
+  <div class="callout cyan reveal"><b>多模态是刻意押注，不是顺手：</b><span class="badge fact">FACT</span>此前行业共识一度是"coding 就是一切"，但 Wang 指出消费者真实体验的世界是高度多模态的（说话、听、看视频、拍东西）。Meta 手里的图像视频数据储备是结构性优势。<span class="badge analysis">ANALYSIS</span>这与眼镜硬件是同一战略的两面：模型能力（感知）与设备形态互相定义。智能眼镜最终会是纯多模态产品——听你所听、看你所看，界面按需在视野里生成，甚至可能不需要应用商店。</div>
+
+  <div class="sec-head reveal" style="margin-top:36px;"><span class="sec-num">03</span><h2>为什么模型即产品</h2></div>
+  <p class="sec-desc reveal">Collison 抛出一个观察：AI 的赢家产品似乎都迅速收敛到极简形态。他被两个人当场反驳——而这场反驳本身，就是 Meta 产品哲学的宣言。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span>Meta 内部的工作语言是"模型即产品"：Muse 里真正复杂的产品工作是<b>隐私与安全模型</b>（用户数据如何处理、能接什么系统）；能力、人格、主动性，都是训练进模型的。Muse 刻意不做模型选择器和强度档位——AI 产品多由极客设计，命名混乱（版本号倒着走、名字换来换去），普通用户根本无从选起。</p>
+    <p><span class="badge fact">FACT</span>Muse 给每个 agent 配<b>独立 VM</b>，而非共享弹性算力——Zuckerberg 认为这是用户敢托付的前提：你的数据不在"大家共用的弹性计算"里裸奔。</p>
+    <p><span class="badge analysis">ANALYSIS</span>X 上已经有人在分辨各家 proactive agent 的"手感"差异——什么时候主动、以什么语气说话。这些差异的规格书其实写在模型设计里（训练方法、数据、eval），传统产品 spec 的维度已经过时。Wang 的类比很准：移动互联网早期"不就是个 App 吗"，后来发现 App 里的 nuance 深不见底；AI 产品正处在同样的"看起来都一样"的早期阶段。<b>竞争壁垒正在从 UI 交互转向 post-training 与 eval 体系</b>——harness 层会收敛，差异在模型行为调教。</p>
+    <p><span class="badge hypo">HYPOTHESIS</span>若"模型即产品"彻底成立，第三方 agent 框架的价值将向"记忆 / 身份 / 资产层"迁移，而非执行层——执行层会被模型内生能力吃掉。</p>
+  </div>
+</section>
+
+<section id="wonder">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>Meet Muse Wonder：爬梯子与三支柱</h2></div>
+  <p class="sec-desc reveal">发布当天最硬核的 20 分钟：双版本、内部代号、训练方法论，以及 Meta 为什么认为 Wonder 是"质变"而非"量变"。</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🪜 爬梯子式训练</h3>
+      <p><span class="badge fact">FACT</span>方法论是每次 pretrain 规模放大 <b>4–5 倍</b>，逐级往上走。Muse Spark 系列内部代号 <b>Avocado</b>（去年 12 月的那次 pretrain），Wonder 系列代号 <b>Watermelon</b>——水果命名已经用完，下次要换。Spark 那次 pretrain 规模其实不算大，但做出了超出体量的智能；Wonder 是显著更大的下一级。</p>
+      <p><span class="badge fact">FACT</span>版本号语义：Muse Spark 1 → 1.1 → 1.2 → 1.3 是<b>同一次 pretrain、不断加 RL</b>；Wonder 与 Spark 是不同的 pretrain。Spark 从一开始就被定位为通往 Wonder 的 stepping stone，Wonder 去年 8 月就开始规划。</p>
+    </div>
+    <div class="card reveal">
+      <h3>📦 双版本与分发</h3>
+      <p><span class="badge fact">FACT</span>发布两个版本：<b>Muse Wonder</b>（走 API 的标准版）与 <b>Muse Wonder Full</b>（更大杯，仅面向 Muse Code 订阅用户）。Wonder 更大、服务成本更高，所以在 Muse App 内先上付费订阅（Spark 继续做免费层）；同时上 Meta Model API、OpenRouter、Muse Code。</p>
+      <p><span class="badge analysis">ANALYSIS</span>API 定价 $4/$20（输入/输出每百万 tokens，与公开报道交叉）直接对标 Claude Opus 5.5——这是宣言：Meta 自认已进入 frontier 定价权俱乐部，<b>不再打性价比牌</b>，而是用"个人 agent 最强模型"的心智换市场。</p>
+    </div>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 640 300" width="640" height="300" font-family="-apple-system,'PingFang SC',sans-serif">
+      <defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+      <text x="320" y="26" text-anchor="middle" fill="#e6edf7" font-size="16" font-weight="700">爬梯子：每次 pretrain 放大 4–5 倍</text>
+      <rect x="60" y="200" width="130" height="46" rx="10" fill="rgba(34,211,238,.12)" stroke="#22d3ee"/>
+      <text x="125" y="220" text-anchor="middle" fill="#22d3ee" font-size="14" font-weight="700">Avocado</text>
+      <text x="125" y="238" text-anchor="middle" fill="#8b98ad" font-size="12">Muse Spark 线</text>
+      <rect x="255" y="130" width="130" height="46" rx="10" fill="rgba(167,139,250,.12)" stroke="#a78bfa"/>
+      <text x="320" y="150" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="700">Watermelon</text>
+      <text x="320" y="168" text-anchor="middle" fill="#8b98ad" font-size="12">Muse Wonder 线</text>
+      <rect x="450" y="60" width="130" height="46" rx="10" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-dasharray="6 4"/>
+      <text x="515" y="80" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="700">???</text>
+      <text x="515" y="98" text-anchor="middle" fill="#8b98ad" font-size="12">水果名已用完</text>
+      <path d="M190 223 L255 153" stroke="url(#lg1)" stroke-width="2.5" marker-end="url(#arr)"/>
+      <path d="M385 153 L450 83" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr)"/>
+      <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#a78bfa" stroke-width="1.6"/></marker></defs>
+      <text x="222" y="200" fill="#8b98ad" font-size="12">4–5×</text>
+      <text x="417" y="130" fill="#8b98ad" font-size="12">4–5×</text>
+      <text x="60" y="272" fill="#8b98ad" font-size="12">Spark 1→1.3：同一次 pretrain，不断加 RL（体感如换代）</text>
+    </svg>
+    <div class="figcap">图 1 · Muse 的"爬梯子"训练路线：规模逐级放大，RL 迭代同样能带来换代体感</div>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 640 260" width="640" height="260" font-family="-apple-system,'PingFang SC',sans-serif">
+      <text x="320" y="26" text-anchor="middle" fill="#e6edf7" font-size="16" font-weight="700">Muse Wonder 三大刻意设计支柱</text>
+      <g>
+        <rect x="40" y="60" width="168" height="150" rx="14" fill="rgba(34,211,238,.08)" stroke="#22d3ee"/>
+        <text x="124" y="95" text-anchor="middle" fill="#22d3ee" font-size="15" font-weight="700">Active Memory</text>
+        <text x="124" y="118" text-anchor="middle" fill="#8b98ad" font-size="12">主动记忆</text>
+        <text x="124" y="145" text-anchor="middle" fill="#c6d2e3" font-size="12">模型原生能力，</text>
+        <text x="124" y="163" text-anchor="middle" fill="#c6d2e3" font-size="12">非外挂 harness</text>
+        <text x="124" y="185" text-anchor="middle" fill="#8b98ad" font-size="11">懂何时 compaction</text>
+      </g>
+      <g>
+        <rect x="236" y="60" width="168" height="150" rx="14" fill="rgba(167,139,250,.08)" stroke="#a78bfa"/>
+        <text x="320" y="95" text-anchor="middle" fill="#a78bfa" font-size="15" font-weight="700">Active Focus</text>
+        <text x="320" y="118" text-anchor="middle" fill="#8b98ad" font-size="12">主动专注</text>
+        <text x="320" y="145" text-anchor="middle" fill="#c6d2e3" font-size="12">长程任务 persistence</text>
+        <text x="320" y="163" text-anchor="middle" fill="#c6d2e3" font-size="12">挫折后找替代路径</text>
+        <text x="320" y="185" text-anchor="middle" fill="#8b98ad" font-size="11">"和别家不一样"的特质</text>
+      </g>
+      <g>
+        <rect x="432" y="60" width="168" height="150" rx="14" fill="rgba(52,211,153,.08)" stroke="#34d399"/>
+        <text x="516" y="95" text-anchor="middle" fill="#34d399" font-size="15" font-weight="700">Domain Expertise</text>
+        <text x="516" y="118" text-anchor="middle" fill="#8b98ad" font-size="12">领域专长</text>
+        <text x="516" y="145" text-anchor="middle" fill="#c6d2e3" font-size="12">金融/法律 eval SOTA</text>
+        <text x="516" y="163" text-anchor="middle" fill="#c6d2e3" font-size="12">从 pretrain 灌领域数据</text>
+        <text x="516" y="185" text-anchor="middle" fill="#8b98ad" font-size="11">不靠后训 RL 补</text>
+      </g>
+      <text x="320" y="240" text-anchor="middle" fill="#8b98ad" font-size="12">Coding：DeepSWE、SWE-Marathon SOTA · Discretion（分寸感）：知你甚多，对外披露最少</text>
+    </svg>
+    <div class="figcap">图 2 · Wonder 的三支柱：记忆从工程问题下沉为模型内生能力，是 agent infra 的分水岭</div>
+  </div>
+
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span><b>评测哲学：</b>提出 "big model smell" 的量化方式——in-distribution（RL/post-training 分布内）与 out-of-distribution 表现之间的 gap；Spark → Wonder 这一 gap 大幅收窄，说明 base 质变带来了泛化红利。外部榜单越来越不重要，内部 eval 主导决策——"把产品思维外包给做了个 viral benchmark 的 PhD 学生是错的"。</p>
+    <p><span class="badge analysis">ANALYSIS</span>两点值得玩味：第一，<b>Discretion（分寸感）</b>被定义为个人 superintelligence 独有的能力维度——帮你订餐厅时不必暴露你的过敏或怀孕信息。隐私从"合规条款"变成了"模型能力项"，这是只有做个人 agent 的公司才会投资的维度，也是 Meta 差异化的护城河。第二，"领域能力从 pretrain 开始"暗示：未来垂直 agent 的壁垒不在微调，而在预训练语料配比——这是只有巨头能玩的游戏。</p>
+    <p><span class="badge hypo">HYPOTHESIS</span>若 Active Memory 确为模型原生而非精巧 prompt 工程，LangChain 类框架的记忆组件将被逐步掏空；第三方记忆模块应定位为<b>跨模型可迁移的用户资产层</b>（可导出、可审计），而非单模型能力。</p>
+  </div>
+</section>
+
+<section id="training">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>前沿模型是如何实际建成的</h2></div>
+  <p class="sec-desc reveal">这是全场信息密度最高的一章：不到 200 人的团队、SFT 与 RL 的分工、吉瓦级算力，以及"七阶段悲伤"。</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>👥 小而密，而非大而全</h3>
+      <p><span class="badge fact">FACT</span>MSL 研究团队不到 200 人，更接近 100 人；每个训练阶段是"几十人"在做，而其他 lab 可能是"几百人"。Wang 的长文计划第一条就是：<b>不需要很多人，人才密度才是关键</b>。配套策略：从 Meta 内部挖最强的人、对外部候选人极严苛的过滤、算力不搞平均主义（不 peanut-butter），给关键研究员配超高的人均算力。</p>
+      <p><span class="badge analysis">ANALYSIS</span>把组织规模做小、把单人资源做大，与传统大厂"堆人头"路线反向。这解释了 Meta 为什么敢用不到 200 人挑战 frontier——<b>人才密度 + 算力集中</b>是 MSL 方法论的核心。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🎢 Pretrain 是赌徒阶段</h3>
+      <p><span class="badge fact">FACT</span>投入算力占比极高、样本极少（就训那么几次），全靠推理预判。Wang 形容会经历"七阶段悲伤"，Zuckerberg 接话说有 "troughs of sadness"。中间信号：pretrain 看 perplexity 类 eval，RL 阶段看传统 benchmark——但大量判断是"眯着眼看一堆点"，有人拿量角器比着屏幕上的曲线量角度。</p>
+      <p><span class="badge fact">FACT</span>何时知道 Wonder 行了：pretrain 团队预期 RL 要很久才能超过 Spark，结果<b>"立刻"就超过了</b>——那一刻知道走对了路。</p>
+    </div>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 640 280" width="640" height="280" font-family="-apple-system,'PingFang SC',sans-serif">
+      <text x="320" y="26" text-anchor="middle" fill="#e6edf7" font-size="16" font-weight="700">Post-training 两阶段心智模型：SFT 定方向，RL 放大</text>
+      <line x1="70" y1="230" x2="590" y2="230" stroke="#3a4a63" stroke-width="1.5"/>
+      <line x1="70" y1="230" x2="70" y2="50" stroke="#3a4a63" stroke-width="1.5"/>
+      <text x="600" y="234" fill="#8b98ad" font-size="12">训练进程 →</text>
+      <text x="52" y="60" fill="#8b98ad" font-size="12">行为</text>
+      <text x="40" y="76" fill="#8b98ad" font-size="12">elicitation</text>
+      <path d="M70 210 C 160 205, 220 190, 280 175" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
+      <path d="M280 175 C 360 150, 440 90, 580 70" fill="none" stroke="#a78bfa" stroke-width="2.5"/>
+      <circle cx="280" cy="175" r="5" fill="#fbbf24"/>
+      <text x="150" y="195" fill="#22d3ee" font-size="13" font-weight="600">SFT 初始化</text>
+      <text x="150" y="212" fill="#8b98ad" font-size="11">想要的行为种进去</text>
+      <text x="150" y="226" fill="#8b98ad" font-size="11">（elicitation 仅 ~10%）</text>
+      <text x="420" y="120" fill="#a78bfa" font-size="13" font-weight="600">RL 大幅拉升</text>
+      <text x="420" y="137" fill="#8b98ad" font-size="11">算力/数据是新 scaling 轴</text>
+      <text x="420" y="151" fill="#8b98ad" font-size="11">数据哲学：less is more</text>
+      <text x="280" y="258" text-anchor="middle" fill="#fbbf24" font-size="12">对齐不是单独步骤，而是贯穿 RL 全程的 holistic 工作</text>
+    </svg>
+    <div class="figcap">图 3 · SFT 把行为"种"进去（约 10%  elicitation），RL 把它放大；对齐贯穿全程而非单独阶段</div>
+  </div>
+
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span><b>RL 的数据哲学与 pretrain 相反：less is more</b>——环境与任务的质量比数量重要。对齐不是单独的"对齐 RL 步骤"，而是贯穿整个 RL 过程的 holistic 工作：大算力 RL 会在"只有做 misaligned 的事才能成功"的场景里施加优化压力，必须精心设计 RL 环境。Meta 的对齐观是<b>与"服务的人"对齐</b>——用户让做的事高可靠执行，不要说教；只有灾难性请求才优雅拒绝。这与其他 lab 的对齐哲学明确不同。</p>
+    <p><span class="badge fact">FACT</span><b>算力量级：</b>Prometheus 集群（俄亥俄）超过 1 吉瓦；Hyperion（路易斯安那）规划到 5 吉瓦——两个规划早于 MSL（2023–2024 年 Llama 时代就开始了）。1 吉瓦集群年运营约 <b>$150 亿</b>，建成 CapEx 约 $500–600 亿；Wang 看过财务 rollup，确认"训练一个前沿模型数百亿美元"是靠谱估计。</p>
+    <p><span class="badge analysis">ANALYSIS</span>RL 正在成为新的主战场：pretrain 决定上限，RL 决定"好用"。Spark 1→1.3 的体感差（用户会以为是不同 pretrain）说明 <b>RL recipe 的进步速度极快</b>——base 模型商品化，RL/harness 定胜负，这是所有 agent 创业公司的机会窗口。对齐观的分歧（服务用户 vs 抽象道德）直接决定产品形态：Meta 的 agent 会更"听话"、更少说教，这是个人 agent 场景的产品选择。</p>
+  </div>
+  <div class="callout green reveal"><b>数据之问：</b><span class="badge fact">FACT</span>当互联网不再快速增长、模型却越做越大，"数据从哪来"成为核心难题——此处 Zuckerberg 点到为止。<span class="badge hypo">HYPOTHESIS</span>这种点到为止本身是个信号：Meta 可能已有未公开的数据策略（合成数据、专有语料交易），值得从后续招聘与论文中找佐证。</div>
+</section>
+
+<section id="bet">
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>Betting $100B：发牌前就 All-in</h2></div>
+  <p class="sec-desc reveal">全场最出圈的一章。Collison 的总结一针见血：训练前沿模型的本质，就是"牌还没发就把筹码全推出去"——与 Lean Startup 完全相反的 hard mode。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span><b>时间线：</b>去年底夏威夷高管 offsite，模型还没影子，Zuckerberg 问 Wang"这能成吗"，然后签了 <b>$100B–$200B</b> 的支票。CFO Susan Li 多次私下警告 Wang：不成的话财务后果会非常严重。数据中心要提前数年投资，等看到模型行了再建就彻底掉队。</p>
+    <p><span class="badge fact">FACT</span><b>Zuckerberg 的三层对冲逻辑：</b>① 算力是硬通货——如果 AI 大方向成了，别人愿意出更高价买这些算力；要让这笔投资打水漂，需要的不是 Meta 失败，而是<b>"AI 整体失败"</b>；② 算力可复用——即使 AI 不成，Meta 还有大量其他产品能消化；③ 推理算力本来就要提前建，产品不存在，但推理需求是确定的。</p>
+    <p><span class="badge analysis">ANALYSIS</span>这本质上是<b>"算力期权"</b>：把 CapEx 理解为买入 AI 行业的看涨期权，行权价是运营成本。只要 AI 行业整体向上，期权就不归零——这是只有现金牛公司才能写的期权费。Wang 对 Zuckerberg 的评价与之呼应：他真正内化了<b>幂律</b>——重要的不是失败的概率，而是赢的时候赢多大。这是 Zuckerberg 最被低估的特质。</p>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 640 280" width="640" height="280" font-family="-apple-system,'PingFang SC',sans-serif">
+      <text x="320" y="26" text-anchor="middle" fill="#e6edf7" font-size="16" font-weight="700">$100B 决策：算力期权思维</text>
+      <line x1="80" y1="230" x2="580" y2="230" stroke="#3a4a63" stroke-width="1.5"/>
+      <line x1="80" y1="230" x2="80" y2="50" stroke="#3a4a63" stroke-width="1.5"/>
+      <text x="590" y="234" fill="#8b98ad" font-size="12">AI 行业景气 →</text>
+      <text x="46" y="60" fill="#8b98ad" font-size="12">回报</text>
+      <line x1="80" y1="190" x2="330" y2="190" stroke="#f87171" stroke-width="2" stroke-dasharray="7 5"/>
+      <path d="M330 190 L580 80" stroke="#34d399" stroke-width="2.5"/>
+      <circle cx="330" cy="190" r="5" fill="#fbbf24"/>
+      <text x="335" y="178" fill="#fbbf24" font-size="12">行权点</text>
+      <text x="120" y="178" fill="#f87171" font-size="12">最大亏损 = 期权费（可转售/复用兜底）</text>
+      <text x="420" y="100" fill="#34d399" font-size="12">上行无限：赢时赢得极大</text>
+      <text x="120" y="258" fill="#8b98ad" font-size="12">亏掉它的条件：不是 Meta 失败，而是"AI 整体失败"</text>
+    </svg>
+    <div class="figcap">图 4 · 把 $100B CapEx 理解为买入 AI 行业的看涨期权：下行有算力转售/复用兜底，上行吃幂律</div>
+  </div>
+
+  <div class="callout amber reveal"><b>幸福的烦恼：</b><span class="badge fact">FACT</span>Muse 上线时团队的中位预期是"先上线、再迭代几次找 PMF"，增长基建都没准备好，结果直接本垒打。<span class="badge analysis">ANALYSIS</span>这反证了"提前数年下注"的合理性——<b>在指数级机会面前，准备不足的成功比准备充分的错过便宜得多</b>。战略判断上：OpenAI 做了文本助手、Anthropic 做通了 coding agent，<b>个人消费级 agent 的 lane 是空的</b>，而这正是 Meta 该做的事。</div>
+</section>
+
+<section id="commerce">
+  <div class="sec-head reveal"><span class="sec-num">07</span><h2>Agentic Commerce：Agent 成为经济主体</h2></div>
+  <p class="sec-desc reveal">如果说 $100B 章讲的是"怎么敢花"，这一章讲的是"怎么赚回来"——以及一个可能改写商业史的论点。</p>
+  <div class="fig reveal">
+    <svg viewBox="0 0 640 250" width="640" height="250" font-family="-apple-system,'PingFang SC',sans-serif">
+      <text x="320" y="26" text-anchor="middle" fill="#e6edf7" font-size="16" font-weight="700">Agentic Commerce 三段式：从零集成到商家自有 agent</text>
+      <g>
+        <rect x="30" y="70" width="170" height="110" rx="14" fill="rgba(34,211,238,.08)" stroke="#22d3ee"/>
+        <text x="115" y="102" text-anchor="middle" fill="#22d3ee" font-size="14" font-weight="700">① Browser Use 打底</text>
+        <text x="115" y="128" text-anchor="middle" fill="#c6d2e3" font-size="12">零集成可用</text>
+        <text x="115" y="148" text-anchor="middle" fill="#8b98ad" font-size="11">computer use 是终极</text>
+        <text x="115" y="164" text-anchor="middle" fill="#8b98ad" font-size="11">向后兼容层</text>
+      </g>
+      <g>
+        <rect x="235" y="70" width="170" height="110" rx="14" fill="rgba(167,139,250,.08)" stroke="#a78bfa"/>
+        <text x="320" y="102" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="700">② 头部 API 招安</text>
+        <text x="320" y="128" text-anchor="middle" fill="#c6d2e3" font-size="12">更快、更便宜</text>
+        <text x="320" y="148" text-anchor="middle" fill="#8b98ad" font-size="11">不用爬网站</text>
+        <text x="320" y="164" text-anchor="middle" fill="#8b98ad" font-size="11">深度集成锁住头部</text>
+      </g>
+      <g>
+        <rect x="440" y="70" width="170" height="110" rx="14" fill="rgba(52,211,153,.08)" stroke="#34d399"/>
+        <text x="525" y="102" text-anchor="middle" fill="#34d399" font-size="14" font-weight="700">③ 企业自有 agent</text>
+        <text x="525" y="128" text-anchor="middle" fill="#c6d2e3" font-size="12">每家企业都有 agent</text>
+        <text x="525" y="148" text-anchor="middle" fill="#8b98ad" font-size="11">如今天之网站/社媒账号</text>
+        <text x="525" y="164" text-anchor="middle" fill="#8b98ad" font-size="11">封杀 agent 者被颠覆</text>
+      </g>
+      <path d="M200 125 L235 125" stroke="#8b98ad" stroke-width="2" marker-end="url(#arr2)"/>
+      <path d="M405 125 L440 125" stroke="#8b98ad" stroke-width="2" marker-end="url(#arr2)"/>
+      <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#8b98ad" stroke-width="1.6"/></marker></defs>
+      <text x="320" y="215" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="600">平台冷启动标准答案：先用通用能力覆盖长尾，再用深度集成锁住头部</text>
+    </svg>
+    <div class="figcap">图 5 · 商家集成策略：browser use 解决冷启动，API 解决体验，终局是商家侧 agent 化</div>
+  </div>
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span><b>Instacart 故事：</b>Zuckerberg 以前几乎不用 Instacart，为了给 Muse 下单才注册了账号，现在每周用一两次——他成了"新增用户"，而且以前永远不会成为用户。由此提出关键问题：<b>这个账号到底是为他开的，还是为 Muse 开的？</b></p>
+    <p><span class="badge analysis">ANALYSIS</span>这是 Zuckerberg 整个商业论证中最锋利的一句：<b>"Agent 将拥有账号"</b>——从"人均账号"到"agent 人均账号"，TAM 的乘数不是 20% 的效率提升，而是<b>新增主体的数量级</b>。给投资人讲 agent 故事时，这是比"提效"有力得多的叙事，直接对标移动互联网"人均设备"的乘数逻辑。</p>
+    <p><span class="badge fact">FACT</span><b>Muse 的价值三层：</b>降摩擦（不用一个个网站比）、约束自动应用（"周三前必须送达"这类条件天然被执行）、整体性个性化（对家庭/朋友/同事的全局理解，做出最合适的礼物推荐——传统推荐系统都是烟囱式的）。Wang 强调 Muse 的魔法在于 "it just works"——<b>差一点不可靠，整个体验就崩了</b>。</p>
+    <p><span class="badge fact">FACT</span><b>Stripe 的角色：</b>双方在 Muse 支付集成上合作愉快；Wang 在 2023 年就跟 Patrick Collison 预言过 agentic commerce，当时早了 3 年。Stripe Sessions 5 月发布相关能力，9 月起数据"开始垂直上升"。</p>
+    <p><span class="badge hypo">HYPOTHESIS</span>商业模式"从 Muse 帮你省/赚的钱里抽一小成"若落地，Muse 的 ARPU 可能超过订阅本身——<b>订阅只是获客，commerce 抽成才是印钞机</b>。待验证其抽成比例与商家接受度。</p>
+  </div>
+  <div class="callout violet reveal"><b>可靠性是 1，其他是 0：</b><span class="badge analysis">ANALYSIS</span>agent 替人花钱的场景里，可靠性每差 1%，信任崩 100%。这对任何 agent 产品的启示都是：tool 调用成功率、幂等性、回滚能力是<b>生死线</b>，不是优化项。</div>
+</section>
+
+<section id="future">
+  <div class="sec-head reveal"><span class="sec-num">08</span><h2>后手机时代、钱从哪来、为什么不是赢家通吃</h2></div>
+  <p class="sec-desc reveal">四个看似发散的话题，其实回答同一个问题：当模型商品化，什么才是稀缺的？</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🎧 语音三难与眼镜赌注</h3>
+      <p><span class="badge fact">FACT</span>Siri 做了十几年还是不行，三层原因：① 光听懂不够，得能"做事"；② 对话动力学极难（打断、停顿、轮次）；③ 语音是高带宽输入、但<b>低效输出</b>（听比看慢得多）。理想界面不是纯语音对语音。</p>
+      <p><span class="badge fact">FACT</span>但语音输入正在爆发：研究员对着键盘"耳语"、大学生对 AI 倾泻 10–15 分钟意识流再让 AI 整理——输入侧摩擦最低的方式赢了。眼镜：无屏版（纯摄像头+音频）已是可用产品，小屏版出货后"相当强大"；Muse Gadgets 开放生态，HomeLink（U 盘大小配件）让 Muse 接管全屋设备。</p>
+      <p><span class="badge analysis">ANALYSIS</span>结论是"输入用语音、输出用视觉"——纯语音 agent 是死胡同。Agent 让语音质变：能行动的 agent 更接近"和人说话"，跨过了 uncanny valley。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🍷 OpenRouter：模型时代的"品酒师"</h3>
+      <p><span class="badge fact">FACT</span>Collison 现场披露：<b>Stripe 已同意收购 OpenRouter</b>（交易尚未 close），后者每天路由超 10 万亿 tokens。Wang 的建议：前沿模型正在向不同方向分化，当它们被压扁到同一套 benchmark 上时，微妙的质感差异就被抹掉了——OpenRouter 的机会是成为<b>"品酒师"</b>，帮开发者理解超越"好/坏"二元评价的细微差别。</p>
+      <p><span class="badge analysis">ANALYSIS</span>这揭示了网关层的终极价值：当模型商品化，<b>评价与路由智能</b>成为稀缺品。价值不在 API 兼容，而在"帮你选对模型"的信息优势——这正是 Stripe 收购的逻辑：支付 + 模型路由 = agentic commerce 的结算与调度层。</p>
+    </div>
+    <div class="card reveal">
+      <h3>💰 Funding：四件套 + 隐藏印钞机</h3>
+      <p><span class="badge fact">FACT</span>Zuckerberg 的收入拼图：<b>订阅</b>（免费版要优秀，Wonder 这种成本扛不住的自然进订阅）、<b>commerce 抽成</b>（"从 Muse 帮你省/赚的钱里抽一小成"，长期是极大的收入流）、<b>API</b>（有利可图）、<b>Meta Enterprise Platform</b>（新设企业级部门，CJ Desai 带队——Meta 历史上不是 enterprise 公司，但模型是通用的）。隐藏的印钞机：<b>用模型加速核心业务</b>——几千亿美元盘子、增速再快几个百分点，就能覆盖巨额投入。</p>
+      <p><span class="badge fact">FACT</span><b>会计视角</b>（Collison 补充、Zuckerberg 认同）：建数据中心是 CapEx 可折旧，而研究员工资（同样在创造多年有效的模型资产）不能资本化——财报上 AI 投入被系统性高估了；自建而非租云还有折旧后的残值红利（H100 今天的价值比去年更高，因为算力持续紧缺）。</p>
+    </div>
+    <div class="card reveal">
+      <h3>⚖️ 为什么 AI 不会赢家通吃</h3>
+      <p><span class="badge fact">FACT</span>2023 年的流行叙事是某家 lab 靠递归自我改进一骑绝尘，现实是多家并立前沿。Wang 给出三层机制：① <b>执行力波动</b>——每家 lab 都有执行强和弱的周期，长期互相拉平；② <b>蒸馏是反霸权力量</b>——没人刻意设计，但蒸馏就是 work，把强智能压缩进越来越小的模型，今天的小模型比一两年前的最大模型还强；③ <b>生态用脚投票</b>——从从业者到企业，很多人不想要"资本主义终点是一家公司"。</p>
+      <p><span class="badge analysis">ANALYSIS</span>Zuckerberg 的框架：互联网时代是 5–6 家大公司加生态；AI 时代会是"一小撮能建 frontier superintelligence 的公司"驱动议程。注意双重性：这既是真诚的哲学，也是精明的竞争策略——在一个 Meta 刚追上 frontier 的时点，"不要赢家通吃"是最有利的叙事。</p>
+    </div>
+  </div>
+</section>
+
+<section id="msl">
+  <div class="sec-head reveal"><span class="sec-num">09</span><h2>MSL：一场教科书级的 reboot</h2></div>
+  <p class="sec-desc reveal">全场最长的章节（近 30 分钟），也是组织建设者最值得逐句读的一章。</p>
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span><b>时间线：</b>Llama 4 在 2025 年 4 月 4 日发布；约 4 月 20 日，Zuckerberg 开始打电话四处请教该怎么办。给 Wang 的第一通电话 44 分钟，两天后 Wang 发来长文计划——<b>第一条就是"不需要很多人，人才密度第一"</b>。早期代号 "Supernova"，一群人 jam 在一起，头几个月没怎么睡觉。</p>
+    <p><span class="badge fact">FACT</span><b>Reboot 是刻意设计：</b>在接触顶尖研究员的过程中意识到——要让计划对最强的人有吸引力，必须让人感觉是<b>"从零开始"</b>，而不是接手旧摊子。从 Llama/FAIR 吸纳优秀的人，但文化、组织全部重来。Collison 总结的"四个反共识决策"：① 公开把前任团队路线判死刑、彻底 reboot；② 为人才付"离谱"的钱（含 Scale AI 49% 股权）；③ 押注从没训过前沿模型的 Wang；④ Zuckerberg 清出 1–2 个月日历，只做一件事：见研究员、聊研究员。</p>
+    <p><span class="badge fact">FACT</span><b>"心沉时刻"：</b>Wang 加入后第一次开会，某位老团队负责人说"我们不需要推理模型，消费者又不需要推理模型"——他当场意识到整个公司领导层需要被 "AI-pilled"，而且要快。后来全公司迅速跟上：管 Instagram 的 Adam Mosseri 现在是重度 vibe coding 用户。</p>
+  </div>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 640 250" width="640" height="250" font-family="-apple-system,'PingFang SC',sans-serif">
+      <text x="320" y="26" text-anchor="middle" fill="#e6edf7" font-size="16" font-weight="700">MSL 的组织实验：消灭非技术管理者</text>
+      <circle cx="320" cy="110" r="34" fill="rgba(251,191,36,.12)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="320" y="106" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="700">Wang</text>
+      <text x="320" y="124" text-anchor="middle" fill="#8b98ad" font-size="10">近 200 direct reports</text>
+      <g fill="rgba(34,211,238,.10)" stroke="#22d3ee">
+        <circle cx="120" cy="200" r="20"/><circle cx="200" cy="210" r="20"/><circle cx="280" cy="200" r="20"/>
+        <circle cx="360" cy="200" r="20"/><circle cx="440" cy="210" r="20"/><circle cx="520" cy="200" r="20"/>
+      </g>
+      <g fill="none" stroke="#3a4a63" stroke-width="1.2">
+        <line x1="320" y1="144" x2="120" y2="182"/><line x1="320" y1="144" x2="200" y2="192"/>
+        <line x1="320" y1="144" x2="280" y2="182"/><line x1="320" y1="144" x2="360" y2="182"/>
+        <line x1="320" y1="144" x2="440" y2="192"/><line x1="320" y1="144" x2="520" y2="182"/>
+      </g>
+      <text x="320" y="200" text-anchor="middle" fill="#22d3ee" font-size="11">研究员（保持写代码、用 agent）</text>
+      <text x="120" y="242" fill="#8b98ad" font-size="11">✕ 非技术管理者：技术岗转管理 → 很快不懂技术还不自知 → AI 时代致命</text>
+      <text x="120" y="242" fill="#8b98ad" font-size="11" dx="0"></text>
+    </svg>
+    <div class="figcap">图 6 · 极度扁平的组织：管理幅度极大，因为 IC 靠 agent 放大产出，管理只剩"技术判断 + 资源调配"</div>
+  </div>
+
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span><b>管理细节：</b>建 MSL 时明确告诉全员"没有 deadline，按正确的节奏来"。Wang 的管理轶事：团队里全是"没安全感的优等生"，永远悲观；他每次记下大家"三个月后我们会在哪"的预测，三个月后拿出来打脸——但大家还是继续悲观。Zuckerberg 评价：对 MSL 整体乐观、对自己项目极度自省，是健康的组合。</p>
+    <p><span class="badge analysis">ANALYSIS</span>MSL reboot 的本质是<b>人才市场的产品化</b>："组织形态"本身就是招聘产品——"从零开始"的叙事是写给候选人的，不是写给董事会的。"无 deadline + 高人才密度"是反直觉但自洽的组合：deadline 是给执行力不足的组织的拐杖；当自我驱动拉满时，deadline 只会扭曲节奏。</p>
+    <p><span class="badge hypo">HYPOTHESIS</span>近 200 direct reports 的扁平结构能否在规模扩大后维持，是待观察的组织实验；若出现中层回潮，说明该模式有规模上限。</p>
+  </div>
+
+  <div class="sec-head reveal" style="margin-top:36px;"><span class="sec-num">10</span><h2>为 Zuckerberg 工作："Very Bayesian"</h2></div>
+  <div class="prose reveal">
+    <p><span class="badge fact">FACT</span>Wang 的核心观察：Zuckerberg 一旦认定某事正确，就会以极高的"学习率"把一切行动切换到与之相符——大多数成功创始人的惯性是"日历照旧、口头支持"，而他是真 pivot。Collison 的总结：摄入新信息、完整更新世界观、然后按新世界观行动——<b>"very Bayesian"</b>。</p>
+    <p><span class="badge fact">FACT</span><b>分工：</b>Wang 跑 lab，Zuckerberg 跑"让全公司为 lab 让路"——没有 founder CEO 的全局优化，MSL 这种 startup 式小单位在大公司里会被局部优化的惯性碾碎。分歧很多（命名吵到最后一刻）；Zuckerberg 欣赏 Wang 的点是 "hire people who really care"——宁要吵架的强意愿，不要盲目执行的乖孩子。</p>
+    <p><span class="badge analysis">ANALYSIS</span>这种特质一开始让 Wang 困惑：下注量级大到 Nat 和 Wang 私下会互问"敢下这么大吗"。但复盘 Meta 历史：每次出现"指标还没反应、但信念上是大事"的时刻，Meta 都 all-in 且事后看都对了——<b>这正是 $100B 敢签的认知基础</b>，与第 06 章的幂律下注是同一决策系统的两面。</p>
+  </div>
+</section>
+
+<section id="takeaway">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>给 openmuse / Cassia 的工程启示</h2></div>
+  <p class="sec-desc reveal">把两小时对谈翻译成我们能动手的事。按"结论 → 行动"写。</p>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🧠 记忆要做成用户资产，而非模型能力</h3>
+      <p>Meta 把记忆下沉为模型内生能力——第三方框架的记忆模块会被侵蚀。openmuse 的长期记忆不应与模型拼"记性"，而应定位为<b>跨模型可迁移的用户资产层</b>：可导出、可审计、可删除。这是模型内生记忆永远给不了的位置。</p>
+    </div>
+    <div class="card reveal">
+      <h3>📏 自建 eval，大于刷榜单</h3>
+      <p>Meta 内部 eval 权重逐版本上升，外部榜单越来越不重要。Cassia/openmuse 应该建立自己的"创始人级硬任务 eval 集"——像 Zuckerberg 的"MMA 60 秒反馈"那样，用具体的高难度任务代替抽象指标。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🛡️ 可靠性是生死线</h3>
+      <p>"it just works"——agent 替人花钱/办事的场景里，可靠性每差 1%，信任崩 100%。tool 调用成功率、幂等性、回滚能力不是优化项，是生死线。独立 VM / per-user 持久 sandbox 路线与此同构：<b>安全架构即 UX</b>。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🔀 网关层是真机会</h3>
+      <p>OpenRouter 模式说明"模型越来越多"本身就是一门生意：路由、比价、容灾、质感评价。openmuse 的 Tavily→Brave→DuckDuckGo 三级搜索是同构思路——<b>多源 + 智能路由</b>是 agent infra 的通用模式，值得把"品酒师"能力产品化。</p>
+    </div>
+    <div class="card reveal">
+      <h3>👔 Stay technical 写成制度</h3>
+      <p>MSL 要求全员（含管理者）保持写代码、用 agent——这不是口号，是组织设计。可以作为团队的硬性文化规则写下来：管理者不懂技术还不自知，在 AI 时代是致命的。</p>
+    </div>
+    <div class="card reveal">
+      <h3>💳 讲 TAM 时用"agent 账号"</h3>
+      <p>"Agent 将拥有账号"——从"人均账号"到"agent 人均账号"，TAM 乘数是新增主体的数量级。无论对投资人还是对自己，这个叙事都比"提效 20%"锋利一个量级。</p>
+    </div>
+  </div>
+  <div class="callout cyan reveal"><b>一句话总结这场对谈：</b>Meta 用 $100B 的算力期权买了一张"个人 superintelligence"的门票，用不到 200 人的"人才密度"实验室兑现它，用"模型即产品"的哲学重新定义竞争——而这场游戏里，<b>记忆、可靠性与 eval</b>才是留给第三方的战场。</div>
+</section>
+
+<section id="sources">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>资料与交叉验证</h2></div>
+  <div class="prose reveal">
+    <p><b>一手来源：</b><a href="https://www.youtube.com/watch?v=XfdIhd1g6EI" target="_blank" rel="noopener" style="color:var(--cyan)">YouTube 原视频</a> · <a href="https://cheekypint.substack.com/p/muse-wonder-zuckerberg-and-wangs" target="_blank" rel="noopener" style="color:var(--cyan)">官方文字稿（Substack）</a></p>
+  </div>
+  <table class="fact-table reveal">
+    <tr><th>事实</th><th>视频陈述</th><th>公开报道交叉</th></tr>
+    <tr><td>Wonder / Wonder Full 双版本</td><td><span class="badge fact">FACT</span> 明确陈述</td><td>✓ 与 VentureBeat 等一致</td></tr>
+    <tr><td>内部代号 Avocado / Watermelon</td><td><span class="badge fact">FACT</span> 明确陈述</td><td>△ 视频独家披露</td></tr>
+    <tr><td>1GW 年运营约 $150 亿</td><td><span class="badge fact">FACT</span> 口述量级</td><td>△ 视频独家量级</td></tr>
+    <tr><td>Stripe 收购 OpenRouter（未 close）</td><td><span class="badge fact">FACT</span> Collison 现场披露</td><td>△ 视频独家披露</td></tr>
+    <tr><td>Kunal Shah 接管 WhatsApp</td><td><span class="badge fact">FACT</span> 明确陈述</td><td>△ 视频独家</td></tr>
+    <tr><td>研究团队 &lt;200 人</td><td><span class="badge fact">FACT</span> 明确陈述</td><td>△ 视频独家</td></tr>
+    <tr><td>1M context / 多模态输入规格</td><td>视频中未明确提及</td><td>？ 仅公开报道有</td></tr>
+  </table>
+  <div class="prose reveal">
+    <p style="color:var(--sub); font-size:13.5px;">本笔记为转化性总结与分析，未复制原文字稿内容。观点归属已按 Fact / Analysis / Hypothesis 分层标注；数字均为嘉宾口述量级，不代表审计数据。Daniel（MSL 联合负责人）在对话中未给全名，此处按公开报道交叉为 Daniel Gross，存在不确定性。</p>
+  </div>
+</section>
+
+<footer>
+  <p>AGENT SANDBOX 档案馆 · 访谈笔记 002 · <a href="index.html">返回首页</a></p>
+  <p>精读对象：Cheeky Pint《Muse Wonder: Zuckerberg and Wang's $100B AI》（2026-10-12）· 上一篇：<a href="alexandr-wang-interview.html">「打造 Muse」Alexandr Wang × David Senra</a></p>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } }), { threshold: .08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
