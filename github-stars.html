@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Stars 群星谱 · 92 位现任 Stars 全收录</title>
+<meta name="description" content="stars.github.com 现任 92 位 GitHub Stars 全收录：代表作、技术贡献与可学之处。">
+<style>
+  :root {
+    --bg:#070b14; --bg2:#0b1120; --card:rgba(255,255,255,.035); --border:rgba(255,255,255,.09);
+    --txt:#e6edf7; --sub:#8b98ad; --cyan:#22d3ee; --violet:#a78bfa; --amber:#fbbf24; --green:#34d399; --pink:#f472b6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg); color:var(--txt); font-family:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC","Segoe UI",sans-serif; line-height:1.7; overflow-x:hidden; }
+  .glow { position:fixed; border-radius:50%; filter:blur(120px); opacity:.16; pointer-events:none; z-index:0; }
+  .glow.g1 { width:520px; height:520px; background:#b8860b; top:-160px; left:-120px; }
+  .glow.g2 { width:460px; height:460px; background:#7c3aed; top:30%; right:-160px; }
+  .glow.g3 { width:420px; height:420px; background:#0ea5e9; bottom:-140px; left:30%; }
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; backdrop-filter:blur(14px); background:rgba(7,11,20,.72); border-bottom:1px solid var(--border); }
+  .nav-inner { max-width:1180px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:15px; letter-spacing:.5px; background:linear-gradient(90deg,var(--amber),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; display:flex; align-items:center; gap:8px; text-decoration:none; }
+  .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--amber); box-shadow:0 0 12px var(--amber); }
+  .nav-links { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; }
+  .nav-links a { color:var(--sub); text-decoration:none; font-size:13px; padding:6px 12px; border-radius:8px; transition:all .2s; }
+  .nav-links a:hover { color:var(--txt); background:rgba(255,255,255,.06); }
+  header { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:150px 24px 30px; text-align:center; }
+  .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:2px; color:var(--amber); border:1px solid rgba(251,191,36,.35); border-radius:99px; padding:5px 14px; margin-bottom:22px; font-family:Consolas,monospace; }
+  h1 { font-size:clamp(36px,5.4vw,62px); font-weight:900; letter-spacing:-1px; line-height:1.15; margin-bottom:18px; }
+  h1 .grad { background:linear-gradient(90deg,var(--amber),var(--pink),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--sub); font-size:16px; max-width:760px; margin:0 auto; }
+  .hero-sub b { color:var(--txt); font-weight:600; }
+  .toc { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:28px; }
+  .toc a { font-size:13px; color:var(--sub); text-decoration:none; border:1px solid var(--border); border-radius:99px; padding:7px 16px; background:var(--card); transition:all .2s; }
+  .toc a:hover { color:var(--txt); border-color:rgba(251,191,36,.5); }
+  section { position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:56px 24px 8px; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; margin-bottom:8px; }
+  .sec-num { font-family:Consolas,monospace; font-size:13px; color:var(--amber); border:1px solid rgba(251,191,36,.35); border-radius:6px; padding:2px 8px; }
+  h2 { font-size:26px; font-weight:800; letter-spacing:-.5px; }
+  .sec-desc { color:var(--sub); font-size:14px; margin-bottom:28px; max-width:780px; }
+  .reveal { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:36px; }
+  .stat { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px; text-align:center; }
+  .stat .n { font-size:44px; font-weight:900; background:linear-gradient(90deg,var(--amber),var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent; line-height:1.2; }
+  .stat .l { color:var(--sub); font-size:13px; margin-top:6px; }
+  .charts { display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:16px; }
+  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px; }
+  .chart-card h4 { font-size:15px; margin-bottom:18px; color:var(--amber); }
+  .bar-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; font-size:13px; }
+  .bar-label { width:110px; flex-shrink:0; color:var(--sub); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-track { flex:1; height:10px; background:rgba(255,255,255,.06); border-radius:99px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--amber),var(--pink)); }
+  .bar-num { width:36px; color:var(--txt); font-weight:700; font-family:Consolas,monospace; }
+  .grid4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+  .card h4 { font-size:15px; font-weight:700; margin-bottom:8px; color:var(--cyan); }
+  .card p { font-size:13.5px; color:var(--sub); }
+  .card p b { color:var(--txt); }
+  .insight { margin-top:16px; background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(167,139,250,.08)); border:1px solid rgba(251,191,36,.3); border-radius:16px; padding:22px 26px; font-size:14px; color:var(--sub); }
+  .insight b { color:var(--amber); }
+  .fgroup { margin:44px 0 20px; display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .fgroup h3 { font-size:22px; font-weight:800; }
+  .fgroup h3 em { font-style:normal; font-size:13px; color:var(--sub); font-weight:400; }
+  .fgroup p { width:100%; color:var(--sub); font-size:13.5px; }
+  .star { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:30px; margin-bottom:18px; position:relative; overflow:hidden; }
+  .star::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--amber),var(--pink),var(--violet)); opacity:.7; }
+  .star-head { display:flex; gap:18px; align-items:center; margin-bottom:20px; }
+  .star-head img { width:72px; height:72px; border-radius:50%; border:2px solid rgba(251,191,36,.4); flex-shrink:0; background:#111; }
+  .star-kicker { font-family:Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--amber); margin-bottom:6px; }
+  .star-head h3 { font-size:21px; font-weight:800; }
+  .uname { font-size:14px; font-weight:400; color:var(--cyan); text-decoration:none; margin-left:8px; }
+  .uname:hover { text-decoration:underline; }
+  .star-country { font-size:12.5px; color:var(--sub); margin-top:2px; }
+  .star-country a { color:var(--sub); text-decoration:none; }
+  .star-country a:hover { color:var(--cyan); }
+  .star-body { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+  .sb { background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:12px; padding:18px; }
+  .sb h4 { font-size:12px; letter-spacing:2px; color:var(--violet); margin-bottom:8px; font-family:Consolas,monospace; }
+  .sb p { font-size:13.5px; color:var(--sub); }
+  .sb.lesson { border-color:rgba(251,191,36,.3); background:rgba(251,191,36,.04); }
+  .sb.lesson h4 { color:var(--amber); }
+  .sb.lesson p { color:var(--txt); }
+  .lesson-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .lesson-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+  .lesson-card .ln { font-family:Consolas,monospace; font-size:12px; color:var(--amber); letter-spacing:2px; margin-bottom:8px; }
+  .lesson-card h4 { font-size:16px; margin-bottom:8px; }
+  .lesson-card p { font-size:13.5px; color:var(--sub); }
+  .lesson-card p b { color:var(--txt); }
+  .filter-bar { display:flex; gap:12px; align-items:center; margin-bottom:22px; flex-wrap:wrap; }
+  #q { flex:1; min-width:240px; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 18px; color:var(--txt); font-size:14px; outline:none; }
+  #q:focus { border-color:rgba(251,191,36,.5); }
+  #count { font-size:13px; color:var(--sub); font-family:Consolas,monospace; }
+  .pgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+  .pcard { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; transition:transform .2s,border-color .2s; }
+  .pcard:hover { transform:translateY(-4px); border-color:rgba(251,191,36,.4); }
+  .pcard img { width:52px; height:52px; border-radius:50%; margin-bottom:12px; border:1px solid var(--border); background:#111; }
+  .pname a { color:var(--txt); text-decoration:none; font-weight:700; font-size:15px; }
+  .pname a:hover { color:var(--amber); }
+  .puname a { color:var(--cyan); text-decoration:none; font-size:12.5px; font-family:Consolas,monospace; }
+  .ptag { font-size:12.5px; color:var(--sub); margin-top:8px; min-height:42px; }
+  .pcountry { font-size:11px; color:var(--violet); margin-top:8px; letter-spacing:1px; }
+  footer { position:relative; z-index:1; max-width:1180px; margin:70px auto 0; padding:50px 24px 60px; color:var(--sub); font-size:12.5px; text-align:center; border-top:1px solid var(--border); }
+  footer a { color:var(--cyan); }
+  @media (max-width:640px) { .charts { grid-template-columns:1fr; } header { padding-top:170px; } }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+<nav><div class="nav-inner">
+  <a class="logo" href="index.html"><span class="logo-dot"></span>SANDBOX ARCHIVE · 沙盒档案馆</a>
+  <div class="nav-links">
+    <a href="index.html">档案馆首页</a>
+    <a href="#program">项目介绍</a>
+    <a href="#data">数据总览</a>
+    <a href="#featured">群星深读</a>
+    <a href="#lessons">可学之处</a>
+    <a href="#directory">92 名录</a>
+  </div>
+</div></nav>
+
+<header>
+  <div class="hero-kicker">★ PEOPLE · 人物志 001</div>
+  <h1>GitHub Stars<br><span class="grad">群星谱</span></h1>
+  <p class="hero-sub">stars.github.com/profiles 现任 <b>92</b> 位 GitHub Stars <b>全收录</b>——他们的代表作、他们留给世界的技术盛宴，以及普通人能从他们身上学到的东西。名单抓取于 <b>2026-10-14</b>，人物导读由本馆编写。</p>
+  <div class="toc">
+    <a href="#program">① 这个项目是什么</a>
+    <a href="#data">② 数据总览</a>
+    <a href="#featured">③ 群星深读 × 24</a>
+    <a href="#lessons">④ 可以学到什么</a>
+    <a href="#directory">⑤ 92 人名录</a>
+  </div>
+</header>
+
+<section id="program">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>这个项目是什么</h2></div>
+  <p class="sec-desc reveal">GitHub Stars 是 GitHub 官方的社区荣誉项目。它不奖励「代码写得多的人」，而表彰那些 <b style="color:var(--txt)">inspire、educate、influence</b> 社区的人——这正是理解这份名单的钥匙。</p>
+  <div class="grid4">
+    <div class="card reveal"><h4>★ 评选机制</h4><p>任何人都可以<b>提名他人</b>（不能自荐），提名需附上社区影响力的具体事例；GitHub 团队做预审与评审，通过后在社交媒体公布。看的是<b>贡献的质与量</b>，不只看 commit 数。</p></div>
+    <div class="card reveal"><h4>★ 什么算贡献</h4><p>官方列出的例子包括：<b>开源项目、博客、视频、播客、线下活动、用户组、演讲</b>。写教程、做视频、组织社区、维护文档——这些都被正式承认为贡献。</p></div>
+    <div class="card reveal"><h4>★ 任期与续评</h4><p>任期为<b>一年</b>（获邀当年 1 月 31 日至次年 1 月 30 日），每年重新评审续期。名单是活的——这 92 位是 2026-10 时点的现任 Stars。</p></div>
+    <div class="card reveal"><h4>★ Stars 得到什么</h4><p>新功能内测与反馈通道、与 GitHub 团队的直接交流、进阶学习资源、活动与演讲邀约、专属周边，以及一座<b>刻着自己名字的实体星星奖杯</b>。</p></div>
+  </div>
+  <div class="insight reveal">💡 <b>关键洞察：</b>这份名单里近半数是教育家、布道者与社区组织者，而非传统意义上的「大神程序员」。GitHub 用这个项目传递了一个明确信号——<b>让更多人学会、让社区更好，本身就是最高级的贡献。</b>这也是本页第 ④ 章存在的原因。</div>
+</section>
+
+<section id="data">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>数据总览</h2></div>
+  <p class="sec-desc reveal">基于 92 位 Stars 公开档案页的 516 条「社区贡献」记录统计。演讲是最常见的贡献形态——能把事情讲清楚的人，正在定义行业。</p>
+  <div class="stats">
+    <div class="stat reveal"><div class="n">92</div><div class="l">现任 GitHub Stars（全收录）</div></div>
+    <div class="stat reveal"><div class="n">25</div><div class="l">覆盖国家 / 地区</div></div>
+    <div class="stat reveal"><div class="n">516</div><div class="l">社区贡献记录（演讲/博客/视频/开源）</div></div>
+    <div class="stat reveal"><div class="n">24</div><div class="l">本页深读人物</div></div>
+  </div>
+  <div class="charts">
+    <div class="chart-card reveal"><h4>★ Stars 地理分布 Top 10</h4><div class="bar-row"><span class="bar-label">United States</span><div class="bar-track"><div class="bar-fill" style="width:100.0%"></div></div><span class="bar-num">21</span></div>
+<div class="bar-row"><span class="bar-label">Netherlands</span><div class="bar-track"><div class="bar-fill" style="width:38.1%"></div></div><span class="bar-num">8</span></div>
+<div class="bar-row"><span class="bar-label">Japan</span><div class="bar-track"><div class="bar-fill" style="width:33.3%"></div></div><span class="bar-num">7</span></div>
+<div class="bar-row"><span class="bar-label">India</span><div class="bar-track"><div class="bar-fill" style="width:33.3%"></div></div><span class="bar-num">7</span></div>
+<div class="bar-row"><span class="bar-label">Spain</span><div class="bar-track"><div class="bar-fill" style="width:28.6%"></div></div><span class="bar-num">6</span></div>
+<div class="bar-row"><span class="bar-label">Brazil</span><div class="bar-track"><div class="bar-fill" style="width:28.6%"></div></div><span class="bar-num">6</span></div>
+<div class="bar-row"><span class="bar-label">Canada</span><div class="bar-track"><div class="bar-fill" style="width:19.0%"></div></div><span class="bar-num">4</span></div>
+<div class="bar-row"><span class="bar-label">United Kingdom</span><div class="bar-track"><div class="bar-fill" style="width:19.0%"></div></div><span class="bar-num">4</span></div>
+<div class="bar-row"><span class="bar-label">Belgium</span><div class="bar-track"><div class="bar-fill" style="width:19.0%"></div></div><span class="bar-num">4</span></div>
+<div class="bar-row"><span class="bar-label">China</span><div class="bar-track"><div class="bar-fill" style="width:14.3%"></div></div><span class="bar-num">3</span></div>
+      <p style="font-size:12px;color:var(--sub);margin-top:14px">华人面孔：薛崟（HelloGitHub）、Nadia Jiang，及来自台湾的 Duran Hsieh。美国 21 人居首，荷兰 8 人次之——DevRel 文化浓厚的国家盛产 Stars。</p></div>
+    <div class="chart-card reveal"><h4>★ 516 条贡献记录的类型分布</h4><div class="bar-row"><span class="bar-label">演讲分享</span><div class="bar-track"><div class="bar-fill" style="width:100.0%;background:linear-gradient(90deg,#22d3ee,#22d3eeaa)"></div></div><span class="bar-num">150</span></div>
+<div class="bar-row"><span class="bar-label">博客文章</span><div class="bar-track"><div class="bar-fill" style="width:90.0%;background:linear-gradient(90deg,#a78bfa,#a78bfaaa)"></div></div><span class="bar-num">135</span></div>
+<div class="bar-row"><span class="bar-label">视频 / 播客</span><div class="bar-track"><div class="bar-fill" style="width:84.7%;background:linear-gradient(90deg,#f472b6,#f472b6aa)"></div></div><span class="bar-num">127</span></div>
+<div class="bar-row"><span class="bar-label">开源项目</span><div class="bar-track"><div class="bar-fill" style="width:69.3%;background:linear-gradient(90deg,#34d399,#34d399aa)"></div></div><span class="bar-num">104</span></div>
+      <p style="font-size:12px;color:var(--sub);margin-top:14px">输出型贡献（演讲+博客+视频）占比约八成：Stars 的本质是「把知识传播出去的人」，代码只是其中一种载体。</p></div>
+  </div>
+</section>
+
+<section id="featured">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>群星深读</h2></div>
+  <p class="sec-desc reveal">从 92 人中精选 24 位，按五种「成星路径」分组。每人三问：代表作是什么？留给世界的技术盛宴是什么？普通人能学到什么？</p>
+  <div class="fgroup reveal"><span class="sec-num">◆</span><h3>工具链工匠 <em>× 6</em></h3><p>他们写的不是应用，而是别人写应用时用的工具。一个好工具的影响力，是它所有用户的总和。</p></div>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/antfu.png" alt="Anthony Fu" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">工具链工匠 · 一年发布数个改变行业的工具</div>
+      <h3>Anthony Fu <a class="uname" href="https://github.com/antfu" target="_blank" rel="noopener">@antfu</a></h3>
+      <div class="star-country">Japan · <a href="https://stars.github.com/profiles/antfu" target="_blank" rel="noopener">stars.github.com/profiles/antfu ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Vitest（新一代 JS 测试运行器）、UnoCSS（原子化 CSS 引擎）、Slidev（开发者幻灯片工具）、VueUse（Vue 组合式工具集）；在 NuxtLabs 支持下全职做开源。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他证明了「开发者体验」本身就是一门手艺：ESLint v9 迁移这样枯燥的工作，被他做成顺滑的工具链；他发起的赞助转发（sponsorship forwarding）倡议，试图修复开源资金流向底层项目的问题。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>把自己每天的重复劳动产品化——他的每个工具都始于真实痛点；一个人维护数十个仓库，靠的是极致的工程纪律与高频小步快跑。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/tiangolo.png" alt="Sebastián Ramírez" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">工具链工匠 · 让 API 设计回归直觉</div>
+      <h3>Sebastián Ramírez <a class="uname" href="https://github.com/tiangolo" target="_blank" rel="noopener">@tiangolo</a></h3>
+      <div class="star-country">Spain · <a href="https://stars.github.com/profiles/tiangolo" target="_blank" rel="noopener">stars.github.com/profiles/tiangolo ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>FastAPI（Python 最受欢迎的 Web 框架之一）、Typer、SQLModel、Asyncer。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>FastAPI 把类型注解一次书写，变成文档、校验与编辑器提示四处受益，重新定义了 Python 写 API 的「默认姿势」，带火了整个 Python 类型生态。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>API 设计是减法艺术——FastAPI 的成功在于「符合直觉」，而直觉来自对用户心智模型的尊重；文档本身就是产品。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/bagder.png" alt="Daniel Stenberg" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">工具链工匠 · 二十五年，只做一件事</div>
+      <h3>Daniel Stenberg <a class="uname" href="https://github.com/bagder" target="_blank" rel="noopener">@bagder</a></h3>
+      <div class="star-country">Sweden · <a href="https://stars.github.com/profiles/bagder" target="_blank" rel="noopener">stars.github.com/profiles/bagder ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>curl——运行在全世界几乎每台联网设备上的数据传输工具；互联网协议专家。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>curl 是数字世界的水电：无人察觉，无处不在。从手机到汽车到空间站（字面意义），背后是他二十多年如一日处理的安全漏洞与协议细节。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>长期主义的终极形态：选一个足够底层、足够重要的东西，做到无人能替代；维护者 90% 的工作是看不见的（安全、兼容、文档）。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/nzakas.png" alt="Nicholas Zakas" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">工具链工匠 · 给代码立规矩的人</div>
+      <h3>Nicholas Zakas <a class="uname" href="https://github.com/nzakas" target="_blank" rel="noopener">@nzakas</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/nzakas" target="_blank" rel="noopener">stars.github.com/profiles/nzakas ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>ESLint（JS 世界的代码规则基础设施）；十余本 JavaScript 畅销书作者。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>ESLint 把「代码风格」从口水战变成可配置、可共享、可自动修复的工程问题；可插拔架构让它活过了无数框架更迭，成为前端工程的基石。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>做「制定规则的工具」比做「遵守规则的工具」影响力大一个数量级；把争议变成配置项，是化解社区分歧的最高手段。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/mcollina.png" alt="Matteo Collina" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">工具链工匠 · Node.js 的性能匠人</div>
+      <h3>Matteo Collina <a class="uname" href="https://github.com/mcollina" target="_blank" rel="noopener">@mcollina</a></h3>
+      <div class="star-country">Italy · <a href="https://stars.github.com/profiles/mcollina" target="_blank" rel="noopener">stars.github.com/profiles/mcollina ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Node.js 技术指导委员会成员；Fastify 联合创始人；Pino（极速日志库）作者；Platformatic CTO。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>Pino 证明了日志库也可以快到「测不出来」；Fastify 把 Node 服务框架的性能天花板往上推了一大截，影响了整个 Node 生态的性能观。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>性能是「抠」出来的——benchmark 驱动、拒绝过早抽象；把一个运行时钻到底层，成为那个「懂的人」。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/spf13.png" alt="Steve Francia" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">工具链工匠 · 一个生态的最大公约数</div>
+      <h3>Steve Francia <a class="uname" href="https://github.com/spf13" target="_blank" rel="noopener">@spf13</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/spf13" target="_blank" rel="noopener">stars.github.com/profiles/spf13 ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Hugo（Go 静态站点生成器）、Cobra（Go CLI 框架，kubectl / docker 都在用）、Viper（配置库）。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>Cobra 几乎成了 Go 写命令行的标准答案；Hugo 让「构建速度」成为静态站点的核心竞争力。三个项目，覆盖了 Go 开发者每天都要碰的东西。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>抓住一个生态的「最大公约数需求」（每个 Go 项目都需要 CLI），一次写好，惠及整个生态——这是杠杆最大的开源。</p></div>
+  </div>
+</article>
+<div class="fgroup reveal"><span class="sec-num">◆</span><h3>平台掌舵人 <em>× 4</em></h3><p>他们维护着数百万人每天依赖的平台。掌舵者的工作不是写最多的代码，而是让生态朝着正确的方向演进。</p></div>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/frenck.png" alt="Franck Nijhof" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">平台掌舵人 · 把家变成操作系统</div>
+      <h3>Franck Nijhof <a class="uname" href="https://github.com/frenck" target="_blank" rel="noopener">@frenck</a></h3>
+      <div class="star-country">Netherlands · <a href="https://stars.github.com/profiles/frenck" target="_blank" rel="noopener">stars.github.com/profiles/frenck ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Home Assistant 负责人与核心维护者——全球最流行的开源智能家居平台。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他证明了「本地优先、隐私优先」的智能家居可以正面抗衡云厂商的封闭生态；上千种设备集成，几乎全靠社区贡献汇聚而成。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>平台思维：自己不做所有集成，而是把「让别人能贡献集成」这件事做到极致；坚持本地化是一种价值观，也是一种护城河。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/danielroe.png" alt="Daniel Roe" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">平台掌舵人 · 在 Vite 时代守住阵地</div>
+      <h3>Daniel Roe <a class="uname" href="https://github.com/danielroe" target="_blank" rel="noopener">@danielroe</a></h3>
+      <div class="star-country">United Kingdom · <a href="https://stars.github.com/profiles/danielroe" target="_blank" rel="noopener">stars.github.com/profiles/danielroe ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Nuxt 核心团队负责人（Vue 的全栈框架）；曾任 SaaS 初创 CTO。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>带领 Nuxt 完成 v3 重写与生态迁移，在构建工具大洗牌的年代守住了 Vue 全栈方案的阵地，让数百万 Vue 开发者有路可走。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>接手已有庞大用户群的项目比重写更难——渐进迁移、安抚生态、保持 momentum，是另一种更稀缺的领导力。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/driesvints.png" alt="Dries Vints" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">平台掌舵人 · 不时髦赛道的守夜人</div>
+      <h3>Dries Vints <a class="uname" href="https://github.com/driesvints" target="_blank" rel="noopener">@driesvints</a></h3>
+      <div class="star-country">Belgium · <a href="https://stars.github.com/profiles/driesvints" target="_blank" rel="noopener">stars.github.com/profiles/driesvints ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Laravel 框架核心开发者——PHP 世界最受欢迎的现代框架。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>PHP 生态现代化的关键推手之一；Laravel 的优雅开发者体验影响了一代 PHP 开发者，证明了「老语言」也能有新灵魂。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>影响力不取决于赛道热度，取决于你服务的人群规模——在「不时髦」的语言里深耕，同样伟大。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/bahmutov.png" alt="Gleb Bahmutov" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">平台掌舵人 · 把质量变成内容</div>
+      <h3>Gleb Bahmutov <a class="uname" href="https://github.com/bahmutov" target="_blank" rel="noopener">@bahmutov</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/bahmutov" target="_blank" rel="noopener">stars.github.com/profiles/bahmutov ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Cypress 工程高级总监；JavaScript 质量与测试布道者，输出了海量实战内容。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他把 Cypress 的开发者体验推向极致，更把「怎么写好测试」变成可演示、可传播的内容资产，抬高了整个前端行业的质量水位。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>布道即工程：写博客、做分享，让最佳实践自己长腿——影响力是可以被「生产」出来的。</p></div>
+  </div>
+</article>
+<div class="fgroup reveal"><span class="sec-num">◆</span><h3>思想者 <em>× 5</em></h3><p>他们输出的是判断与方法论。在技术范式转移的关口，思想者的写作本身就是基础设施。</p></div>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/simonw.png" alt="Simon Willison" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">思想者 · Django 联创，LLM 时代的清醒观察者</div>
+      <h3>Simon Willison <a class="uname" href="https://github.com/simonw" target="_blank" rel="noopener">@simonw</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/simonw" target="_blank" rel="noopener">stars.github.com/profiles/simonw ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Django 联合创始人；Datasette（把 SQLite 变成可探索的数据新闻工具）作者；独立博客是 LLM 时代最重要的技术观察站之一。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>Datasette 让数据新闻平民化；他对 LLM 的持续写作（prompt 注入、RAG、eval 方法论）是全行业的学习材料，定义了很多讨论的词汇。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>保持「建造者 × 写作者」双身份——每做一个工具就写透一篇博客，写作是最好的 API 设计评审；对新技术既兴奋又较真。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/chiphuyen.png" alt="Chip Huyen" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">思想者 · 在范式转移期做翻译者</div>
+      <h3>Chip Huyen <a class="uname" href="https://github.com/chiphuyen" target="_blank" rel="noopener">@chiphuyen</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/chiphuyen" target="_blank" rel="noopener">stars.github.com/profiles/chiphuyen ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>斯坦福《机器学习系统设计》主讲；曾任 Snorkel AI / NVIDIA，创办 AI infra 公司并被收购；《Designing Machine Learning Systems》《AI Engineering》作者。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>她把「MLOps / LLMOps 从论文到生产」的整套知识体系化，定义了 AI Engineer 这个工种的知识边界，无数团队照着她的框架搭建生产系统。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>在范式转移的窗口期做「知识翻译者」——把前沿实践整理成体系，本身就是巨大的杠杆；写书是最慢但最持久的影响力。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/angiejones.png" alt="Angie Jones" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">思想者 · 被低估领域的顶尖玩家</div>
+      <h3>Angie Jones <a class="uname" href="https://github.com/angiejones" target="_blank" rel="noopener">@angiejones</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/angiejones" target="_blank" rel="noopener">stars.github.com/profiles/angiejones ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Block 开发者项目 VP；测试自动化领域最有影响力的布道者之一。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>她让「测试」从边缘工种变成工程文化的核心议题，持续输出测试策略与自动化的实战方法论，影响了无数团队的质量观。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>选一个被低估的领域做到顶尖——测试人人需要、少人深耕，稀缺性就是影响力；把「苦活」讲出方法论，就是布道。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/kentcdodds.png" alt="Kent C. Dodds" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">思想者 · 理念先行，工具随后</div>
+      <h3>Kent C. Dodds <a class="uname" href="https://github.com/kentcdodds" target="_blank" rel="noopener">@kentcdodds</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/kentcdodds" target="_blank" rel="noopener">stars.github.com/profiles/kentcdodds ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Testing Library 作者；EpicWeb.dev 教育者；世界级 Web 开发教育家。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>Testing Library 让全球前端测试从「测实现细节」转向「测用户行为」——理念层面的贡献大于代码本身，重塑了一代人的测试观。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>先把「应该怎么做」讲清楚，工具只是理念的载体；教学相长，教是最好的学，写教程的人往往是学得最深的人。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/jlleitschuh.png" alt="Jonathan Leitschuh" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">思想者 · 供应链安全的吹哨人</div>
+      <h3>Jonathan Leitschuh <a class="uname" href="https://github.com/jlleitschuh" target="_blank" rel="noopener">@jlleitschuh</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/jlleitschuh" target="_blank" rel="noopener">stars.github.com/profiles/jlleitschuh ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>安全软件工程师与研究员；以 Gradle / Maven 生态的依赖安全研究闻名。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他揭示了构建工具链中的信任漏洞，推动整个 Java 生态修补供应链安全短板——这类工作没有掌声，但保护了每一个人。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>安全研究的「吹哨」本身就是贡献：发现问题、负责任地披露、推动修复，影响力远超写功能代码；守护者往往是无名的。</p></div>
+  </div>
+</article>
+<div class="fgroup reveal"><span class="sec-num">◆</span><h3>开源布道者 <em>× 2</em></h3><p>他们解决开源最难的问题：可持续性。用众筹、策展与布道，让好项目活下去、被看见。</p></div>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/foosel.png" alt="Gina Häußge" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">开源布道者 · 众筹开源的先驱</div>
+      <h3>Gina Häußge <a class="uname" href="https://github.com/foosel" target="_blank" rel="noopener">@foosel</a></h3>
+      <div class="star-country">Germany · <a href="https://stars.github.com/profiles/foosel" target="_blank" rel="noopener">stars.github.com/profiles/foosel ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>OctoPrint（3D 打印机 Web 控制界面）作者与维护者；2016 年起完全依靠社区众筹全职开发。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>她证明了「个人维护者靠社区众筹全职做开源」这条路走得通——为后来者趟出了一条资金路径；OctoPrint 至今是桌面 3D 打印的事实标准 companion。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>可持续性是架构问题：先解决「自己能一直做下去」，再谈改变世界；社区运营（教学、布道、生态）与写代码同等重要。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/521xueweihan.png" alt="Xue Sun" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">开源布道者 · 中文开源的摆渡人</div>
+      <h3>Xue Sun <a class="uname" href="https://github.com/521xueweihan" target="_blank" rel="noopener">@521xueweihan</a></h3>
+      <div class="star-country">China · <a href="https://stars.github.com/profiles/521xueweihan" target="_blank" rel="noopener">stars.github.com/profiles/521xueweihan ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>HelloGitHub 发起人——每月为中文读者精选有趣、入门级的开源项目；HelloStar 开源人物访谈系列。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>中文世界第一次有了稳定、高质量的「开源项目导购」；无数人通过 HelloGitHub 第一次给开源项目提 PR，第一次感受到开源的乐趣。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>策展（curation）是一种创造：在信息过载时代，帮人过滤就是帮人；从「月刊」这样的小事做起，坚持数年就是护城河。</p></div>
+  </div>
+</article>
+<div class="fgroup reveal"><span class="sec-num">◆</span><h3>教育家 <em>× 7</em></h3><p>他们把知识变成可规模化的产品。名单里近半数 Stars 是教育者——这本身就是 GitHub 想告诉你的事。</p></div>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/adrianhajdin.png" alt="Adrian Hajdin" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 把教学做成工业化生产线</div>
+      <h3>Adrian Hajdin <a class="uname" href="https://github.com/adrianhajdin" target="_blank" rel="noopener">@adrianhajdin</a></h3>
+      <div class="star-country">Croatia · <a href="https://stars.github.com/profiles/adrianhajdin" target="_blank" rel="noopener">stars.github.com/profiles/adrianhajdin ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>JS Mastery 创始人；1.1 亿次播放、触达 2500 万开发者的项目制课程体系。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他证明了「跟着做一个完整项目」比「看语法教程」有效十倍；把前端教学做成了可复制、可规模化的生产线。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>教学产品的核心是「完成感」——学员做完一个能用的东西，才会回来学下一个；规模化的关键是流程，不是灵感。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/mouredev.png" alt="Brais Moure" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 拆掉语言那堵墙</div>
+      <h3>Brais Moure <a class="uname" href="https://github.com/mouredev" target="_blank" rel="noopener">@mouredev</a></h3>
+      <div class="star-country">Spain · <a href="https://stars.github.com/profiles/mouredev" target="_blank" rel="noopener">stars.github.com/profiles/mouredev ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>西语开发者社区领袖；软件工程师、内容创作者，2010 年入行至今。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他用西班牙语把前沿技术带给数百万开发者——语言本身就是一道墙，拆墙者功德无量；西语技术社区因他而有了自己的中心。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>非英语世界是巨大的蓝海：用母语做高质量内容，竞争少、需求大、粘性强——这是被严重低估的杠杆。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/midudev.png" alt="Miguel Ángel Durán García" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 内容即社区</div>
+      <h3>Miguel Ángel Durán García <a class="uname" href="https://github.com/midudev" target="_blank" rel="noopener">@midudev</a></h3>
+      <div class="star-country">Spain · <a href="https://stars.github.com/profiles/midudev" target="_blank" rel="noopener">stars.github.com/profiles/midudev ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>西语区最大的开发者内容创作者之一，全栈工程师。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>持续多年的高频高质量输出，养活了一个西语前端学习社区；他的直播与课程是无数西语开发者的「默认学校」。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>复利：内容创作是为数不多「越老越吃香」的开发者工作；坚持本身就是一种策略，时间会奖励不断出现的人。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/hiteshchoudhary.png" alt="Hitesh Choudhary" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 印度开发者的引路人</div>
+      <h3>Hitesh Choudhary <a class="uname" href="https://github.com/hiteshchoudhary" target="_blank" rel="noopener">@hiteshchoudhary</a></h3>
+      <div class="star-country">India · <a href="https://stars.github.com/profiles/hiteshchoudhary" target="_blank" rel="noopener">stars.github.com/profiles/hiteshchoudhary ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>印度极具影响力的技术教育者、YouTuber、软件工程师。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他用免费高质量课程把编程带给印度数百万年轻人，实实在在改变了很多人的职业轨迹——教育是最具杠杆的开源。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>你写的代码服务用户，你教的人服务世界；免费不等于廉价，免费可以是最大的野心。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/kunal-kushwaha.png" alt="Kunal Kushwaha" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 社区是「人」的工程</div>
+      <h3>Kunal Kushwaha <a class="uname" href="https://github.com/kunal-kushwaha" target="_blank" rel="noopener">@kunal-kushwaha</a></h3>
+      <div class="star-country">United Kingdom · <a href="https://stars.github.com/profiles/kunal-kushwaha" target="_blank" rel="noopener">stars.github.com/profiles/kunal-kushwaha ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>WeMakeDevs 创始人；Civo Field CTO。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>WeMakeDevs 是印度最活跃的开发者社区之一，用活动、内容与 mentorship 连接了数十万人，孵化了无数开源新人。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>组织活动、连接人与人，产生的影响力不亚于写代码；社区建设者的 KPI 是「别人的成长」。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/jlengstorf.png" alt="Jason Lengstorf" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 把学习做成电视</div>
+      <h3>Jason Lengstorf <a class="uname" href="https://github.com/jlengstorf" target="_blank" rel="noopener">@jlengstorf</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/jlengstorf" target="_blank" rel="noopener">stars.github.com/profiles/jlengstorf ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Learn With Jason——以直播形式与嘉宾一起从零学新技术的节目；20 年工程经验。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>他开创了「结对学习直播」这一内容形态：不装专家，和观众一起从零学，反而更真实、更有效，重塑了技术直播的范式。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>示弱是一种力量：「我也不会，我们一起学」比「我来教你」更能建立信任；真实感是稀缺品。</p></div>
+  </div>
+</article>
+<article class="star reveal">
+  <div class="star-head">
+    <img loading="lazy" src="https://github.com/thecodercoder.png" alt="Jess Chan" onerror="this.style.display='none'">
+    <div>
+      <div class="star-kicker">教育家 · 新手的第一盏灯</div>
+      <h3>Jess Chan <a class="uname" href="https://github.com/thecodercoder" target="_blank" rel="noopener">@thecodercoder</a></h3>
+      <div class="star-country">United States · <a href="https://stars.github.com/profiles/thecodercoder" target="_blank" rel="noopener">stars.github.com/profiles/thecodercoder ↗</a></div>
+    </div>
+  </div>
+  <div class="star-body">
+    <div class="sb"><h4>代表作</h4><p>Coder Coder YouTube 频道主播，专注零基础前端入门教学。</p></div>
+    <div class="sb"><h4>留给世界的技术盛宴</h4><p>她降低了编程的入门门槛——她的观众很多是转行者，第一行代码因她而写；「Day 0 的人」终于有了不被鄙视的起点。</p></div>
+    <div class="sb lesson"><h4>可学之处</h4><p>服务「Day 0 的人」：专家不缺内容，新手缺引路人；把复杂讲简单，是顶级能力，不是降维。</p></div>
+  </div>
+</article>
+</section>
+
+<section id="lessons">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>可以从他们身上学到什么</h2></div>
+  <p class="sec-desc reveal">92 份档案读完，真正值得带走的不是名单，而是七条可复制的路径。</p>
+  <div class="lesson-grid"><div class="lesson-card reveal"><div class="ln">01</div><h4>影响力 ≠ 代码量</h4><p>名单里近半数是教育家、布道者与社区组织者。GitHub 官方的评选标准是 <b>inspire / educate / influence</b>——写教程、做视频、组织活动、维护文档，同样是「贡献」。先把「我要对社区有用」放在「我要写很多代码」前面。</p></div>
+<div class="lesson-card reveal"><div class="ln">02</div><h4>把重复劳动产品化</h4><p>antfu 的每个工具都始于自己的痛点。你每天手动做的事，就是下一个工具的雏形。工具链工匠的起点不是宏大叙事，是「受够了」。</p></div>
+<div class="lesson-card reveal"><div class="ln">03</div><h4>选一个足够重要的问题，做长期主义者</h4><p>bagder 维护 curl 二十多年，foosel 众筹做 OctoPrint 十年。时间的复利只奖励不换赛道的人——选底层、选重要、选你愿意做二十年的。</p></div>
+<div class="lesson-card reveal"><div class="ln">04</div><h4>做「规则层」的贡献</h4><p>ESLint、Cobra、Testing Library——定义别人怎么写代码的工具，影响力是应用层的指数倍。往下走一层，杠杆大十倍。</p></div>
+<div class="lesson-card reveal"><div class="ln">05</div><h4>在范式转移期做翻译者</h4><p>chiphuyen 在 MLOps/LLMOps 爆发期做体系化输出，simonw 在 LLM 时代持续写作。窗口期 × 写作能力 = 巨大杠杆；写清楚一件事的人，会被记住。</p></div>
+<div class="lesson-card reveal"><div class="ln">06</div><h4>母语是蓝海</h4><p>西语（mouredev / midudev）、中文（HelloGitHub）、韩语、葡语——非英语高质量技术内容永远稀缺。用母语服务母语者，竞争少、需求大、粘性强。</p></div>
+<div class="lesson-card reveal"><div class="ln">07</div><h4>可持续性是架构问题</h4><p>foosel 的众筹、antfu 的赞助转发倡议——先解决「自己能一直做下去」，再谈改变世界。开源的敌人不是技术难度，是 burnout。</p></div></div>
+</section>
+
+<section id="directory">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>92 群星名录</h2></div>
+  <p class="sec-desc reveal">现任全部 92 位 GitHub Stars。可搜索姓名 / 用户名 / 国家 / 标签，点击姓名进入其官方 Stars 档案页。</p>
+  <div class="filter-bar reveal"><input id="q" type="text" placeholder="搜索：姓名、@用户名、国家或标签…（如 fastapi、中国、日本）"><span id="count">92 / 92</span></div>
+  <div class="pgrid" id="grid"><div class="pcard reveal" data-search="xue sun 521xueweihan china hellogithub 发起人，中文开源内容布道者">
+  <img loading="lazy" src="https://github.com/521xueweihan.png" alt="Xue Sun" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/521xueweihan" target="_blank" rel="noopener">Xue Sun</a></div>
+  <div class="puname"><a href="https://github.com/521xueweihan" target="_blank" rel="noopener">@521xueweihan</a></div>
+  <div class="ptag">HelloGitHub 发起人，中文开源内容布道者</div>
+  <div class="pcountry">China</div>
+</div>
+<div class="pcard reveal" data-search="adewale abati acekyd netherlands developer advocate，非洲开源推广人">
+  <img loading="lazy" src="https://github.com/acekyd.png" alt="Adewale Abati" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/acekyd" target="_blank" rel="noopener">Adewale Abati</a></div>
+  <div class="puname"><a href="https://github.com/acekyd" target="_blank" rel="noopener">@acekyd</a></div>
+  <div class="ptag">Developer Advocate，非洲开源推广人</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="adrian hajdin adrianhajdin croatia js mastery 创始人，项目制前端教学（1.1 亿播放）">
+  <img loading="lazy" src="https://github.com/adrianhajdin.png" alt="Adrian Hajdin" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/adrianhajdin" target="_blank" rel="noopener">Adrian Hajdin</a></div>
+  <div class="puname"><a href="https://github.com/adrianhajdin" target="_blank" rel="noopener">@adrianhajdin</a></div>
+  <div class="ptag">JS Mastery 创始人，项目制前端教学（1.1 亿播放）</div>
+  <div class="pcountry">Croatia</div>
+</div>
+<div class="pcard reveal" data-search="ahmad awais ahmadawais canada wordpress/node 开源老兵，ai 编程工具创业者">
+  <img loading="lazy" src="https://github.com/ahmadawais.png" alt="Ahmad Awais" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/ahmadawais" target="_blank" rel="noopener">Ahmad Awais</a></div>
+  <div class="puname"><a href="https://github.com/ahmadawais" target="_blank" rel="noopener">@ahmadawais</a></div>
+  <div class="ptag">WordPress/Node 开源老兵，AI 编程工具创业者</div>
+  <div class="pcountry">Canada</div>
+</div>
+<div class="pcard reveal" data-search="anand chowdhary anandchowdhary netherlands 连续创业者，工程师 × 设计师">
+  <img loading="lazy" src="https://github.com/anandchowdhary.png" alt="Anand Chowdhary" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/anandchowdhary" target="_blank" rel="noopener">Anand Chowdhary</a></div>
+  <div class="puname"><a href="https://github.com/anandchowdhary" target="_blank" rel="noopener">@anandchowdhary</a></div>
+  <div class="ptag">连续创业者，工程师 × 设计师</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="angie jones angiejones united states block 开发者项目 vp，测试自动化领袖">
+  <img loading="lazy" src="https://github.com/angiejones.png" alt="Angie Jones" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/angiejones" target="_blank" rel="noopener">Angie Jones</a></div>
+  <div class="puname"><a href="https://github.com/angiejones" target="_blank" rel="noopener">@angiejones</a></div>
+  <div class="ptag">Block 开发者项目 VP，测试自动化领袖</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="anthony fu antfu japan vue 生态工具链作者：vitest / unocss / slidev / vueuse">
+  <img loading="lazy" src="https://github.com/antfu.png" alt="Anthony Fu" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/antfu" target="_blank" rel="noopener">Anthony Fu</a></div>
+  <div class="puname"><a href="https://github.com/antfu" target="_blank" rel="noopener">@antfu</a></div>
+  <div class="ptag">Vue 生态工具链作者：Vitest / UnoCSS / Slidev / VueUse</div>
+  <div class="pcountry">Japan</div>
+</div>
+<div class="pcard reveal" data-search="arístides guimerá orozco arisguimera spain 移动开发者，技术内容创作者">
+  <img loading="lazy" src="https://github.com/arisguimera.png" alt="Arístides Guimerá Orozco" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/arisguimera" target="_blank" rel="noopener">Arístides Guimerá Orozco</a></div>
+  <div class="puname"><a href="https://github.com/arisguimera" target="_blank" rel="noopener">@arisguimera</a></div>
+  <div class="ptag">移动开发者，技术内容创作者</div>
+  <div class="pcountry">Spain</div>
+</div>
+<div class="pcard reveal" data-search="barbara forbes ba4bes netherlands azure mvp，云与自动化布道者">
+  <img loading="lazy" src="https://github.com/ba4bes.png" alt="Barbara Forbes" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/ba4bes" target="_blank" rel="noopener">Barbara Forbes</a></div>
+  <div class="puname"><a href="https://github.com/ba4bes" target="_blank" rel="noopener">@ba4bes</a></div>
+  <div class="ptag">Azure MVP，云与自动化布道者</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="daniel stenberg bagder sweden curl 作者，互联网协议专家">
+  <img loading="lazy" src="https://github.com/bagder.png" alt="Daniel Stenberg" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/bagder" target="_blank" rel="noopener">Daniel Stenberg</a></div>
+  <div class="puname"><a href="https://github.com/bagder" target="_blank" rel="noopener">@bagder</a></div>
+  <div class="ptag">curl 作者，互联网协议专家</div>
+  <div class="pcountry">Sweden</div>
+</div>
+<div class="pcard reveal" data-search="gleb bahmutov bahmutov united states cypress 工程总监，js 质量布道者">
+  <img loading="lazy" src="https://github.com/bahmutov.png" alt="Gleb Bahmutov" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/bahmutov" target="_blank" rel="noopener">Gleb Bahmutov</a></div>
+  <div class="puname"><a href="https://github.com/bahmutov" target="_blank" rel="noopener">@bahmutov</a></div>
+  <div class="ptag">Cypress 工程总监，JS 质量布道者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="leonardo montini balastrong italy 前端开源爱好者，内容创作者">
+  <img loading="lazy" src="https://github.com/balastrong.png" alt="Leonardo Montini" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/balastrong" target="_blank" rel="noopener">Leonardo Montini</a></div>
+  <div class="puname"><a href="https://github.com/balastrong" target="_blank" rel="noopener">@balastrong</a></div>
+  <div class="ptag">前端开源爱好者，内容创作者</div>
+  <div class="pcountry">Italy</div>
+</div>
+<div class="pcard reveal" data-search="beatriz milz beatrizmilz brazil r 语言 / tidyverse 布道者，学术研究者">
+  <img loading="lazy" src="https://github.com/beatrizmilz.png" alt="Beatriz Milz" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/beatrizmilz" target="_blank" rel="noopener">Beatriz Milz</a></div>
+  <div class="puname"><a href="https://github.com/beatrizmilz" target="_blank" rel="noopener">@beatrizmilz</a></div>
+  <div class="ptag">R 语言 / tidyverse 布道者，学术研究者</div>
+  <div class="pcountry">Brazil</div>
+</div>
+<div class="pcard reveal" data-search="bodhish thomas bodhish india 开放医疗网络基金会 ceo">
+  <img loading="lazy" src="https://github.com/bodhish.png" alt="Bodhish Thomas" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/bodhish" target="_blank" rel="noopener">Bodhish Thomas</a></div>
+  <div class="puname"><a href="https://github.com/bodhish" target="_blank" rel="noopener">@bodhish</a></div>
+  <div class="ptag">开放医疗网络基金会 CEO</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="chip huyen chiphuyen united states ai 工程与 mlops 知名作者、教育者">
+  <img loading="lazy" src="https://github.com/chiphuyen.png" alt="Chip Huyen" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/chiphuyen" target="_blank" rel="noopener">Chip Huyen</a></div>
+  <div class="puname"><a href="https://github.com/chiphuyen" target="_blank" rel="noopener">@chiphuyen</a></div>
+  <div class="ptag">AI 工程与 MLOps 知名作者、教育者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="colby fayock colbyfayock united states 前端教育者，深耕 astro 生态">
+  <img loading="lazy" src="https://github.com/colbyfayock.png" alt="Colby Fayock" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/colbyfayock" target="_blank" rel="noopener">Colby Fayock</a></div>
+  <div class="puname"><a href="https://github.com/colbyfayock" target="_blank" rel="noopener">@colbyfayock</a></div>
+  <div class="ptag">前端教育者，深耕 Astro 生态</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="corbin crutchley crutchcorn united states web components 布道，工程领导力">
+  <img loading="lazy" src="https://github.com/crutchcorn.png" alt="Corbin Crutchley" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/crutchcorn" target="_blank" rel="noopener">Corbin Crutchley</a></div>
+  <div class="puname"><a href="https://github.com/crutchcorn" target="_blank" rel="noopener">@crutchcorn</a></div>
+  <div class="ptag">Web Components 布道，工程领导力</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="daniel roe danielroe united kingdom nuxt 核心团队负责人">
+  <img loading="lazy" src="https://github.com/danielroe.png" alt="Daniel Roe" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/danielroe" target="_blank" rel="noopener">Daniel Roe</a></div>
+  <div class="puname"><a href="https://github.com/danielroe" target="_blank" rel="noopener">@danielroe</a></div>
+  <div class="ptag">Nuxt 核心团队负责人</div>
+  <div class="pcountry">United Kingdom</div>
+</div>
+<div class="pcard reveal" data-search="jonah lawrence denvercoder1 israel github readme streak stats 作者">
+  <img loading="lazy" src="https://github.com/denvercoder1.png" alt="Jonah Lawrence" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/denvercoder1" target="_blank" rel="noopener">Jonah Lawrence</a></div>
+  <div class="puname"><a href="https://github.com/denvercoder1" target="_blank" rel="noopener">@denvercoder1</a></div>
+  <div class="ptag">GitHub Readme Streak Stats 作者</div>
+  <div class="pcountry">Israel</div>
+</div>
+<div class="pcard reveal" data-search="dirk lemstra dlemstra netherlands imagemagick 等开源项目维护者">
+  <img loading="lazy" src="https://github.com/dlemstra.png" alt="Dirk Lemstra" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/dlemstra" target="_blank" rel="noopener">Dirk Lemstra</a></div>
+  <div class="puname"><a href="https://github.com/dlemstra" target="_blank" rel="noopener">@dlemstra</a></div>
+  <div class="ptag">ImageMagick 等开源项目维护者</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="dries vints driesvints belgium laravel 框架核心开发者">
+  <img loading="lazy" src="https://github.com/driesvints.png" alt="Dries Vints" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/driesvints" target="_blank" rel="noopener">Dries Vints</a></div>
+  <div class="puname"><a href="https://github.com/driesvints" target="_blank" rel="noopener">@driesvints</a></div>
+  <div class="ptag">Laravel 框架核心开发者</div>
+  <div class="pcountry">Belgium</div>
+</div>
+<div class="pcard reveal" data-search="kazumi ohira dzeyelid japan azure / github 布道者">
+  <img loading="lazy" src="https://github.com/dzeyelid.png" alt="Kazumi Ohira" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/dzeyelid" target="_blank" rel="noopener">Kazumi Ohira</a></div>
+  <div class="puname"><a href="https://github.com/dzeyelid" target="_blank" rel="noopener">@dzeyelid</a></div>
+  <div class="ptag">Azure / GitHub 布道者</div>
+  <div class="pcountry">Japan</div>
+</div>
+<div class="pcard reveal" data-search="andrzej mazur end3r poland js13kgames 发起人，web 游戏布道者">
+  <img loading="lazy" src="https://github.com/end3r.png" alt="Andrzej Mazur" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/end3r" target="_blank" rel="noopener">Andrzej Mazur</a></div>
+  <div class="puname"><a href="https://github.com/end3r" target="_blank" rel="noopener">@end3r</a></div>
+  <div class="ptag">js13kGames 发起人，Web 游戏布道者</div>
+  <div class="pcountry">Poland</div>
+</div>
+<div class="pcard reveal" data-search="erika heidi erikaheidi netherlands 创意开发者，devrel，内容创作者">
+  <img loading="lazy" src="https://github.com/erikaheidi.png" alt="Erika Heidi" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/erikaheidi" target="_blank" rel="noopener">Erika Heidi</a></div>
+  <div class="puname"><a href="https://github.com/erikaheidi" target="_blank" rel="noopener">@erikaheidi</a></div>
+  <div class="ptag">创意开发者，DevRel，内容创作者</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="elio struyf estruyf belgium 工程负责人，microsoft 365 开源工具作者">
+  <img loading="lazy" src="https://github.com/estruyf.png" alt="Elio Struyf" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/estruyf" target="_blank" rel="noopener">Elio Struyf</a></div>
+  <div class="puname"><a href="https://github.com/estruyf" target="_blank" rel="noopener">@estruyf</a></div>
+  <div class="ptag">工程负责人，Microsoft 365 开源工具作者</div>
+  <div class="pcountry">Belgium</div>
+</div>
+<div class="pcard reveal" data-search="fatih kadir akın f turkey devrel，开发者工具布道者">
+  <img loading="lazy" src="https://github.com/f.png" alt="Fatih Kadir Akın" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/f" target="_blank" rel="noopener">Fatih Kadir Akın</a></div>
+  <div class="puname"><a href="https://github.com/f" target="_blank" rel="noopener">@f</a></div>
+  <div class="ptag">DevRel，开发者工具布道者</div>
+  <div class="pcountry">Turkey</div>
+</div>
+<div class="pcard reveal" data-search="charlie fish fishcharlie united states ios 工程师，创业者">
+  <img loading="lazy" src="https://github.com/fishcharlie.png" alt="Charlie Fish" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/fishcharlie" target="_blank" rel="noopener">Charlie Fish</a></div>
+  <div class="puname"><a href="https://github.com/fishcharlie" target="_blank" rel="noopener">@fishcharlie</a></div>
+  <div class="ptag">iOS 工程师，创业者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="gina häußge foosel germany octoprint 作者，众筹开源先驱">
+  <img loading="lazy" src="https://github.com/foosel.png" alt="Gina Häußge" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/foosel" target="_blank" rel="noopener">Gina Häußge</a></div>
+  <div class="puname"><a href="https://github.com/foosel" target="_blank" rel="noopener">@foosel</a></div>
+  <div class="ptag">OctoPrint 作者，众筹开源先驱</div>
+  <div class="pcountry">Germany</div>
+</div>
+<div class="pcard reveal" data-search="franck nijhof frenck netherlands home assistant 负责人">
+  <img loading="lazy" src="https://github.com/frenck.png" alt="Franck Nijhof" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/frenck" target="_blank" rel="noopener">Franck Nijhof</a></div>
+  <div class="puname"><a href="https://github.com/frenck" target="_blank" rel="noopener">@frenck</a></div>
+  <div class="ptag">Home Assistant 负责人</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="gonzalo pozzo goncy argentina 前端教育者，内容创作者">
+  <img loading="lazy" src="https://github.com/goncy.png" alt="Gonzalo Pozzo" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/goncy" target="_blank" rel="noopener">Gonzalo Pozzo</a></div>
+  <div class="puname"><a href="https://github.com/goncy" target="_blank" rel="noopener">@goncy</a></div>
+  <div class="ptag">前端教育者，内容创作者</div>
+  <div class="pcountry">Argentina</div>
+</div>
+<div class="pcard reveal" data-search="hitesh choudhary hiteshchoudhary india 印度极具影响力的技术教育者">
+  <img loading="lazy" src="https://github.com/hiteshchoudhary.png" alt="Hitesh Choudhary" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/hiteshchoudhary" target="_blank" rel="noopener">Hitesh Choudhary</a></div>
+  <div class="puname"><a href="https://github.com/hiteshchoudhary" target="_blank" rel="noopener">@hiteshchoudhary</a></div>
+  <div class="ptag">印度极具影响力的技术教育者</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="yuval avidani hoodini israel ai 构建者、演讲者、教育者">
+  <img loading="lazy" src="https://github.com/hoodini.png" alt="Yuval Avidani" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/hoodini" target="_blank" rel="noopener">Yuval Avidani</a></div>
+  <div class="puname"><a href="https://github.com/hoodini" target="_blank" rel="noopener">@hoodini</a></div>
+  <div class="ptag">AI 构建者、演讲者、教育者</div>
+  <div class="pcountry">Israel</div>
+</div>
+<div class="pcard reveal" data-search="huan li huan united states 连续创业者，ai 架构师">
+  <img loading="lazy" src="https://github.com/huan.png" alt="Huan Li" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/huan" target="_blank" rel="noopener">Huan Li</a></div>
+  <div class="puname"><a href="https://github.com/huan" target="_blank" rel="noopener">@huan</a></div>
+  <div class="ptag">连续创业者，AI 架构师</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="abhishek veeramalla iam-veeramalla india devops 教育者，youtube 布道">
+  <img loading="lazy" src="https://github.com/iam-veeramalla.png" alt="Abhishek Veeramalla" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/iam-veeramalla" target="_blank" rel="noopener">Abhishek Veeramalla</a></div>
+  <div class="puname"><a href="https://github.com/iam-veeramalla" target="_blank" rel="noopener">@iam-veeramalla</a></div>
+  <div class="ptag">DevOps 教育者，YouTube 布道</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="augustine correa indcoder india 资深开源社区建设者">
+  <img loading="lazy" src="https://github.com/indcoder.png" alt="Augustine Correa" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/indcoder" target="_blank" rel="noopener">Augustine Correa</a></div>
+  <div class="puname"><a href="https://github.com/indcoder" target="_blank" rel="noopener">@indcoder</a></div>
+  <div class="ptag">资深开源社区建设者</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="jacob stopak initialcommit-io united states git 可视化教学，devlands 游戏化 git">
+  <img loading="lazy" src="https://github.com/initialcommit-io.png" alt="Jacob Stopak" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/initialcommit-io" target="_blank" rel="noopener">Jacob Stopak</a></div>
+  <div class="puname"><a href="https://github.com/initialcommit-io" target="_blank" rel="noopener">@initialcommit-io</a></div>
+  <div class="ptag">Git 可视化教学，Devlands 游戏化 Git</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="simon gerst intrigus-lgtm germany 安全研究员，软件解剖爱好者">
+  <img loading="lazy" src="https://github.com/intrigus-lgtm.png" alt="Simon Gerst" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/intrigus-lgtm" target="_blank" rel="noopener">Simon Gerst</a></div>
+  <div class="puname"><a href="https://github.com/intrigus-lgtm" target="_blank" rel="noopener">@intrigus-lgtm</a></div>
+  <div class="ptag">安全研究员，软件解剖爱好者</div>
+  <div class="pcountry">Germany</div>
+</div>
+<div class="pcard reveal" data-search="jan de dobbeleer jandedobbeleer belgium oh-my-posh 作者（终端提示符美化引擎）">
+  <img loading="lazy" src="https://github.com/jandedobbeleer.png" alt="Jan De Dobbeleer" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jandedobbeleer" target="_blank" rel="noopener">Jan De Dobbeleer</a></div>
+  <div class="puname"><a href="https://github.com/jandedobbeleer" target="_blank" rel="noopener">@jandedobbeleer</a></div>
+  <div class="ptag">oh-my-posh 作者（终端提示符美化引擎）</div>
+  <div class="pcountry">Belgium</div>
+</div>
+<div class="pcard reveal" data-search="jesse houwing jessehouwing netherlands azure devops / alm 专家">
+  <img loading="lazy" src="https://github.com/jessehouwing.png" alt="Jesse Houwing" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jessehouwing" target="_blank" rel="noopener">Jesse Houwing</a></div>
+  <div class="puname"><a href="https://github.com/jessehouwing" target="_blank" rel="noopener">@jessehouwing</a></div>
+  <div class="ptag">Azure DevOps / ALM 专家</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="nadia jiang jiangbonadia china 创业者，devrel 专家">
+  <img loading="lazy" src="https://github.com/jiangbonadia.png" alt="Nadia Jiang" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jiangbonadia" target="_blank" rel="noopener">Nadia Jiang</a></div>
+  <div class="puname"><a href="https://github.com/jiangbonadia" target="_blank" rel="noopener">@jiangbonadia</a></div>
+  <div class="ptag">创业者，DevRel 专家</div>
+  <div class="pcountry">China</div>
+</div>
+<div class="pcard reveal" data-search="jason lengstorf jlengstorf united states learn with jason：开发者直播学习节目">
+  <img loading="lazy" src="https://github.com/jlengstorf.png" alt="Jason Lengstorf" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jlengstorf" target="_blank" rel="noopener">Jason Lengstorf</a></div>
+  <div class="puname"><a href="https://github.com/jlengstorf" target="_blank" rel="noopener">@jlengstorf</a></div>
+  <div class="ptag">Learn With Jason：开发者直播学习节目</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="jonathan leitschuh jlleitschuh united states 软件供应链安全研究员">
+  <img loading="lazy" src="https://github.com/jlleitschuh.png" alt="Jonathan Leitschuh" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jlleitschuh" target="_blank" rel="noopener">Jonathan Leitschuh</a></div>
+  <div class="puname"><a href="https://github.com/jlleitschuh" target="_blank" rel="noopener">@jlleitschuh</a></div>
+  <div class="ptag">软件供应链安全研究员</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="john mcbride jpmcb united states cobra 维护者，staff 软件工程师">
+  <img loading="lazy" src="https://github.com/jpmcb.png" alt="John McBride" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jpmcb" target="_blank" rel="noopener">John McBride</a></div>
+  <div class="puname"><a href="https://github.com/jpmcb" target="_blank" rel="noopener">@jpmcb</a></div>
+  <div class="ptag">Cobra 维护者，Staff 软件工程师</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="jessica temporal jtemporal canada 巴西数据科学播客联合创始人">
+  <img loading="lazy" src="https://github.com/jtemporal.png" alt="Jessica Temporal" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/jtemporal" target="_blank" rel="noopener">Jessica Temporal</a></div>
+  <div class="puname"><a href="https://github.com/jtemporal" target="_blank" rel="noopener">@jtemporal</a></div>
+  <div class="ptag">巴西数据科学播客联合创始人</div>
+  <div class="pcountry">Canada</div>
+</div>
+<div class="pcard reveal" data-search="juliana conde julianaconde brazil 开发者体验工程师">
+  <img loading="lazy" src="https://github.com/julianaconde.png" alt="Juliana Conde" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/julianaconde" target="_blank" rel="noopener">Juliana Conde</a></div>
+  <div class="puname"><a href="https://github.com/julianaconde" target="_blank" rel="noopener">@julianaconde</a></div>
+  <div class="ptag">开发者体验工程师</div>
+  <div class="pcountry">Brazil</div>
+</div>
+<div class="pcard reveal" data-search="julio arruda julioarruda brazil 巴西首位 github star，docker captain">
+  <img loading="lazy" src="https://github.com/julioarruda.png" alt="Julio Arruda" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/julioarruda" target="_blank" rel="noopener">Julio Arruda</a></div>
+  <div class="puname"><a href="https://github.com/julioarruda" target="_blank" rel="noopener">@julioarruda</a></div>
+  <div class="ptag">巴西首位 GitHub Star，Docker Captain</div>
+  <div class="pcountry">Brazil</div>
+</div>
+<div class="pcard reveal" data-search="kamila santos kamilahsantos brazil 架构师，程序员与技术 leader 导师">
+  <img loading="lazy" src="https://github.com/kamilahsantos.png" alt="Kamila Santos" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/kamilahsantos" target="_blank" rel="noopener">Kamila Santos</a></div>
+  <div class="puname"><a href="https://github.com/kamilahsantos" target="_blank" rel="noopener">@kamilahsantos</a></div>
+  <div class="ptag">架构师，程序员与技术 leader 导师</div>
+  <div class="pcountry">Brazil</div>
+</div>
+<div class="pcard reveal" data-search="kent c. dodds kentcdodds united states testing library 作者，测试教育家">
+  <img loading="lazy" src="https://github.com/kentcdodds.png" alt="Kent C. Dodds" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/kentcdodds" target="_blank" rel="noopener">Kent C. Dodds</a></div>
+  <div class="puname"><a href="https://github.com/kentcdodds" target="_blank" rel="noopener">@kentcdodds</a></div>
+  <div class="ptag">Testing Library 作者，测试教育家</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="kenta kase kesin11 japan github actions / copilot 开源开发者">
+  <img loading="lazy" src="https://github.com/kesin11.png" alt="Kenta Kase" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/kesin11" target="_blank" rel="noopener">Kenta Kase</a></div>
+  <div class="puname"><a href="https://github.com/kesin11" target="_blank" rel="noopener">@kesin11</a></div>
+  <div class="ptag">GitHub Actions / Copilot 开源开发者</div>
+  <div class="pcountry">Japan</div>
+</div>
+<div class="pcard reveal" data-search="kunal kushwaha kunal-kushwaha united kingdom wemakedevs 创始人，社区建设者">
+  <img loading="lazy" src="https://github.com/kunal-kushwaha.png" alt="Kunal Kushwaha" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/kunal-kushwaha" target="_blank" rel="noopener">Kunal Kushwaha</a></div>
+  <div class="puname"><a href="https://github.com/kunal-kushwaha" target="_blank" rel="noopener">@kunal-kushwaha</a></div>
+  <div class="ptag">WeMakeDevs 创始人，社区建设者</div>
+  <div class="pcountry">United Kingdom</div>
+</div>
+<div class="pcard reveal" data-search="kedasha kerr ladykerr united states developer advocate，技术内容创作者">
+  <img loading="lazy" src="https://github.com/ladykerr.png" alt="Kedasha Kerr" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/ladykerr" target="_blank" rel="noopener">Kedasha Kerr</a></div>
+  <div class="puname"><a href="https://github.com/ladykerr" target="_blank" rel="noopener">@ladykerr</a></div>
+  <div class="ptag">Developer Advocate，技术内容创作者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="monica powell m0nica united states 开源新人引导布道者">
+  <img loading="lazy" src="https://github.com/m0nica.png" alt="Monica Powell" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/m0nica" target="_blank" rel="noopener">Monica Powell</a></div>
+  <div class="puname"><a href="https://github.com/m0nica" target="_blank" rel="noopener">@m0nica</a></div>
+  <div class="ptag">开源新人引导布道者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="duran hsieh matsurigoto taiwan 台积电 principal sre，云原生布道者">
+  <img loading="lazy" src="https://github.com/matsurigoto.png" alt="Duran Hsieh" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/matsurigoto" target="_blank" rel="noopener">Duran Hsieh</a></div>
+  <div class="puname"><a href="https://github.com/matsurigoto" target="_blank" rel="noopener">@matsurigoto</a></div>
+  <div class="ptag">台积电 Principal SRE，云原生布道者</div>
+  <div class="pcountry">Taiwan</div>
+</div>
+<div class="pcard reveal" data-search="matteo collina mcollina italy node.js tsc，fastify / pino 作者">
+  <img loading="lazy" src="https://github.com/mcollina.png" alt="Matteo Collina" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/mcollina" target="_blank" rel="noopener">Matteo Collina</a></div>
+  <div class="puname"><a href="https://github.com/mcollina" target="_blank" rel="noopener">@mcollina</a></div>
+  <div class="ptag">Node.js TSC，Fastify / Pino 作者</div>
+  <div class="pcountry">Italy</div>
+</div>
+<div class="pcard reveal" data-search="michael heap mheap united kingdom 终身开源贡献者">
+  <img loading="lazy" src="https://github.com/mheap.png" alt="Michael Heap" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/mheap" target="_blank" rel="noopener">Michael Heap</a></div>
+  <div class="puname"><a href="https://github.com/mheap" target="_blank" rel="noopener">@mheap</a></div>
+  <div class="ptag">终身开源贡献者</div>
+  <div class="pcountry">United Kingdom</div>
+</div>
+<div class="pcard reveal" data-search="miguel ángel durán garcía midudev spain 西语区最大的开发者社区之一">
+  <img loading="lazy" src="https://github.com/midudev.png" alt="Miguel Ángel Durán García" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/midudev" target="_blank" rel="noopener">Miguel Ángel Durán García</a></div>
+  <div class="puname"><a href="https://github.com/midudev" target="_blank" rel="noopener">@midudev</a></div>
+  <div class="ptag">西语区最大的开发者社区之一</div>
+  <div class="pcountry">Spain</div>
+</div>
+<div class="pcard reveal" data-search="takashi kawamoto mochan-tk japan github copilot 布道 youtuber">
+  <img loading="lazy" src="https://github.com/mochan-tk.png" alt="Takashi Kawamoto" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/mochan-tk" target="_blank" rel="noopener">Takashi Kawamoto</a></div>
+  <div class="puname"><a href="https://github.com/mochan-tk" target="_blank" rel="noopener">@mochan-tk</a></div>
+  <div class="ptag">GitHub Copilot 布道 YouTuber</div>
+  <div class="pcountry">Japan</div>
+</div>
+<div class="pcard reveal" data-search="brais moure mouredev spain 西语开发者社区领袖">
+  <img loading="lazy" src="https://github.com/mouredev.png" alt="Brais Moure" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/mouredev" target="_blank" rel="noopener">Brais Moure</a></div>
+  <div class="puname"><a href="https://github.com/mouredev" target="_blank" rel="noopener">@mouredev</a></div>
+  <div class="ptag">西语开发者社区领袖</div>
+  <div class="pcountry">Spain</div>
+</div>
+<div class="pcard reveal" data-search="nick taylor nickytonline canada .net / 云开发者，多料 mvp">
+  <img loading="lazy" src="https://github.com/nickytonline.png" alt="Nick Taylor" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/nickytonline" target="_blank" rel="noopener">Nick Taylor</a></div>
+  <div class="puname"><a href="https://github.com/nickytonline" target="_blank" rel="noopener">@nickytonline</a></div>
+  <div class="ptag">.NET / 云开发者，多料 MVP</div>
+  <div class="pcountry">Canada</div>
+</div>
+<div class="pcard reveal" data-search="hassan el mghari nutlope united states together ai devrel，开源 ai 项目作者">
+  <img loading="lazy" src="https://github.com/nutlope.png" alt="Hassan El Mghari" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/nutlope" target="_blank" rel="noopener">Hassan El Mghari</a></div>
+  <div class="puname"><a href="https://github.com/nutlope" target="_blank" rel="noopener">@nutlope</a></div>
+  <div class="ptag">Together AI DevRel，开源 AI 项目作者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="nicholas zakas nzakas united states eslint 作者，js 畅销书作家">
+  <img loading="lazy" src="https://github.com/nzakas.png" alt="Nicholas Zakas" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/nzakas" target="_blank" rel="noopener">Nicholas Zakas</a></div>
+  <div class="puname"><a href="https://github.com/nzakas" target="_blank" rel="noopener">@nzakas</a></div>
+  <div class="ptag">ESLint 作者，JS 畅销书作家</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="mario souto omariosouto brazil devsoutinho：巴西 js 教育者">
+  <img loading="lazy" src="https://github.com/omariosouto.png" alt="Mario Souto" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/omariosouto" target="_blank" rel="noopener">Mario Souto</a></div>
+  <div class="puname"><a href="https://github.com/omariosouto" target="_blank" rel="noopener">@omariosouto</a></div>
+  <div class="ptag">DevSoutinho：巴西 JS 教育者</div>
+  <div class="pcountry">Brazil</div>
+</div>
+<div class="pcard reveal" data-search="oren melamed orenme israel agentic ai 系统，社区建设者">
+  <img loading="lazy" src="https://github.com/orenme.png" alt="Oren Melamed" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/orenme" target="_blank" rel="noopener">Oren Melamed</a></div>
+  <div class="puname"><a href="https://github.com/orenme" target="_blank" rel="noopener">@orenme</a></div>
+  <div class="ptag">Agentic AI 系统，社区建设者</div>
+  <div class="pcountry">Israel</div>
+</div>
+<div class="pcard reveal" data-search="jeonghoon byun outsideris south korea 韩国技术博主，开源分享者">
+  <img loading="lazy" src="https://github.com/outsideris.png" alt="JeongHoon Byun" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/outsideris" target="_blank" rel="noopener">JeongHoon Byun</a></div>
+  <div class="puname"><a href="https://github.com/outsideris" target="_blank" rel="noopener">@outsideris</a></div>
+  <div class="ptag">韩国技术博主，开源分享者</div>
+  <div class="pcountry">South Korea</div>
+</div>
+<div class="pcard reveal" data-search="piyush garg piyushgarg-dev india 软件工程师、教育者、创业者">
+  <img loading="lazy" src="https://github.com/piyushgarg-dev.png" alt="Piyush Garg" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/piyushgarg-dev" target="_blank" rel="noopener">Piyush Garg</a></div>
+  <div class="puname"><a href="https://github.com/piyushgarg-dev" target="_blank" rel="noopener">@piyushgarg-dev</a></div>
+  <div class="ptag">软件工程师、教育者、创业者</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="chrissy lemaire potatoqualitee belgium dbatools 作者（powershell × sql server）">
+  <img loading="lazy" src="https://github.com/potatoqualitee.png" alt="Chrissy LeMaire" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/potatoqualitee" target="_blank" rel="noopener">Chrissy LeMaire</a></div>
+  <div class="puname"><a href="https://github.com/potatoqualitee" target="_blank" rel="noopener">@potatoqualitee</a></div>
+  <div class="ptag">dbatools 作者（PowerShell × SQL Server）</div>
+  <div class="pcountry">Belgium</div>
+</div>
+<div class="pcard reveal" data-search="rob bos rajbos netherlands alm / devops 自动化专家">
+  <img loading="lazy" src="https://github.com/rajbos.png" alt="Rob Bos" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/rajbos" target="_blank" rel="noopener">Rob Bos</a></div>
+  <div class="puname"><a href="https://github.com/rajbos" target="_blank" rel="noopener">@rajbos</a></div>
+  <div class="ptag">ALM / DevOps 自动化专家</div>
+  <div class="pcountry">Netherlands</div>
+</div>
+<div class="pcard reveal" data-search="rishab kumar rishabkumar7 canada twilio 布道师，技术作者">
+  <img loading="lazy" src="https://github.com/rishabkumar7.png" alt="Rishab Kumar" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/rishabkumar7" target="_blank" rel="noopener">Rishab Kumar</a></div>
+  <div class="puname"><a href="https://github.com/rishabkumar7" target="_blank" rel="noopener">@rishabkumar7</a></div>
+  <div class="ptag">Twilio 布道师，技术作者</div>
+  <div class="pcountry">Canada</div>
+</div>
+<div class="pcard reveal" data-search="ruth ikegah ruth-ikegah nigeria 开源项目管理，社区经理">
+  <img loading="lazy" src="https://github.com/ruth-ikegah.png" alt="Ruth Ikegah" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/ruth-ikegah" target="_blank" rel="noopener">Ruth Ikegah</a></div>
+  <div class="puname"><a href="https://github.com/ruth-ikegah" target="_blank" rel="noopener">@ruth-ikegah</a></div>
+  <div class="ptag">开源项目管理，社区经理</div>
+  <div class="pcountry">Nigeria</div>
+</div>
+<div class="pcard reveal" data-search="samson goddy samswag nigeria 开源布道师，devrel">
+  <img loading="lazy" src="https://github.com/samswag.png" alt="Samson Goddy" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/samswag" target="_blank" rel="noopener">Samson Goddy</a></div>
+  <div class="puname"><a href="https://github.com/samswag" target="_blank" rel="noopener">@samswag</a></div>
+  <div class="ptag">开源布道师，DevRel</div>
+  <div class="pcountry">Nigeria</div>
+</div>
+<div class="pcard reveal" data-search="santosh yadav santoshyadavdev germany angular gde，developer advocate">
+  <img loading="lazy" src="https://github.com/santoshyadavdev.png" alt="Santosh Yadav" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/santoshyadavdev" target="_blank" rel="noopener">Santosh Yadav</a></div>
+  <div class="puname"><a href="https://github.com/santoshyadavdev" target="_blank" rel="noopener">@santoshyadavdev</a></div>
+  <div class="ptag">Angular GDE，Developer Advocate</div>
+  <div class="pcountry">Germany</div>
+</div>
+<div class="pcard reveal" data-search="simon willison simonw united states django 联合创始人，datasette 作者，llm 观察者">
+  <img loading="lazy" src="https://github.com/simonw.png" alt="Simon Willison" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/simonw" target="_blank" rel="noopener">Simon Willison</a></div>
+  <div class="puname"><a href="https://github.com/simonw" target="_blank" rel="noopener">@simonw</a></div>
+  <div class="ptag">Django 联合创始人，Datasette 作者，LLM 观察者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="sonya moisset sonyamoisset france ai 安全布道者">
+  <img loading="lazy" src="https://github.com/sonyamoisset.png" alt="Sonya Moisset" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/sonyamoisset" target="_blank" rel="noopener">Sonya Moisset</a></div>
+  <div class="puname"><a href="https://github.com/sonyamoisset" target="_blank" rel="noopener">@sonyamoisset</a></div>
+  <div class="ptag">AI 安全布道者</div>
+  <div class="pcountry">France</div>
+</div>
+<div class="pcard reveal" data-search="steve francia spf13 united states hugo / cobra / viper 作者">
+  <img loading="lazy" src="https://github.com/spf13.png" alt="Steve Francia" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/spf13" target="_blank" rel="noopener">Steve Francia</a></div>
+  <div class="puname"><a href="https://github.com/spf13" target="_blank" rel="noopener">@spf13</a></div>
+  <div class="ptag">Hugo / Cobra / Viper 作者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="scott tolinski stolinski united states syntax.fm 联合主持，level up tutorials">
+  <img loading="lazy" src="https://github.com/stolinski.png" alt="Scott Tolinski" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/stolinski" target="_blank" rel="noopener">Scott Tolinski</a></div>
+  <div class="puname"><a href="https://github.com/stolinski" target="_blank" rel="noopener">@stolinski</a></div>
+  <div class="ptag">Syntax.fm 联合主持，Level Up Tutorials</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="sergio valverde svg153 spain 开发者体验 / 平台工程">
+  <img loading="lazy" src="https://github.com/svg153.png" alt="Sergio Valverde" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/svg153" target="_blank" rel="noopener">Sergio Valverde</a></div>
+  <div class="puname"><a href="https://github.com/svg153" target="_blank" rel="noopener">@svg153</a></div>
+  <div class="ptag">开发者体验 / 平台工程</div>
+  <div class="pcountry">Spain</div>
+</div>
+<div class="pcard reveal" data-search="swaminathan vetri swaminathanvetri india 平台架构师">
+  <img loading="lazy" src="https://github.com/swaminathanvetri.png" alt="Swaminathan Vetri" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/swaminathanvetri" target="_blank" rel="noopener">Swaminathan Vetri</a></div>
+  <div class="puname"><a href="https://github.com/swaminathanvetri" target="_blank" rel="noopener">@swaminathanvetri</a></div>
+  <div class="ptag">平台架构师</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="teo calvo teocalvo brazil 数据科学教育者">
+  <img loading="lazy" src="https://github.com/teocalvo.png" alt="Teo Calvo" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/teocalvo" target="_blank" rel="noopener">Teo Calvo</a></div>
+  <div class="puname"><a href="https://github.com/teocalvo" target="_blank" rel="noopener">@teocalvo</a></div>
+  <div class="ptag">数据科学教育者</div>
+  <div class="pcountry">Brazil</div>
+</div>
+<div class="pcard reveal" data-search="jess chan thecodercoder united states coder coder：零基础编程入门教学">
+  <img loading="lazy" src="https://github.com/thecodercoder.png" alt="Jess Chan" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/thecodercoder" target="_blank" rel="noopener">Jess Chan</a></div>
+  <div class="puname"><a href="https://github.com/thecodercoder" target="_blank" rel="noopener">@thecodercoder</a></div>
+  <div class="ptag">Coder Coder：零基础编程入门教学</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="thomas thornton thomast1906 united kingdom azure 技术专家">
+  <img loading="lazy" src="https://github.com/thomast1906.png" alt="Thomas Thornton" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/thomast1906" target="_blank" rel="noopener">Thomas Thornton</a></div>
+  <div class="puname"><a href="https://github.com/thomast1906" target="_blank" rel="noopener">@thomast1906</a></div>
+  <div class="ptag">Azure 技术专家</div>
+  <div class="pcountry">United Kingdom</div>
+</div>
+<div class="pcard reveal" data-search="sebastián ramírez tiangolo spain fastapi / typer / sqlmodel 作者">
+  <img loading="lazy" src="https://github.com/tiangolo.png" alt="Sebastián Ramírez" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/tiangolo" target="_blank" rel="noopener">Sebastián Ramírez</a></div>
+  <div class="puname"><a href="https://github.com/tiangolo" target="_blank" rel="noopener">@tiangolo</a></div>
+  <div class="ptag">FastAPI / Typer / SQLModel 作者</div>
+  <div class="pcountry">Spain</div>
+</div>
+<div class="pcard reveal" data-search="tomoki nomura tmknom japan 《github ci/cd 实战指南》作者">
+  <img loading="lazy" src="https://github.com/tmknom.png" alt="Tomoki Nomura" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/tmknom" target="_blank" rel="noopener">Tomoki Nomura</a></div>
+  <div class="puname"><a href="https://github.com/tmknom" target="_blank" rel="noopener">@tmknom</a></div>
+  <div class="ptag">《GitHub CI/CD 实战指南》作者</div>
+  <div class="pcountry">Japan</div>
+</div>
+<div class="pcard reveal" data-search="oleksii holub tyrrrz ukraine .net 工具作者">
+  <img loading="lazy" src="https://github.com/tyrrrz.png" alt="Oleksii Holub" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/tyrrrz" target="_blank" rel="noopener">Oleksii Holub</a></div>
+  <div class="puname"><a href="https://github.com/tyrrrz" target="_blank" rel="noopener">@tyrrrz</a></div>
+  <div class="ptag">.NET 工具作者</div>
+  <div class="pcountry">Ukraine</div>
+</div>
+<div class="pcard reveal" data-search="vanessa aristizábal vanessamarely colombia angular gde，女性技术布道者">
+  <img loading="lazy" src="https://github.com/vanessamarely.png" alt="Vanessa Aristizábal" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/vanessamarely" target="_blank" rel="noopener">Vanessa Aristizábal</a></div>
+  <div class="puname"><a href="https://github.com/vanessamarely" target="_blank" rel="noopener">@vanessamarely</a></div>
+  <div class="ptag">Angular GDE，女性技术布道者</div>
+  <div class="pcountry">Colombia</div>
+</div>
+<div class="pcard reveal" data-search="victoria lo victoria-lo singapore 技术博主、播客主">
+  <img loading="lazy" src="https://github.com/victoria-lo.png" alt="Victoria Lo" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/victoria-lo" target="_blank" rel="noopener">Victoria Lo</a></div>
+  <div class="puname"><a href="https://github.com/victoria-lo" target="_blank" rel="noopener">@victoria-lo</a></div>
+  <div class="ptag">技术博主、播客主</div>
+  <div class="pcountry">Singapore</div>
+</div>
+<div class="pcard reveal" data-search="vipul gupta vipulgupta2048 india 工程师、文档作者、社区组织者">
+  <img loading="lazy" src="https://github.com/vipulgupta2048.png" alt="Vipul Gupta" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/vipulgupta2048" target="_blank" rel="noopener">Vipul Gupta</a></div>
+  <div class="puname"><a href="https://github.com/vipulgupta2048" target="_blank" rel="noopener">@vipulgupta2048</a></div>
+  <div class="ptag">工程师、文档作者、社区组织者</div>
+  <div class="pcountry">India</div>
+</div>
+<div class="pcard reveal" data-search="liam allan worksofliam united states 软件布道师，开发者工具作者">
+  <img loading="lazy" src="https://github.com/worksofliam.png" alt="Liam Allan" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/worksofliam" target="_blank" rel="noopener">Liam Allan</a></div>
+  <div class="puname"><a href="https://github.com/worksofliam" target="_blank" rel="noopener">@worksofliam</a></div>
+  <div class="ptag">软件布道师，开发者工具作者</div>
+  <div class="pcountry">United States</div>
+</div>
+<div class="pcard reveal" data-search="xavier portilla edo xavidop spain 开发者，技术内容创作者">
+  <img loading="lazy" src="https://github.com/xavidop.png" alt="Xavier Portilla Edo" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/xavidop" target="_blank" rel="noopener">Xavier Portilla Edo</a></div>
+  <div class="puname"><a href="https://github.com/xavidop" target="_blank" rel="noopener">@xavidop</a></div>
+  <div class="ptag">开发者，技术内容创作者</div>
+  <div class="pcountry">Spain</div>
+</div>
+<div class="pcard reveal" data-search="yanina bellini saibene yabellini argentina ropensci 社区经理，r-ladies 负责人">
+  <img loading="lazy" src="https://github.com/yabellini.png" alt="Yanina Bellini Saibene" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/yabellini" target="_blank" rel="noopener">Yanina Bellini Saibene</a></div>
+  <div class="puname"><a href="https://github.com/yabellini" target="_blank" rel="noopener">@yabellini</a></div>
+  <div class="ptag">rOpenSci 社区经理，R-Ladies 负责人</div>
+  <div class="pcountry">Argentina</div>
+</div>
+<div class="pcard reveal" data-search="yetone yetone china 开发者工具爱好者，全栈工程师">
+  <img loading="lazy" src="https://github.com/yetone.png" alt="yetone" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/yetone" target="_blank" rel="noopener">yetone</a></div>
+  <div class="puname"><a href="https://github.com/yetone" target="_blank" rel="noopener">@yetone</a></div>
+  <div class="ptag">开发者工具爱好者，全栈工程师</div>
+  <div class="pcountry">China</div>
+</div>
+<div class="pcard reveal" data-search="maki nagase yuma-722 japan github / azure 布道 youtube 频道主">
+  <img loading="lazy" src="https://github.com/yuma-722.png" alt="Maki Nagase" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/yuma-722" target="_blank" rel="noopener">Maki Nagase</a></div>
+  <div class="puname"><a href="https://github.com/yuma-722" target="_blank" rel="noopener">@yuma-722</a></div>
+  <div class="ptag">GitHub / Azure 布道 YouTube 频道主</div>
+  <div class="pcountry">Japan</div>
+</div>
+<div class="pcard reveal" data-search="yutaka osada yutaka-art japan .net / azure 开发者">
+  <img loading="lazy" src="https://github.com/yutaka-art.png" alt="Yutaka Osada" onerror="this.style.display='none'">
+  <div class="pname"><a href="https://stars.github.com/profiles/yutaka-art" target="_blank" rel="noopener">Yutaka Osada</a></div>
+  <div class="puname"><a href="https://github.com/yutaka-art" target="_blank" rel="noopener">@yutaka-art</a></div>
+  <div class="ptag">.NET / Azure 开发者</div>
+  <div class="pcountry">Japan</div>
+</div></div>
+</section>
+
+<footer>
+  <div>GitHub Stars 群星谱 · 档案馆「人物志」001 · 由 muse 编写 · 2026-10-14</div>
+  <div style="margin-top:8px">名单与贡献数据抓取自 <a href="https://stars.github.com/profiles" target="_blank" rel="noopener">stars.github.com/profiles</a>（2026-10-14 时点，现任 92 位）；项目机制引自 <a href="https://stars.github.com/program" target="_blank" rel="noopener">Program</a> 与 <a href="https://stars.github.com/faq" target="_blank" rel="noopener">FAQ</a> 页面。人物中文导读为本馆编写，详情以官方档案页为准。</div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } }), { threshold:.06 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  const q = document.getElementById('q'), grid = document.getElementById('grid'), count = document.getElementById('count');
+  const cards = [...grid.children];
+  q.addEventListener('input', () => {
+    const s = q.value.trim().toLowerCase(); let n = 0;
+    cards.forEach(c => { const hit = !s || c.dataset.search.includes(s); c.style.display = hit ? '' : 'none'; if (hit) n++; });
+    count.textContent = n + ' / ' + cards.length;
+  });
+</script>
+</body>
+</html>
