@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASE 007 · CocoonStack 全栈深度解读 · Agent Sandbox 档案馆</title>
+<style>
+  :root {
+    --bg: #070b14; --bg2: #0b1120;
+    --card: rgba(255,255,255,.035); --border: rgba(255,255,255,.09);
+    --txt: #e6edf7; --sub: #8b98ad;
+    --cyan: #22d3ee; --violet: #a78bfa; --amber: #fbbf24;
+    --green: #34d399; --pink: #f472b6; --red: #f87171;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg); color: var(--txt);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    line-height: 1.8; overflow-x: hidden; font-size: 15.5px;
+  }
+  .glow { position: fixed; border-radius: 50%; filter: blur(130px); opacity: .14; pointer-events: none; z-index: 0; }
+  .glow.g1 { width: 560px; height: 560px; background: #0ea5e9; top: -180px; left: -140px; }
+  .glow.g2 { width: 480px; height: 480px; background: #7c3aed; top: 32%; right: -180px; }
+  .glow.g3 { width: 440px; height: 440px; background: #059669; bottom: -160px; left: 32%; }
+
+  nav { position: fixed; top:0; left:0; right:0; z-index:100; backdrop-filter: blur(14px);
+    background: rgba(7,11,20,.75); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 1080px; margin: 0 auto; padding: 11px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:14px; letter-spacing:.5px; display:flex; align-items:center; gap:8px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .nav-links { display:flex; gap:2px; flex-wrap:wrap; margin-left:auto; }
+  .nav-links a { color:var(--sub); text-decoration:none; font-size:12.5px; padding:6px 10px; border-radius:8px; transition:all .2s; }
+  .nav-links a:hover { color:var(--txt); background:rgba(255,255,255,.06); }
+  .nav-links a.home { color:var(--cyan); border:1px solid rgba(34,211,238,.3); }
+
+  header { position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:140px 24px 40px; }
+  .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:2px; color:var(--cyan);
+    border:1px solid rgba(34,211,238,.3); border-radius:99px; padding:5px 14px; margin-bottom:20px; font-family:Consolas,monospace; }
+  h1 { font-size:clamp(30px,4.6vw,50px); font-weight:900; letter-spacing:-1px; line-height:1.2; margin-bottom:16px; }
+  h1 .grad { background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--sub); font-size:16px; max-width:780px; }
+  .hero-sub b { color:var(--txt); }
+  .hero-meta { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .meta-chip { font-size:12.5px; color:var(--sub); border:1px solid var(--border); border-radius:99px; padding:5px 14px; background:var(--card); }
+  .meta-chip b { color:var(--txt); font-weight:600; }
+  .meta-chip a { color:var(--cyan); text-decoration:none; }
+
+  main { position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:0 24px; }
+  section.block { padding:44px 0 6px; }
+  .sec-head { display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+  .sec-num { font-family:Consolas,monospace; font-size:13px; color:var(--cyan); border:1px solid rgba(34,211,238,.3);
+    border-radius:6px; padding:2px 9px; white-space:nowrap; }
+  h2 { font-size:25px; font-weight:800; letter-spacing:-.5px; }
+  .sec-desc { color:var(--sub); font-size:14px; margin:4px 0 24px; max-width:820px; }
+
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:none; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 24px; margin-bottom:16px; }
+  .card h3 { font-size:17px; font-weight:750; margin-bottom:10px; }
+  .card h3 .em { color:var(--cyan); }
+  .card p { color:var(--sub); font-size:14.5px; margin-bottom:10px; }
+  .card p:last-child { margin-bottom:0; }
+  .card p b, .card li b { color:var(--txt); font-weight:600; }
+  .card ul, .card ol { margin:8px 0 8px 20px; color:var(--sub); font-size:14.5px; }
+  .card li { margin-bottom:6px; }
+  .card code, p code, li code, td code { font-family:Consolas,"SF Mono",monospace; font-size:.86em;
+    background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.18); border-radius:6px; padding:1px 7px; color:var(--cyan); }
+
+  .badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:1px; border-radius:6px; padding:2px 9px; margin-right:8px; vertical-align:2px; }
+  .badge.fact { background:rgba(34,211,238,.12); color:var(--cyan); border:1px solid rgba(34,211,238,.35); }
+  .badge.analysis { background:rgba(167,139,250,.12); color:var(--violet); border:1px solid rgba(167,139,250,.35); }
+  .badge.hypo { background:rgba(251,191,36,.1); color:var(--amber); border:1px solid rgba(251,191,36,.35); }
+  .badge.warn { background:rgba(248,113,113,.1); color:var(--red); border:1px solid rgba(248,113,113,.35); }
+
+  .callout { border-left:3px solid var(--cyan); background:rgba(34,211,238,.05); border-radius:0 12px 12px 0;
+    padding:16px 20px; margin:18px 0; font-size:14.5px; color:var(--sub); }
+  .callout b { color:var(--txt); }
+  .callout.violet { border-color:var(--violet); background:rgba(167,139,250,.05); }
+  .callout.amber { border-color:var(--amber); background:rgba(251,191,36,.05); }
+  .callout.red { border-color:var(--red); background:rgba(248,113,113,.05); }
+  .callout.green { border-color:var(--green); background:rgba(52,211,153,.05); }
+
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:14px 0; }
+  th, td { text-align:left; padding:11px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  th { color:var(--cyan); font-weight:700; font-size:13px; letter-spacing:.5px; white-space:nowrap; }
+  td { color:var(--sub); }
+  td b, td strong { color:var(--txt); }
+  tr:hover td { background:rgba(255,255,255,.02); }
+
+  .fig { background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:18px;
+    padding:26px 18px 14px; margin:20px 0; overflow-x:auto; }
+  .fig svg { display:block; margin:0 auto; max-width:100%; height:auto; }
+  .figcap { text-align:center; color:var(--sub); font-size:13px; margin-top:10px; padding:0 12px 6px; }
+  .figcap b { color:var(--txt); }
+
+  .grid { display:grid; gap:14px; }
+  .g2 { grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); }
+  .g3 { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+  .mini { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+  .mini h4 { font-size:15px; margin-bottom:8px; }
+  .mini p { font-size:13.5px; color:var(--sub); }
+  .mini p b { color:var(--txt); }
+
+  .timeline { position:relative; margin:10px 0 10px 8px; padding-left:26px; border-left:2px solid rgba(34,211,238,.25); }
+  .tl-item { position:relative; margin-bottom:20px; }
+  .tl-item::before { content:""; position:absolute; left:-33px; top:6px; width:10px; height:10px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 10px var(--cyan); }
+  .tl-item.hot::before { background:var(--amber); box-shadow:0 0 10px var(--amber); }
+  .tl-item .tl-date { font-family:Consolas,monospace; font-size:12.5px; color:var(--cyan); }
+  .tl-item.hot .tl-date { color:var(--amber); }
+  .tl-item .tl-body { color:var(--sub); font-size:14.5px; }
+  .tl-item .tl-body b { color:var(--txt); }
+
+  .toc { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px 26px; margin:26px 0; }
+  .toc h3 { font-size:14px; letter-spacing:2px; color:var(--sub); margin-bottom:12px; font-weight:700; }
+  .toc ol { margin-left:20px; color:var(--sub); font-size:14px; columns:2; column-gap:32px; }
+  .toc li { margin-bottom:6px; }
+  .toc a { color:var(--sub); text-decoration:none; }
+  .toc a:hover { color:var(--cyan); }
+  @media (max-width:700px){ .toc ol{columns:1;} }
+
+  pre.code { background:rgba(0,0,0,.35); border:1px solid var(--border); border-radius:12px; padding:16px 18px;
+    overflow-x:auto; font-family:Consolas,"SF Mono",monospace; font-size:13px; line-height:1.65; color:#a5f3fc; margin:14px 0; }
+
+  footer { position:relative; z-index:1; max-width:1080px; margin:60px auto 0; padding:36px 24px 60px;
+    color:var(--sub); font-size:12.5px; text-align:center; border-top:1px solid var(--border); }
+  footer a { color:var(--cyan); text-decoration:none; }
+  @media (max-width:640px){ .g2{grid-template-columns:1fr;} header{padding-top:150px;} }
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span>SANDBOX ARCHIVE · 沙盒档案馆</div>
+    <div class="nav-links">
+      <a class="home" href="index.html">← 档案馆首页</a>
+      <a href="#s01">一句话</a><a href="#s03">架构</a><a href="#s04">引擎层</a>
+      <a href="#s06">控制面</a><a href="#s07">性能</a><a href="#s09">协议</a><a href="#s13">Cassia 启示</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-kicker">CASE 007 · SANDBOX INFRASTRUCTURE · 2026-11-09</div>
+  <h1>CocoonStack <span class="grad">全栈深度解读</span><br>不用 etcd 存沙盒的 microVM 舰队</h1>
+  <p class="hero-sub">2026 年下半年，一套名叫 <b>CocoonStack</b> 的开源全栈悄悄长成：底层是把 Cloud Hypervisor 包装成 Docker 式 CLI 的 microVM 引擎 <b>cocoon</b>，中层是每节点一个守护进程的热池 <b>sandboxd</b>，顶层是一个<b>在 etcd 里一个沙盒对象都不存</b>的聚合式 Kubernetes APIServer。它宣称一次 <code>kubectl patch</code> 就能在 20 台裸金属上 15 秒拉起 <b>50,000 台 microVM</b>，而 etcd 全程只有约 2 次写/秒。本报告把三仓代码与全部官方文档逐页读完后写成：分层对齐、数字溯源、协议边界与风险一并交代。</p>
+  <div class="hero-meta">
+    <span class="meta-chip"><b>组织</b> cocoonstack（25 个公开仓库）</span>
+    <span class="meta-chip"><b>三仓热度</b> ★261 + ★87 + ★85（2026-11-09 GitHub API 实测）</span>
+    <span class="meta-chip"><b>协议</b> 引擎 MIT / 上层 AGPL-3.0</span>
+    <span class="meta-chip"><b>cocoon</b> <a href="https://github.com/cocoonstack/cocoon">cocoonstack/cocoon</a></span>
+    <span class="meta-chip"><b>sandbox</b> <a href="https://github.com/cocoonstack/sandbox">cocoonstack/sandbox</a></span>
+    <span class="meta-chip"><b>operator</b> <a href="https://github.com/cocoonstack/sandbox-operator">cocoonstack/sandbox-operator</a></span>
+  </div>
+
+  <div class="toc reveal">
+    <h3>本页目录</h3>
+    <ol>
+      <li><a href="#s01">一句话看懂：它到底是什么</a></li>
+      <li><a href="#s02">基本面：三仓名片与时间线</a></li>
+      <li><a href="#s03">全栈架构：L0–L3 四层对齐</a></li>
+      <li><a href="#s04">引擎层 cocoon：双 hypervisor 与快照原语</a></li>
+      <li><a href="#s05">节点层 sandbox：sandboxd 热池与 silkd</a></li>
+      <li><a href="#s06">控制面 sandbox-operator：聚合 APIServer</a></li>
+      <li><a href="#s07">性能账本：50,000 台 / 15 秒的出处</a></li>
+      <li><a href="#s08">生命周期与 e2b 兼容层</a></li>
+      <li><a href="#s09">协议边界：MIT 与 AGPL 的分界线</a></li>
+      <li><a href="#s10">安全模型：隔离在 VM，战场在网络</a></li>
+      <li><a href="#s11">已知问题与风险：fork 依赖与未竟之路</a></li>
+      <li><a href="#s12">横向对比：E2B / OpenSandbox / 上游 / Cassia</a></li>
+      <li><a href="#s13">对 Cassia 的启示：可拿走与不可拿走</a></li>
+      <li><a href="#s14">验证方法与资料来源</a></li>
+    </ol>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 01 ============ -->
+<section class="block" id="s01">
+  <div class="sec-head reveal"><span class="sec-num">01</span><h2>一句话看懂</h2></div>
+  <p class="sec-desc reveal">先建立直觉，再逐层拆开。</p>
+
+  <div class="card reveal">
+    <p><span class="badge fact">Fact</span>Modal 曾发文论证「Kubernetes 到不了 100 万并发沙盒」：调度是 O(n×p) 且串行、每个 Pod 触发多次 etcd 写入、etcd 在单个 keyspace 内不可分片。它的解法是<b>离开 Kubernetes</b>，自建无状态调度器 + Redis 流。CocoonStack 的 <code>scaling-design.md</code> 直接回应：诊断是对的，但要拿掉的是<b>集中式事务路径</b>，不是 K8s 的 API 语义——K8s 自己就有先例：kubelet 静态 Pod（节点先干、apiserver 后记）、Lease（心跳专用小对象）、<code>metrics.k8s.io</code> 聚合层（scatter-gather 实时节点状态、etcd 零存储）。</p>
+    <p><span class="badge analysis">Analysis</span>整套栈的赌注一句话：<b>把 Kubernetes 降级为「意图记录 + 策略面」，把事务面下沉到节点本地</b>。etcd 只存「想要多少」（一个 WarmPool 对象）和「每节点有什么」（一个 NodeInventory 对象），单个沙盒的存在与否只活在节点内存与本地文件里。于是对象数从 O(sandboxes) 降到 O(pools + nodes)，扩容速度只取决于节点本地能多快克隆快照——而那是引擎层 cocoon 用 mmap 写时复制解决的问题。</p>
+  </div>
+
+  <div class="callout green reveal"><b>一句话记住它：</b>CocoonStack = <b>cocoon</b>（microVM 引擎，快照克隆原语）+ <b>sandboxd</b>（节点热池，亚毫秒 claim）+ <b>sandbox-apiserver</b>（聚合层，etcd 零沙盒对象），再套一个 <b>e2b 兼容面</b>，让未修改的 e2b SDK 改个 <code>E2B_API_URL</code> 就能从这套自托管舰队里领沙盒。</div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section class="block" id="s02">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>基本面：三仓名片与时间线</h2></div>
+  <p class="sec-desc reveal">三个仓库不是三个项目，是一套栈的三层。先把年龄、规模、协议摆正——尤其是协议，三层不一样。</p>
+
+  <div class="card reveal">
+    <h3>📇 三仓名片 <span class="badge fact">Fact</span></h3>
+    <table>
+      <tr><th>层</th><th>仓库</th><th>规模（2026-11-09 API 实测）</th><th>最新 release</th><th>协议</th></tr>
+      <tr><td><b>引擎层</b></td><td><b>cocoonstack/cocoon</b><br>microVM 引擎：OCI/cloud 镜像、快照克隆、CNI 网络、Docker 式 CLI</td><td>★261 · 694 commits · 2026-02-22 建仓</td><td>v0.7.8（2026-11-05）· 累计 69 个</td><td><b>MIT</b></td></tr>
+      <tr><td><b>节点层</b></td><td><b>cocoonstack/sandbox</b><br>sandboxd 节点守护进程 + silkd guest 内守护进程 + Go/Python SDK</td><td>★87 · 927 commits · 2026-07-02 建仓</td><td>v0.1.27（2026-11-08）</td><td><b>AGPL-3.0</b>（SDK 为 Apache-2.0）</td></tr>
+      <tr><td><b>控制面</b></td><td><b>cocoonstack/sandbox-operator</b><br>聚合 APIServer + envd 代理 + e2b 兼容面</td><td>★85 · 183 commits · 2026-07-15 建仓</td><td>v0.1.6（2026-09-28）</td><td><b>AGPL-3.0</b></td></tr>
+    </table>
+    <p>组织 <code>cocoonstack</code> 名下共 <b>25 个公开仓库</b>：除三仓外，还有两个 virtual-kubelet provider（<code>vk-cocoon</code> MIT / <code>vk-sandbox</code> AGPL-3.0）、三个自维护 fork（<code>cloud-hypervisor</code>、<code>rust-hypervisor-firmware</code>、<code>firecracker</code>）、Windows 镜像构建、<code>cocoon-macos</code>（★55，在 Linux 上跑 macOS guest）等。fork 不是顺手 star，是这套栈的承重墙——见 §11。</p>
+  </div>
+
+  <div class="card reveal">
+    <h3>🗓️ 时间线：先引擎，后舰队 <span class="badge fact">Fact</span></h3>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-date">2026-02-22</div><div class="tl-body"><b>cocoon 建仓</b>——先做引擎：镜像、快照、CNI、CLI</div></div>
+      <div class="tl-item"><div class="tl-date">2026-04-01</div><div class="tl-body">vk-cocoon / cocoon-operator / webhook 等 K8s 周边同日建仓， fork 仓建立</div></div>
+      <div class="tl-item"><div class="tl-date">2026-07-02</div><div class="tl-body"><b>sandbox 建仓</b>——sandboxd 热池层登场，guest 侧 silkd 用 Rust 写</div></div>
+      <div class="tl-item"><div class="tl-date">2026-07-15</div><div class="tl-body"><b>sandbox-operator 建仓</b>——聚合 APIServer 与 e2b 兼容面</div></div>
+      <div class="tl-item"><div class="tl-date">2026-09-22</div><div class="tl-body">operator 删掉自维护的上游 fork controller，改用 <b>kubernetes-sigs/agent-sandbox 上游 v1.0.3</b>，并同机 A/B 实测（见 §7）</div></div>
+      <div class="tl-item hot"><div class="tl-date">2026-11-05</div><div class="tl-body">cocoon <b>v0.7.8</b>；sandbox 三天后发 <b>v0.1.27</b>——三仓至今保持周级迭代</div></div>
+    </div>
+    <p><span class="badge analysis">Analysis</span>建仓顺序暴露了真实的工程路径：<b>引擎先行 5 个月，舰队层是后长出来的</b>。这与多数「先画控制面 PPT、再填引擎」的沙盒项目相反，也是它性能数字能落到节点本地常数上的原因——瓶颈在哪一层，它就先建哪一层。</p>
+  </div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section class="block" id="s03">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>全栈架构：L0–L3 四层对齐</h2></div>
+  <p class="sec-desc reveal">官方 scaling-design 把自己拆成四层 staging。注意诚实标注：L1 已交还上游、L2 只设计未实现、真正属于本栈自研的是 L0 与 L3。</p>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 430" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#22d3ee"/></marker></defs>
+      <rect x="40" y="30" width="250" height="80" rx="14" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="165" y="60" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">客户端</text>
+      <text x="165" y="82" fill="#8b98ad" font-size="12" text-anchor="middle">kubectl / client-go · e2b SDK</text>
+      <rect x="40" y="150" width="250" height="80" rx="14" fill="rgba(167,139,250,.06)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="165" y="180" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">L3 · sandbox-apiserver</text>
+      <text x="165" y="202" fill="#8b98ad" font-size="12" text-anchor="middle">聚合层 · etcd 只存意图</text>
+      <rect x="40" y="270" width="250" height="80" rx="14" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="165" y="300" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">节点层 · sandboxd</text>
+      <text x="165" y="322" fill="#8b98ad" font-size="12" text-anchor="middle">热池 claim · gossip 选节点</text>
+      <rect x="40" y="380" width="250" height="42" rx="10" fill="rgba(251,191,36,.05)" stroke="#fbbf24"/>
+      <text x="165" y="406" fill="#e6edf7" font-size="12.5" text-anchor="middle">NodeInventory CRD（每节点 1 个对象）</text>
+      <line x1="165" y1="110" x2="165" y2="145" stroke="#22d3ee" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="165" y1="230" x2="165" y2="265" stroke="#22d3ee" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="370" y="30" width="510" height="150" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.12)"/>
+      <text x="625" y="56" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">L3 内部：三条路径汇入同一热池</text>
+      <text x="625" y="82" fill="#8b98ad" font-size="12.5" text-anchor="middle">① Pod 路径：上游 agent-sandbox controller → Pod → vk-sandbox / vk-cocoon 虚拟节点</text>
+      <text x="625" y="106" fill="#8b98ad" font-size="12.5" text-anchor="middle">② L3 路径：聚合 apiserver 从 NodeInventory scatter-gather，create 即节点本地 claim</text>
+      <text x="625" y="130" fill="#8b98ad" font-size="12.5" text-anchor="middle">③ e2b 路径：同一 apiserver 出 e2b REST 面，envd-proxy 承载 files/commands/pty</text>
+      <text x="625" y="156" fill="#8b98ad" font-size="12.5" text-anchor="middle">无 K8s 时：sandbox-e2b 直接跑在 sandboxd mesh（memberlist gossip）上</text>
+      <rect x="370" y="200" width="510" height="100" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.12)"/>
+      <text x="625" y="226" fill="#e6edf7" font-size="13.5" text-anchor="middle" font-weight="700">L0 / L1 / L2 的位置</text>
+      <text x="625" y="250" fill="#8b98ad" font-size="12.5" text-anchor="middle">L0 节点卫生（已交付于 vk-*）：读走本地 cache、写前 diff、LIST 不打 etcd</text>
+      <text x="625" y="272" fill="#8b98ad" font-size="12.5" text-anchor="middle">L1 claim=所有权转移（上游 controller 实现，本栈只留 pod-template 契约）</text>
+      <text x="370" y="322" width="510" height="60" rx="12" fill="rgba(248,113,113,.04)" stroke="#f87171" stroke-dasharray="6 4"/>
+      <text x="625" y="346" fill="#e6edf7" font-size="12.5" text-anchor="middle">L2 节点本地 claim 网关：已设计、未实现（参考实现已删）</text>
+      <text x="625" y="366" fill="#8b98ad" font-size="12" text-anchor="middle">设计目标：claim 脱离 apiserver 路径，Bound 记录异步补写</text>
+      <line x1="290" y1="105" x2="365" y2="105" stroke="rgba(255,255,255,.25)"/>
+      <line x1="290" y1="190" x2="365" y2="240" stroke="rgba(255,255,255,.25)"/>
+    </svg>
+    <div class="figcap"><b>图 1 · CocoonStack 分层。</b>L3 读路径靠 NodeInventory 扇出合成，写路径（claim）直达节点；etcd 对象数 O(pools + nodes)，与沙盒数无关。</div>
+  </div>
+
+  <div class="grid g3">
+    <div class="mini reveal"><h4>L0 · API 卫生</h4><p>前置条件：周期读全走节点级 informer cache、写前 diff、控制环 <code>LIST</code> 永不打 etcd。实测空载虚拟节点仅 <b>0.2 req/s 且零 LIST</b>。根因很硬：K8s APF 按资源<b>总对象数</b>给 LIST 定价，2500 个 Pod 时一次小 LIST 就能吃满一个优先级层级——限 QPS 没用，只能消灭 LIST。</p></div>
+    <div class="mini reveal"><h4>L1 · Claim 是所有权转移</h4><p>热池里的沙盒已经调度完、镜像拉完、开机了，<code>SandboxClaim</code> 要做的只是把一台预热好的 <code>Sandbox</code> 的<b>所有权转交</b>出去——语义和 <code>PersistentVolumeClaim → PersistentVolume</code> 的 Bound 一模一样，不需要再过调度器和 kubelet。这层由上游 controller 实现。</p></div>
+    <div class="mini reveal"><h4>L3 · 聚合 APIServer</h4><p>本栈自研核心：一个 <code>APIService</code> 影子掉 <code>Sandbox</code> CRD，<code>List/Get/Watch</code> 从各节点 NodeInventory 扇出合成，<code>Create/Delete</code> 变成节点本地 RPC。<code>kubectl get sandboxes</code>、RBAC、field selector 照常工作，用户看不见存储已被去中心化。</p></div>
+  </div>
+</section>
+
+<!-- ============ 04 ============ -->
+<section class="block" id="s04">
+  <div class="sec-head reveal"><span class="sec-num">04</span><h2>引擎层 cocoon：双 hypervisor 与快照原语</h2></div>
+  <p class="sec-desc reveal">cocoon 是整套栈里年龄最大、协议最宽松（MIT）、也最能单独拿出来用的一层。它把 Cloud Hypervisor 的裸 API 包装成 Docker 式体验，并补齐了上层热池赖以存在的快照克隆语义。</p>
+
+  <div class="card reveal">
+    <h3>⚙️ 双后端：一份 CLI，两种取舍 <span class="badge fact">Fact</span></h3>
+    <table>
+      <tr><th></th><th>Cloud Hypervisor（默认）</th><th>Firecracker（<code>--fc</code>）</th></tr>
+      <tr><td><b>启动 / 开销</b></td><td>~200–500ms · ~10–20 MiB/VM</td><td><b>~125ms · &lt;5 MiB/VM</b></td></tr>
+      <tr><td><b>镜像</b></td><td>OCI 直启 + cloudimg（UEFI）+ Windows</td><td>仅 OCI</td></tr>
+      <tr><td><b>能力</b></td><td>qcow2、多队列网络、热插盘/NIC、VFIO、vhost-user-fs、hugepages</td><td>几乎全无；<code>--pci</code> 才给有限热插（上限 8 设备）</td></tr>
+    </table>
+    <p><span class="badge analysis">Analysis</span>默认选 CH 不是因为它快，而是因为只有 CH 能承载完整桌面与 Windows guest；FC 是给「极致密度、无头代码沙盒」留的降级档。sandbox 层的 roadmap 里专门有一条「per-pool hypervisor 轴（ch | fc）」——现在池子按 <code>(template, net, size)</code> 分键，还不能同节点混跑两种引擎，正说明这个双后端还没完全长进上层。</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>💿 镜像：VM 镜像，不是容器镜像 <span class="badge fact">Fact</span></h3>
+      <p><code>cocoon image pull ghcr.io/cocoonstack/cocoon/ubuntu:24.04</code> 拉的是带 <b>kernel + initramfs + rootfs</b> 的 VM 镜像：OCI 层转 EROFS、内容寻址 SHA-256 去重；没有内核的普通容器镜像直接拒绝。cloud 镜像走 URL 拉取自动转 qcow2 v3 + UEFI。官方目录含 Ubuntu 22.04/24.04（及 <code>24.04-xfce</code>、<code>24.04-chrome</code> 变体）、Debian 13、Android 14/15/16、Windows 11，均内置 vsock exec agent。</p>
+    </div>
+    <div class="card reveal">
+      <h3>📸 快照与克隆：上层一切速度的来源 <span class="badge fact">Fact</span></h3>
+      <p>快照捕获 <b>内存 + COW 磁盘 + 设备状态</b>全量。恢复三模式：<code>mmap</code>（默认，CoW 映射、兄弟克隆共享 page cache、零 eager 拷贝）/ <code>copy</code>（hugepages 等场景回退）/ <code>ondemand</code>（userfaultfd 按需分页）。另有原子 hibernate（存盘失败则 VM 直接 resume）、多轮增量 live migration（靠 XFS reflink 比对 extent）、带稀疏洞保真的 export/import。</p>
+      <p><span class="badge warn">硬约束</span>CPU / 内存 / 存储在<b>快照时定死</b>，clone/restore 不接受改规格；要不同形状只能新建 VM。热池按 size 分档就是被这条约束逼出来的。</p>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <h3>🌐 网络与资源：密度优化做到 cgroup 粒度 <span class="badge fact">Fact</span></h3>
+    <ul>
+      <li><b>CNI + TC redirect</b>：virtio-net 多队列 TAP 经 TC ingress mirred 接到 CNI veth，<b>数据路径上没有 bridge</b>；MAC 透传以过 Cilium/Calico anti-spoofing，MTU 自动同步；另有 bridge 直连模式与 NIC 热扩缩。</li>
+      <li><b>每 VM 一个 cgroup v2 scope</b>：Guaranteed-at-N 默认、cpuset 可钉到一个 cache domain、磁盘队列线程也钉在最闲的域里。</li>
+      <li><b>内存回收组合拳</b>：virtio-balloon 默认回收 25%、可选 KSM <code>MADV_MERGEABLE</code> 跨 VM 去重、hugepages 可选（但会失去 mmap 恢复快路径）。</li>
+      <li><b>元数据引擎换代</b>：默认 sqlite（旧 json 根目录可离线双向转换）。官方 PR 实测写入比 json 快 30x（N=1）至 11x（N=1000），万级 VM 时读延迟保持平坦——热池规模上去后，元数据层先于 hypervisor 成为瓶颈，他们先修了这里。</li>
+    </ul>
+    <p><span class="badge analysis">Analysis</span>还有一个架构细节值得记：<b>daemon-optional</b>。一台 VM 一个 hypervisor 进程，每条 CLI 命令独立执行；可选的 <code>cocoon daemon</code> 只做崩溃收敛与状态跟踪。这让上层 sandboxd 能直接把 cocoon 当原语调用，不必再和一层常驻 daemon 抢状态所有权。</p>
+  </div>
+</section>
+
+<!-- ============ 05 ============ -->
+<section class="block" id="s05">
+  <div class="sec-head reveal"><span class="sec-num">05</span><h2>节点层 sandbox：sandboxd 热池与 silkd</h2></div>
+  <p class="sec-desc reveal">sandbox 仓解决的是单节点问题：怎样让「领一台沙盒」这件事快到亚毫秒，池子空了又怎样在几十毫秒内补出来。</p>
+
+  <div class="fig reveal">
+    <svg viewBox="0 0 920 280" width="920" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+      <defs><marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#22d3ee"/></marker></defs>
+      <rect x="40" y="90" width="190" height="100" rx="14" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="135" y="122" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">SDK / 上层调用方</text>
+      <text x="135" y="144" fill="#8b98ad" font-size="12" text-anchor="middle">Go / Python SDK · MCP server</text>
+      <text x="135" y="162" fill="#8b98ad" font-size="12" text-anchor="middle">OpenAI Agents / LangChain 适配</text>
+      <rect x="330" y="60" width="260" height="160" rx="14" fill="rgba(167,139,250,.05)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="460" y="90" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">sandboxd（每节点，Go）</text>
+      <text x="460" y="114" fill="#8b98ad" font-size="12" text-anchor="middle">warm pool：按 (template, net, size) 预热</text>
+      <text x="460" y="134" fill="#8b98ad" font-size="12" text-anchor="middle">claim：热命中所有权转移 0.2–0.7ms</text>
+      <text x="460" y="154" fill="#8b98ad" font-size="12" text-anchor="middle">miss：golden 快照克隆（几十 ms）</text>
+      <text x="460" y="174" fill="#8b98ad" font-size="12" text-anchor="middle">再 miss：冷启 0.2–0.4s</text>
+      <text x="460" y="198" fill="#8b98ad" font-size="12" text-anchor="middle">memberlist gossip：热池水位广播 + MOVED 式重定向</text>
+      <rect x="690" y="90" width="190" height="100" rx="14" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="785" y="122" fill="#e6edf7" font-size="14" text-anchor="middle" font-weight="700">guest microVM</text>
+      <text x="785" y="144" fill="#8b98ad" font-size="12" text-anchor="middle">silkd（Rust，vsock 2048）</text>
+      <text x="785" y="162" fill="#8b98ad" font-size="12" text-anchor="middle">exec / files / pty / git / LSP</text>
+      <line x1="230" y1="125" x2="325" y2="125" stroke="#22d3ee" stroke-width="2" marker-end="url(#arr2)"/>
+      <line x1="590" y1="140" x2="685" y2="140" stroke="#22d3ee" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="460" y="252" fill="#8b98ad" font-size="12.5" text-anchor="middle">数据面是 relay-only：sandboxd 把 SDK 的 HTTP 连接升级为字节流，经 vsock 转发给 silkd——guest 无网络（net=none）也能操作</text>
+    </svg>
+    <div class="figcap"><b>图 2 · 节点层数据面。</b>控制面（claim）与数据面（exec/files）在 sandboxd 分开：前者是本地事务，后者是 vsock 中继。</div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🏊 热池三级火箭 <span class="badge fact">Fact</span></h3>
+      <table>
+        <tr><th>档位</th><th>路径</th><th>延迟</th></tr>
+        <tr><td><b>热命中</b></td><td>池中已有开机完成的 VM，转交所有权</td><td><b>0.2–0.7 ms</b></td></tr>
+        <tr><td><b>池 miss</b></td><td>从 golden 快照 mmap 克隆一台</td><td>几十 ms</td></tr>
+        <tr><td><b>冷启</b></td><td>从镜像完整开机（裸金属）</td><td>0.2–0.4 s</td></tr>
+      </table>
+      <p>池子按 <code>(template, net, size)</code> 分键预热；交付前有一道 <code>warmup</code> 探活 gate——VM 的 envd（及代码解释器）没答活之前绝不交出去，上层曾因此吃过「首个 runCode 返回 502」的亏，现在写进配置契约。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🪼 silkd 与协议纪律 <span class="badge fact">Fact</span></h3>
+      <p>guest 内产品守护进程 <b>silkd 用 Rust 写</b>，走 vsock 2048 端口的 newline-JSON 帧协议，提供 exec、文件、tar、pty、持久会话、git 操作、后台进程、fork、hibernate、checkpoint、LSP broker 等完整面。线协议有共享的 golden fixture 语料库，<b>Rust / Go / Python 三端测试全部 round-trip 同一份语料</b>——协议漂移直接让 CI 变红。这种「用夹具锁协议」的做法在同类项目里少见。</p>
+      <p>SDK 侧 Go 与 Python 对等（Python 版纯 stdlib、零依赖），外加 MCP stdio server、OpenAI Agents SDK 与 LangChain 的 provider 适配。</p>
+    </div>
+  </div>
+
+  <div class="callout violet reveal"><span class="badge analysis">Analysis</span><b>gossip 是节点层的隐藏关键。</b>各节点的 sandboxd 用 memberlist 互相广播热池水位（亚秒级新鲜），远比上层 NodeInventory 的 5–30 秒发布周期新。于是出现一个双时间尺度设计：控制面用慢而稳的 inventory 做全局视图与选点兜底，节点间用快而局部的 gossip 做 claim 时的最后一跳纠偏——上层 claim 选错节点时，sandboxd 直接回一个指向真有货节点的重定向，而不是失败重试。</div>
+</section>
+
+<!-- ============ 06 ============ -->
+<section class="block" id="s06">
+  <div class="sec-head reveal"><span class="sec-num">06</span><h2>控制面 sandbox-operator：聚合 APIServer</h2></div>
+  <p class="sec-desc reveal">名字叫 operator，实际上它不跑传统 controller reconcile——它自己声明「ships no controller of its own」。核心是三个二进制与一个 CRD。</p>
+
+  <div class="card reveal">
+    <h3>🧩 组件清单 <span class="badge fact">Fact</span></h3>
+    <table>
+      <tr><th>组件</th><th>职责</th></tr>
+      <tr><td><code>cmd/sandbox-apiserver</code></td><td>聚合 APIServer：scatter-gather 读、节点本地 claim/release、pause/resume/fork/snapshot 子资源、可选 e2b REST 面、进程内 WarmPool 驱动</td></tr>
+      <tr><td><code>cmd/sandbox-envd-proxy</code></td><td>e2b 数据面：单一公网入口，按 claim 把 files/commands/pty 经 vsock 送进正确的 guest，客户端永远看不到节点地址</td></tr>
+      <tr><td><code>cmd/sandbox-e2b</code></td><td>无 K8s 形态：同一 e2b 面直接跑在 sandboxd mesh 上，靠 gossip 发现节点，可同进程内嵌 envd-proxy</td></tr>
+      <tr><td><code>NodeInventory</code> CRD</td><td>本仓唯一自有 CRD（独立 API 组 <code>sandbox.cocoonstack.io</code>）：每节点一份的实时摘要——在册沙盒、热池容量、已晋升模板、sandboxd 地址</td></tr>
+    </table>
+    <p>安装形态有个关键取舍：Helm chart 装的是一个会<b>影子掉上游 <code>Sandbox</code> CRD 的 APIService</b>——L3 集群因此<b>不装</b>上游 Sandbox CRD、<b>不跑</b>上游 controller。想要 Pod 路径就装上游的整套清单。两条路径最终都落到同一个 sandboxd 热池，区别只在 K8s 里存什么。</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🎯 选点：power-of-two-choices <span class="badge fact">Fact</span></h3>
+      <p>NodeInventory 每 5–30 秒才发布一次，若每次 claim 都挑「快照里最热的节点」，一个发布窗口内的突发流量会把那台节点抽干、其它节点闲置——它自己的 100 连发实测里 2 次 miss 正是单节点过载的冷启。解法：从有热容量的候选里<b>随机抽两个，取更热的那个</b>。偏向热容量与摊匀突发兼得。若快照仍选错，sandboxd 的 gossip 重定向补最后一跳（双机实测一跳 0.57ms）。</p>
+    </div>
+    <div class="card reveal">
+      <h3>⏳ 一致性账本：哪些是强的，哪些是最终一致的 <span class="badge fact">Fact</span></h3>
+      <ul>
+        <li><code>List / Watch</code>：最终一致，随 inventory 发布周期（~30s）收敛；watch 目前靠轮询 inventory 做 diff 实现。</li>
+        <li><code>Get</code> 与生命周期操作：按名字或 claim id <b>直查节点</b>，在任意副本上立即准确——专门补读己之写。</li>
+        <li><code>Create</code> 不是 upsert：同名重复 Create 会再 claim 一台新 VM，可靠调用方应使用 <code>generateName</code>，以响应里的 claim-id 锚定身份。</li>
+        <li>节点死亡：其 inventory 超过 90 秒未更新即退出 claim 路径、其沙盒从读视图消失并发出 Deleted 事件；节点本身还活着时 sandboxd 仍在本地履约租约。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout amber reveal"><span class="badge warn">注意</span><b>WarmPool 驱动与 apiserver 同进程。</b>它 watch <code>SandboxWarmPool</code>、把模板解析成 <code>(template, net, size)</code> 键、把期望副本数摊到各节点、再把 <code>status.readyReplicas</code> 按节点上报写回。reconcile 是 O(pools + nodes)/tick，永不 per-sandbox——这是「apiserver 后台负载不随沙盒数增长」的结构性原因，也是它敢宣称 100 万意图的底气。但代价写在 roadmap 里：多副本 HA 未完成，今天多副本只分担读，claim 偏向单写者。</div>
+</section>
+
+<!-- ============ 07 ============ -->
+<section class="block" id="s07">
+  <div class="sec-head reveal"><span class="sec-num">07</span><h2>性能账本：50,000 台 / 15 秒的出处</h2></div>
+  <p class="sec-desc reveal">这一节把官方 performance.md 的数字逐条溯源：方法、硬件、轮次、反例。它是本报告最看重的一节——不是因为数字大，而是因为记账方式少见地诚实。</p>
+
+  <div class="card reveal">
+    <h3>🚀 舰队供给：一次 patch 拉满 5 万台 <span class="badge fact">Fact</span></h3>
+    <p><b>方法</b>：单个 <code>SandboxWarmPool</code> 把 <code>replicas: 0 → 50000</code>，跑在 <b>20 台同构裸金属</b>（每台 384 vCPU / 1.5 TiB / 本地 NVMe，每节点 2,500 台 microVM）。<code>status.readyReplicas</code> 以 1 秒粒度轮询，节点侧遥测以 5 秒粒度交叉核对。沙盒是真实 Cloud Hypervisor/KVM microVM，从 golden 快照恢复。</p>
+    <p><b>结果</b>：全量供给 <b>10–15 秒</b>（节点遥测）/ 15.7 秒（CR 墙钟），有效速率 <b>3,300–5,000 台/秒</b>；每台净内存 <b>99 MB</b>；全程 etcd 约 <b>2 写/秒</b>（20 份 inventory 每 30 秒发布 + 少量 status），且 claim 路径对 etcd <b>零写入</b>。</p>
+    <table>
+      <tr><th>轮次</th><th>节点</th><th>恢复路径</th><th>填满耗时</th></tr>
+      <tr><td>1</td><td>26</td><td>eager copy（全量拷贝）</td><td>172.7 s</td></tr>
+      <tr><td>2</td><td>26（含 1 台 HDD 节点）</td><td>mmap CoW</td><td>290.1 s</td></tr>
+      <tr><td><b>3</b></td><td><b>20（同构 NVMe）</b></td><td><b>mmap CoW</b></td><td><b>12 ± 3 s</b></td></tr>
+    </table>
+    <p><span class="badge warn">反例不藏</span>第 2 轮是官方自曝的负优化：同一轮里每台 NVMe 节点都变快了，唯独那台 HDD 节点让 mmap CoW 从约 140 秒退化到约 295 秒——<b>优化的符号由存储介质决定</b>。去掉 6 台异构节点才得到第 3 轮的干净曲线。把反例写进自家性能文档，这一笔比 5 万这个数字本身更值钱。</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🧮 内存账本：99 MB 是怎么算出来的 <span class="badge fact">Fact</span></h3>
+      <table>
+        <tr><th>恢复方式</th><th>CH RSS</th><th>私有</th><th>共享</th><th>净 / VM</th></tr>
+        <tr><td>eager copy</td><td>359 MB</td><td>353</td><td>6</td><td>358 MB</td></tr>
+        <tr><td><b>mmap CoW</b></td><td>163 MB</td><td>96</td><td>67</td><td><b>99 MB</b></td></tr>
+      </table>
+      <p>口径来自 <code>/proc/&lt;pid&gt;/smaps</code> 与节点 <code>MemAvailable</code> 差值互证。扩展律写作 <code>T(S,N) ≈ T₀ + S/(N·r)</code>，其中节点本地常数 <code>r ≈ 200–270/s</code>、控制面常数 <code>T₀ ≈ 5–6s</code>。r 恒定的原因是供给所需的一切（golden 镜像、256 路 refill 预算、SQLite 元数据）全是节点本地的，控制面对每节点只有每 5 秒一次 O(1) 的 <code>PUT /v1/pools</code>——节点间零耦合，于是集群速率 = N·r。外推表给到 200 节点 / 100 万台约 25 秒，并明确标注为<b>外推</b>而非实测（roadmap 里「百万级验证」仍在长期清单）。</p>
+    </div>
+    <div class="card reveal">
+      <h3>⚡ Claim 延迟：分两层看 <span class="badge fact">Fact</span></h3>
+      <ul>
+        <li><b>节点本地</b>：sandboxd 所有权转移 <b>0.2–0.7 ms</b>。</li>
+        <li><b>经 K8s API 全链路</b>：26 节点舰队（每节点 125 台热池）上 <code>create → Ready</code> <b>p50 &lt; 1s，p95/p99/max 均为 1s</b>；100 个 Sandbox CR 提交耗时 2.9s，98/100 热命中，2 次 miss 是单节点过载的冷启而非控制面问题；突发下 APF 队列深度全程为 0。</li>
+        <li><b>上游 controller A/B</b>（2026-09-22，双机各 30 热池）：上游 v1.0.3 claim p50 48–54ms，与被删的自维护 fork（44–52ms）落在同一噪声带内——官方据此判定可以放心交还上游。池被抽干后的突发场景里，瓶颈被定位在 virtual-kubelet 默认每节点 10 次/秒的 Pod 同步限速，放开到客户端预算后 refill 达 103–104/s。</li>
+        <li><b>每 claim 的 etcd 成本</b>（Pod 路径）：21–24 次 apiserver 写、18–21 次 etcd put；关掉三项可选事件/标注后降约 19–23%。而 L3 路径这一项是 <b>0</b>——这正是两条路径的本质差价。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout reveal"><span class="badge analysis">Analysis</span><b>怎么读这份账本：</b>供给速率（万台/十几秒）测的是「热池预热」而非「用户请求延迟」，两者别混；claim 的亚毫秒是节点本地数字，全链路 p50 &lt;1s 才是应用视角。官方把三者分开记账、把 retired 的 fork 数据单独归档并注明「描述的是已不在仓里的代码」，是这套数字可被引用的前提。本报告所有性能结论均标注为<b>厂商自测</b>（Fact 层为「官方如此宣称且方法可复现」），尚无第三方复测——见 §14。</div>
+</section>
+
+<!-- ============ 08 ============ -->
+<section class="block" id="s08">
+  <div class="sec-head reveal"><span class="sec-num">08</span><h2>生命周期与 e2b 兼容层</h2></div>
+  <p class="sec-desc reveal">上游 agent-sandbox 的 API 只有 create/delete 级别语义。CocoonStack 在 L3 上补了四个动词，并把同一套语义翻译给 e2b SDK。</p>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🔀 四个子资源动词（L3 独有） <span class="badge fact">Fact</span></h3>
+      <table>
+        <tr><th>子资源</th><th>效果</th></tr>
+        <tr><td><code>sandboxes/pause</code></td><td>快照 guest 内存并停机（成本与内存大小成正比）</td></tr>
+        <tr><td><code>sandboxes/resume</code></td><td>走 cocoon mmap 快路径恢复（实测 109ms vs pause 315ms）</td></tr>
+        <tr><td><code>sandboxes/fork</code></td><td>同节点克隆 N 个子沙盒，源继续运行；子沙盒各自独立租约，不继承父租约</td></tr>
+        <tr><td><code>sandboxes/snapshot</code></td><td>打 checkpoint，供后续沙盒从它分支</td></tr>
+      </table>
+      <p>这些动词以子资源形式挂在上游 <code>agents.x-k8s.io/v1beta1</code> 组下，标准 Sandbox schema 不动，未修改的上游客户端照常工作。四个动词全线拒绝 server-side dry-run——节点 API 没有 dry-run 事务，装不出来就明说。</p>
+    </div>
+    <div class="card reveal">
+      <h3>🔌 e2b 兼容：平移层，不是第二控制面 <span class="badge fact">Fact</span></h3>
+      <pre class="code">export E2B_API_URL=http://your-apiserver:8080
+export E2B_API_KEY=&lt;key&gt;
+# 未修改的 e2b SDK：
+# Sandbox.create('ghcr.io/.../rt:24.04') 直接 claim 热池
+# 同一台沙盒同时出现在 kubectl get sandboxes 里</pre>
+      <p>映射覆盖 create/list/get/delete、timeout/refresh（续租）、pause/connect（恢复）、fork、snapshot，以及模板 build API（并行度、超时、日志行数、构建产物走本地目录或 S3）。模板别名文件把 e2b 的 <code>base</code> / <code>code-interpreter-v1</code> 映射到本栈镜像。启动期强校验：没配 API key 文件又没显式允许匿名、没配 <code>--e2b-domain</code>、没配 envd 密钥文件，任一缺失直接<b>启动失败</b>——不给「裸奔的 claim 端点」留静默缺口。</p>
+    </div>
+  </div>
+
+  <div class="callout amber reveal"><span class="badge warn">快照的持久性边界</span><b>checkpoint 只活在打出它的那台节点上。</b>节点磁盘丢了，checkpoint 就没了；对等节点能搬运记录但够不到数据本身，官方明确不做复制，理由写在 roadmap 里：「checkpoint 是 agent 工作负载的分支点，不是备份」，复制的写放大不值得。需要跨节点存活的状态，正道是 <b>promote 成模板</b>再分发。把这条边界当设计前提接受，CocoonStack 的 fork/snapshot 语义才是自洽的；拿它当持久化存储用，会丢东西。</div>
+</section>
+
+<!-- ============ 09 ============ -->
+<section class="block" id="s09">
+  <div class="sec-head reveal"><span class="sec-num">09</span><h2>协议边界：MIT 与 AGPL 的分界线</h2></div>
+  <p class="sec-desc reveal">这是整套栈最容易被忽略、但对商用接入决定性的一节。三层协议不一致，分界线画得非常具体。</p>
+
+  <div class="card reveal">
+    <table>
+      <tr><th>部件</th><th>协议</th><th>说明</th></tr>
+      <tr><td><b>cocoon 引擎</b>（含 vk-cocoon、cocoon-operator 等早期周边）</td><td><b>MIT</b></td><td>可自由嵌入、修改、商用，无 copyleft 传染</td></tr>
+      <tr><td><b>sandbox 服务端</b>：sandboxd、silkd、boot 链、OS 镜像、MCP server</td><td><b>AGPL-3.0</b></td><td>官方原话：这一层「is a product」</td></tr>
+      <tr><td>sandbox 客户端：Go/Python SDK、OpenAI/LangChain 适配、wire 协议模块</td><td><b>Apache-2.0</b></td><td>各目录自带 LICENSE，明确无 copyleft 义务</td></tr>
+      <tr><td><b>sandbox-operator 全部自有代码</b></td><td><b>AGPL-3.0</b></td><td>其消费的上游 agent-sandbox API 类型是 Apache-2.0 依赖，未复制源码入仓</td></tr>
+      <tr><td>vk-sandbox</td><td><b>AGPL-3.0</b></td><td>与较早的 vk-cocoon（MIT）不同——同一组织内新旧部件协议不同，接入前逐仓核对</td></tr>
+    </table>
+    <p><span class="badge analysis">Analysis</span>分界线的意图很清楚：<b>引擎开源引流，产品层用 AGPL 守住托管生意</b>——你可以拿 cocoon 去搭自己的栈，但如果你把 sandboxd / sandbox-operator 改一改就对外提供网络服务，AGPL 的源码提供义务会被触发。对接入方的实操结论：只取引擎层（MIT）+ 自写控制面，是法律上最干净的切法；整套托管商用，先过法务。这一点与 E2B（托管服务、引擎闭源）、OpenSandbox（Apache-2.0 全开放）的站位都不同，选型表里必须单列。</p>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="block" id="s10">
+  <div class="sec-head reveal"><span class="sec-num">10</span><h2>安全模型：隔离在 VM，战场在网络</h2></div>
+  <p class="sec-desc reveal">官方 security.md 只写了一页，但边界划得干净。结合本档案馆的一贯结论看：microVM 逃逸面与网络出口面要分开评估。</p>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>🧱 信任边界 <span class="badge fact">Fact</span></h3>
+      <ul>
+        <li><b>K8s 面</b>：标准 authn/authz + RBAC 管 <code>agents.x-k8s.io</code> 资源；e2b 面用独立 API key 文件，按 key 绑定 namespace 隔离。</li>
+        <li><b>Claim 令牌</b>：节点 claim 用 sandboxd bearer token；每台沙盒交付时发 per-claim token（K8s 面是 annotation，e2b 面是其 HMAC 派生的 <code>envdAccessToken</code>）。泄漏一张只失守一台沙盒、且只到它的数据面，不及宿主机。</li>
+        <li><b>envd-proxy 是高价值目标</b>：它同时持有全舰队 sandboxd token 与 envd 密钥，校验来访 token 的派生关系后才用 claim token 开中继——客户端永远学不到节点地址，但这也意味着 proxy 本身是全舰队的钥匙串，其部署边界需按控制面等级保护。</li>
+        <li><b>隔离原语</b>：硬件虚拟化 microVM；guest 逃逸被定义为下层 hypervisor 栈的漏洞，走 GitHub 私密 Security Advisory 上报，不开公开 issue。</li>
+      </ul>
+    </div>
+    <div class="card reveal">
+      <h3>🌐 网络默认硬化 <span class="badge fact">Fact</span></h3>
+      <ul>
+        <li><b><code>net=none</code> 为默认车道</b>：guest 没有网卡，全部 I/O 走 vsock 经 sandboxd 中继——无网 guest 也能 exec/传文件，但没有任何直接出口。</li>
+        <li><b><code>net=egress</code> 需显式选择</b>：挂 CNI/bridge 网卡；e2b 面上 <code>allow_internet_access: true</code> 才映射到 egress，其余一律 none。模板 build 沙盒恒走 none，只能经 sandboxd 的 guarded egress proxy 出网。</li>
+        <li>带签名的文件 URL（envd 49983 端口）是唯一免 token 放行的请求：proxy 用舰队 token 中继且保持被动（不唤醒暂停的沙盒），签名由 envd 自行校验。</li>
+      </ul>
+      <p><span class="badge analysis">Analysis</span>与本档案馆此前对 SPACE 的取证结论互证：<b>VM 隔离层很难被打穿，真实世界的失守多发生在 egress</b>。CocoonStack 把默认车道设成「根本没网卡」而不是「有网卡再加防火墙规则」，是把攻击面从策略问题降维成拓扑问题——规则会写错，物理不存在的网卡不会。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="block" id="s11">
+  <div class="sec-head reveal"><span class="sec-num">11</span><h2>已知问题与风险：fork 依赖与未竟之路</h2></div>
+  <p class="sec-desc reveal">cocoon 的 known-issues 文档长达 444 行。文档诚实是优点，但每一条都是接入方要替它还的债。</p>
+
+  <div class="card reveal">
+    <h3>⚠️ 风险清单 <span class="badge fact">Fact</span> <span class="badge analysis">Analysis</span></h3>
+    <table>
+      <tr><th>风险</th><th>具体形态</th><th>等级</th></tr>
+      <tr><td><b>三个 dev fork 承重</b></td><td>Cloud Hypervisor 必须 v54+ 且用 cocoonstack fork 的 <code>dev</code> 滚动构建（diff 快照、shadow-stack 保存恢复、QCOW 泄漏修复）；Firecracker 必须 1.16.1+ fork 版（1.16.0 恢复后永久损坏 vsock）；x86 固件必须 fork 的 dev 版（上游 0.5.0 连 Windows ACPI 关机都做不对）。<code>cocoon-check --upgrade</code> 装的全是这些滚动构建</td><td><b>高</b>——生产稳定性押在三个滚动 dev 分支上，上游漂移即是自己的故障</td></tr>
+      <tr><td><b>Clone 后网络要进 guest 手工修</b></td><td>CH 克隆热换新 MAC，guest 按旧 MAC 匹配的配置失效、起来无 IP；FC 克隆保留旧 MAC，直接与源 VM 撞 IP、桥转发表抖动。<code>vm clone</code> 只能把修复脚本打印出来。sandboxd 在上层用 golden 流程包掉了这一步，cocoon 单独使用时它是裸露的</td><td>中——上层已包，引擎层裸用需自备自动化</td></tr>
+      <tr><td><b>UEFI 固件上游缺陷</b></td><td>rust-hypervisor-firmware 不支持 <code>InstallMultipleProtocolInterfaces()</code>，Ubuntu 24.04 / Debian 13 的 cloud 镜像直接 kernel panic，只能改走 OCI 直启镜像绕行</td><td>中——有绕行路径，但 cloudimg 生态受限</td></tr>
+      <tr><td><b>硬件与环境门槛</b></td><td>Linux KVM + root；x86 内核 ≥5.17（CH 需 <code>KVM_CAP_XSAVE2</code>）；<code>root_dir</code> 拒绝 NFS/FUSE；live migration 实际只测过 XFS reflink。云上嵌套虚拟化与普通云主机基本不可用</td><td>中——定位即裸金属舰队，非缺陷，但排除大量部署形态</td></tr>
+      <tr><td><b>控制面未竟项（官方 roadmap）</b></td><td>聚合 apiserver 多副本 HA 未完成（读可分担、claim 偏单写）；watch 仍是轮询 diff 而非 per-node 流合并；L2 节点本地 claim 网关只有设计；per-pool hypervisor 轴未落地；百万级全栈验证未做</td><td>中——当下规模可用，往 10 万+ 台走前需逐项验收</td></tr>
+      <tr><td><b>项目年龄</b></td><td>三仓全部建于 2026 年，合计 star 不足 450；公开生产证据只有其自述的 26 节点 MY 舰队与双机测试床</td><td>中——文档质量远超社区验证量</td></tr>
+    </table>
+  </div>
+
+  <div class="callout red reveal"><span class="badge warn">一句话风险摘要</span>CocoonStack 的技术叙事是自洽且可复现的，但它的<b>供应链形状</b>是全栈最大的风险：hypervisor、固件、Firecracker 三个关键二进制全部来自自维护 fork 的滚动 dev 构建。这既是它能做出 mmap CoW、diff 快照这些上游没有的能力的原因，也是接入方必须自己评估「跟不跟得起这条升级链」的理由。</div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="block" id="s12">
+  <div class="sec-head reveal"><span class="sec-num">12</span><h2>横向对比：放在选型桌上看</h2></div>
+  <p class="sec-desc reveal">与本档案馆及用户日常选型中最常同框的四个对象对比。口径：隔离技术、控制面、协议、成本锚点、桌面能力。</p>
+
+  <div class="card reveal">
+    <table>
+      <tr><th>维度</th><th>CocoonStack</th><th>E2B（托管）</th><th>OpenSandbox（阿里→AAIF）</th><th>上游 agent-sandbox</th></tr>
+      <tr><td><b>隔离</b></td><td>microVM（CH / FC 双后端）</td><td>microVM（Firecracker）</td><td>容器 / gVisor / microVM 多运行时</td><td>Pod 抽象，运行时由 provider 决定</td></tr>
+      <tr><td><b>控制面</b></td><td>聚合 APIServer，etcd 零沙盒对象</td><td>闭源托管控制面</td><td>自有控制面，egress 设计为亮点</td><td>CRD + controller，每沙盒一个 etcd 对象（Pod 路径）</td></tr>
+      <tr><td><b>协议</b></td><td>引擎 MIT / 产品层 AGPL-3.0</td><td>闭源服务，SDK 开源</td><td>Apache-2.0</td><td>Apache-2.0</td></tr>
+      <tr><td><b>e2b 兼容</b></td><td>原生提供（控制面 + envd 数据面 + build API）</td><td>本体</td><td>部分兼容层</td><td>无</td></tr>
+      <tr><td><b>桌面 / Windows</b></td><td><b>官方镜像含 XFCE / Chrome / Win11 / Android</b></td><td>无头为主</td><td>无头为主</td><td>取决于 provider（vk-cocoon 可）</td></tr>
+      <tr><td><b>成本形态</b></td><td>自有裸金属摊薄，99MB/VM 密度</td><td>按秒/时长计费</td><td>自托管</td><td>自托管</td></tr>
+      <tr><td><b>运维负担</b></td><td><b>最高</b>：裸金属 + 三个 fork 构建 + K8s 聚合层</td><td>最低（全托管）</td><td>中</td><td>中</td></tr>
+    </table>
+    <p><span class="badge analysis">Analysis</span>四者不在同一条赛道上抢同一个位置：E2B 卖的是「免运维」，OpenSandbox 卖的是「开放治理 + egress」，上游 agent-sandbox 卖的是「标准 API」，CocoonStack 卖的是「舰队密度与控制面可扩展性」。把它当成 E2B 的平替来比价格是错位——它的对手其实是「自建 Firecracker 舰队」这个选项本身，比的是你自己造轮子要花多少人月。</p>
+  </div>
+</section>
+
+<!-- ============ 13 ============ -->
+<section class="block" id="s13">
+  <div class="sec-head reveal"><span class="sec-num">13</span><h2>对 Cassia 的启示：可拿走与不可拿走</h2></div>
+  <p class="sec-desc reveal">站在 Cassia（AI agent 操作系统：真实电脑 + 实时可见操作 + 持久环境）的立场做一次能力审计。本节为本档案馆的分析立场，非官方结论。</p>
+
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>✅ 可直接拿走的四样 <span class="badge analysis">Analysis</span></h3>
+      <ol>
+        <li><b>NodeInventory scatter-gather 模型</b>：Cassia 若走向多节点自托管，这是避免重蹈「每沙盒一个对象」覆辙的现成设计，连失败模式表（节点分区、inventory 丢失、控制面停写）都替你枚举好了。</li>
+        <li><b>热池交付纪律</b>：<code>(template, net, size)</code> 分键 + warmup 探活 gate（envd 没答活绝不交付）。Cassia 在 E2B 上吃过的「沙盒领到但环境没就绪」类问题，这套纪律是结构化解法。</li>
+        <li><b>fork / pause 语义设计</b>：子沙盒独立租约不继承父租约、snapshot 命名空间戳、pause 成本与内存成正比的诚实标注——做分支型 agent 工作流时可直接参照。</li>
+        <li><b>power-of-two-choices 选点</b>：任何「从慢更新的全局视图里挑节点」的场景都适用，比最优选择更抗突发。</li>
+      </ol>
+    </div>
+    <div class="card reveal">
+      <h3>🚫 拿不走 / 要付代价的三样 <span class="badge analysis">Analysis</span></h3>
+      <ol>
+        <li><b>整套托管商用先过 AGPL</b>：产品层（sandboxd/operator）是 AGPL-3.0，与 Cassia 现行 MIT 发布策略不兼容。干净的切法是<b>只取 cocoon 引擎（MIT）+ 自写控制面</b>，而非整栈搬运。</li>
+        <li><b>运维形态不匹配</b>：它要求裸金属 KVM 舰队与三个 fork 的滚动构建；Cassia 当前部署（单机 + E2B）没有这个运维面，接进来等于新开一条 infra 战线。</li>
+        <li><b>叙事不重合</b>：CocoonStack 的主线是无头代码沙盒舰队，桌面只是 cocoon 的一个镜像变体；Cassia 的差异化在「真实电脑 + 实时可见 + 持久环境」。可借的是它的引擎与快照原语去承载桌面镜像，不是它的控制面叙事。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="callout green reveal"><b>审计结论：</b>对 Cassia，CocoonStack 的正确打开方式是<b>当参考架构与原语库读，不当平替平台迁</b>。近期动作建议只有一条：保持 P0 级 release 跟踪（cocoon 的版本节奏最快、且 MIT 层变化直接决定可复用边界）；真要验证供给速度，需借一台 KVM 裸金属做单节点 sandboxd 三数基准（热 claim / golden 克隆 / pause-resume），普通云主机与嵌套虚拟化环境测不了，也不该拿测不了的环境数据下结论。</div>
+</section>
+
+<!-- ============ 14 ============ -->
+<section class="block" id="s14">
+  <div class="sec-head reveal"><span class="sec-num">14</span><h2>验证方法与资料来源</h2></div>
+  <p class="sec-desc reveal">本报告的证据等级与复现路径，照档案馆惯例交代清楚。</p>
+
+  <div class="card reveal">
+    <h3>🔍 本报告如何写成 <span class="badge fact">Fact</span></h3>
+    <ul>
+      <li><b>一手资料通读</b>：三仓 README 与全部官方文档站（cocoon / sandbox / sandbox-operator 三套 docs），含 performance、scaling-design、e2b-compat、lifecycle、security、roadmap、snapshots、firecracker、networking、known-issues 各页。</li>
+      <li><b>基本面实测</b>：star / fork / commit / release / 协议经 GitHub API 于 2026-11-09 复核（三仓与组织全量 25 仓）。</li>
+      <li><b>性能数字的等级</b>：全部为<b>厂商自测</b>。方法、硬件、轮次与反例均公开且可按其文档复现，但本档案馆<b>未做第三方复测</b>——无 KVM 裸金属环境，嵌套虚拟化测出的数字没有意义，不测。文中凡引性能处均已标注口径。</li>
+      <li><b>分层纪律</b>：标注 Fact 的为文档/API 可直接核对的陈述；Analysis 为本馆基于这些事实的推论；涉及未来与动机判断处使用 Hypothesis 并明示。</li>
+    </ul>
+    <table>
+      <tr><th>资料</th><th>链接</th></tr>
+      <tr><td>cocoon 引擎仓 / 文档</td><td><a href="https://github.com/cocoonstack/cocoon" style="color:var(--cyan)">github.com/cocoonstack/cocoon</a> · <a href="https://cocoonstack.github.io/cocoon/" style="color:var(--cyan)">cocoonstack.github.io/cocoon</a></td></tr>
+      <tr><td>sandbox 节点层仓 / 文档</td><td><a href="https://github.com/cocoonstack/sandbox" style="color:var(--cyan)">github.com/cocoonstack/sandbox</a> · <a href="https://cocoonstack.github.io/sandbox/" style="color:var(--cyan)">cocoonstack.github.io/sandbox</a></td></tr>
+      <tr><td>sandbox-operator 控制面仓 / 文档</td><td><a href="https://github.com/cocoonstack/sandbox-operator" style="color:var(--cyan)">github.com/cocoonstack/sandbox-operator</a> · <a href="https://cocoonstack.github.io/sandbox-operator/" style="color:var(--cyan)">cocoonstack.github.io/sandbox-operator</a></td></tr>
+      <tr><td>上游 API 定义</td><td><a href="https://github.com/kubernetes-sigs/agent-sandbox" style="color:var(--cyan)">kubernetes-sigs/agent-sandbox</a></td></tr>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>Agent Sandbox Archive · CASE 007 · 由 muse 通读三仓文档与 API 实测后生成 · 2026-11-09</div>
+  <div style="margin-top:8px">报告中的数值为采样时点状态；性能数字为厂商自测，本馆未做第三方复测（原因见 §14）。凭据与个人隐私内容一律未收录。</div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: .08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
